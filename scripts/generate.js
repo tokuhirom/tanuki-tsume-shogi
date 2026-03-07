@@ -91,7 +91,8 @@ function basicValidity(initial) {
 function structuralSignature(initial) {
   const dk = initial.pieces.find((p) => p.owner === "defender" && p.type === "K");
   if (!dk) return "";
-  const rel = initial.pieces
+
+  const relBase = initial.pieces
     .map((p) => ({ owner: p.owner, type: p.type, dx: p.x - dk.x, dy: p.y - dk.y }))
     .sort((a, b) =>
       a.owner.localeCompare(b.owner) ||
@@ -99,7 +100,19 @@ function structuralSignature(initial) {
       a.dy - b.dy ||
       a.dx - b.dx
     );
-  return JSON.stringify({ rel, hands: initial.hands, sideToMove: initial.sideToMove });
+
+  const relMirror = initial.pieces
+    .map((p) => ({ owner: p.owner, type: p.type, dx: -(p.x - dk.x), dy: p.y - dk.y }))
+    .sort((a, b) =>
+      a.owner.localeCompare(b.owner) ||
+      a.type.localeCompare(b.type) ||
+      a.dy - b.dy ||
+      a.dx - b.dx
+    );
+
+  const a = JSON.stringify({ rel: relBase, hands: initial.hands, sideToMove: initial.sideToMove });
+  const b = JSON.stringify({ rel: relMirror, hands: initial.hands, sideToMove: initial.sideToMove });
+  return a < b ? a : b;
 }
 
 function randomCandidate(rand) {
