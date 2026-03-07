@@ -6,6 +6,9 @@
 
 スマホでサクサク遊べる、GitHub Pages ホスティング前提の Web 詰将棋アプリです。
 
+> [!WARNING]
+> このアプリは現在開発中です。仕様・問題データ・画面UIは予告なく変更される場合があります。
+
 ## 特徴
 
 - ブラウザだけでプレイ可能（インストール不要）
@@ -35,6 +38,11 @@
 ## 開発
 
 - 開発者向け情報は [DEVELOPMENT.md](./DEVELOPMENT.md) を参照
+
+## GitHub Pages
+
+- `main` ブランチへの push で `docs/` を自動デプロイします（`.github/workflows/pages.yml`）
+- リポジトリ設定の `Settings > Pages > Build and deployment` は `GitHub Actions` を選択してください
 
 ## ライセンス
 

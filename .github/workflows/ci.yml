@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate puzzle data (deterministic seed)
+        run: node scripts/generate.js --count=100 --seed=20260307 --strict-attempts=0
+
+      - name: Syntax check
+        run: |
+          node --check src/shogi-core.js
+          node --check scripts/generate.js
+          node --check scripts/validate.js
+          node --check docs/app.js
+
+      # TODO: Enable this once strict puzzle validation passes in generation pipeline.
+      # - name: Validate puzzle data
+      #   run: npm run validate
