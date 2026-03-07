@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 pub const BOARD_SIZE: i8 = 9;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -70,6 +71,7 @@ impl PieceType {
         matches!(self, PieceType::PR | PieceType::PB | PieceType::PS | PieceType::PN | PieceType::PL | PieceType::PP)
     }
 
+    #[allow(dead_code)]
     pub fn is_hand_type(self) -> bool {
         matches!(self, PieceType::R | PieceType::B | PieceType::G | PieceType::S | PieceType::N | PieceType::L | PieceType::P)
     }
@@ -368,6 +370,7 @@ fn pseudo_drops(state: &State, owner: Owner) -> Vec<Move> {
     out
 }
 
+/// 指し手を適用して新しい局面を返す（元の局面は変更しない）
 pub fn apply_move(state: &State, m: &Move) -> State {
     let mut next = state.clone();
     let owner = state.side_to_move;
@@ -448,6 +451,7 @@ fn can_reach(state: &State, pos: Pos, piece: BoardPiece, target: Pos) -> bool {
     false
 }
 
+/// owner 側の玉に王手がかかっているか判定する
 pub fn is_in_check(state: &State, owner: Owner) -> bool {
     let kp = match state.king_pos(owner) {
         Some(p) => p,
@@ -456,7 +460,7 @@ pub fn is_in_check(state: &State, owner: Owner) -> bool {
     is_square_attacked(state, kp, owner.opposite())
 }
 
-/// Check if the side to move has at least one legal move (faster than generating all)
+/// 手番側に合法手が1つでもあるか判定する（全手生成より高速）
 fn has_any_legal_move(state: &State) -> bool {
     let owner = state.side_to_move;
 
@@ -476,22 +480,22 @@ fn has_any_legal_move(state: &State) -> bool {
     }
 
     for m in pseudo_drops(state, owner) {
+        let next = apply_move(state, &m);
+        if is_in_check(&next, owner) { continue; }
+        // 打ち歩詰めチェック
         if m.drop == Some(PieceType::P) {
-            let next = apply_move(state, &m);
             let enemy = owner.opposite();
             if is_in_check(&next, enemy) && !has_any_legal_move(&next) {
-                continue; // pawn drop mate forbidden
+                continue;
             }
         }
-        let next = apply_move(state, &m);
-        if !is_in_check(&next, owner) {
-            return true;
-        }
+        return true;
     }
 
     false
 }
 
+/// 打ち歩詰めの禁手チェック: 歩を打って王手かつ相手の合法手がない場合は禁止
 fn pawn_drop_mate_forbidden(state: &State, m: &Move) -> bool {
     if m.drop != Some(PieceType::P) { return false; }
     let owner = state.side_to_move;
@@ -501,6 +505,8 @@ fn pawn_drop_mate_forbidden(state: &State, m: &Move) -> bool {
     !has_any_legal_move(&next)
 }
 
+/// 現在の手番側の合法手をすべて生成する
+/// 自玉を王手に晒す手と打ち歩詰めは除外される
 pub fn legal_moves(state: &State) -> Vec<Move> {
     let owner = state.side_to_move;
     let mut out = Vec::new();
@@ -547,6 +553,9 @@ fn state_key(state: &State, plies: u32) -> u64 {
     hasher.finish()
 }
 
+/// plies 手以内の詰みを探索する
+/// 攻め方は王手のみ許可（詰将棋ルール）、守り方は最善応手を選ぶ
+/// メモ化により同一局面の再計算を回避する
 pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, MateResult>) -> MateResult {
     let key = state_key(state, plies);
     if let Some(cached) = memo.get(&key) {
@@ -635,6 +644,10 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
     result
 }
 
+/// 詰将棋の問題として有効か検証する
+/// 条件: 奇数手、攻め方手番、両玉あり、初期王手なし、
+///       指定手数で詰み、より短い手数では詰まない、解が唯一
+/// 有効なら解の手順を返す
 pub fn validate_tsume_puzzle(state: &State, mate_length: u32) -> Option<Vec<Move>> {
     if mate_length % 2 == 0 || mate_length == 0 { return None; }
     if state.side_to_move != Owner::Attacker { return None; }
@@ -675,6 +688,7 @@ pub struct HandsData {
     pub defender: HandCount,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HandCount {
     #[serde(default)]
@@ -699,6 +713,23 @@ impl Default for HandCount {
     }
 }
 
+impl HandCount {
+    /// HAND_TYPES の順序 [R, B, G, S, N, L, P] に対応する配列に変換
+    pub fn to_array(&self) -> [u8; 7] {
+        [self.R, self.B, self.G, self.S, self.N, self.L, self.P]
+    }
+
+    /// HAND_TYPES の順序 [R, B, G, S, N, L, P] の配列から復元
+    pub fn from_array(a: &[u8; 7]) -> Self {
+        HandCount { R: a[0], B: a[1], G: a[2], S: a[3], N: a[4], L: a[5], P: a[6] }
+    }
+
+    /// 全駒種の合計枚数
+    pub fn total(&self) -> u8 {
+        self.R + self.B + self.G + self.S + self.N + self.L + self.P
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InitialData {
     pub pieces: Vec<PieceData>,
@@ -714,8 +745,8 @@ impl InitialData {
             let pos = Pos::new(p.x, p.y);
             state.set(pos, Some(BoardPiece { owner: p.owner, piece_type: p.piece_type }));
         }
-        state.hands.attacker = [self.hands.attacker.R, self.hands.attacker.B, self.hands.attacker.G, self.hands.attacker.S, self.hands.attacker.N, self.hands.attacker.L, self.hands.attacker.P];
-        state.hands.defender = [self.hands.defender.R, self.hands.defender.B, self.hands.defender.G, self.hands.defender.S, self.hands.defender.N, self.hands.defender.L, self.hands.defender.P];
+        state.hands.attacker = self.hands.attacker.to_array();
+        state.hands.defender = self.hands.defender.to_array();
         state.side_to_move = self.side_to_move;
         state
     }
@@ -734,24 +765,8 @@ impl InitialData {
         InitialData {
             pieces,
             hands: HandsData {
-                attacker: HandCount {
-                    R: state.hands.attacker[0],
-                    B: state.hands.attacker[1],
-                    G: state.hands.attacker[2],
-                    S: state.hands.attacker[3],
-                    N: state.hands.attacker[4],
-                    L: state.hands.attacker[5],
-                    P: state.hands.attacker[6],
-                },
-                defender: HandCount {
-                    R: state.hands.defender[0],
-                    B: state.hands.defender[1],
-                    G: state.hands.defender[2],
-                    S: state.hands.defender[3],
-                    N: state.hands.defender[4],
-                    L: state.hands.defender[5],
-                    P: state.hands.defender[6],
-                },
+                attacker: HandCount::from_array(&state.hands.attacker),
+                defender: HandCount::from_array(&state.hands.defender),
             },
             side_to_move: state.side_to_move,
         }

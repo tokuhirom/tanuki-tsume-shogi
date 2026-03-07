@@ -54,41 +54,50 @@ fn empty_hands_data() -> HandsData {
     }
 }
 
+/// HandCount の指定駒種の枚数を設定する
+fn set_hand_count(hc: &mut HandCount, t: PieceType, v: u8) {
+    match t {
+        PieceType::R => hc.R = v,
+        PieceType::B => hc.B = v,
+        PieceType::G => hc.G = v,
+        PieceType::S => hc.S = v,
+        PieceType::N => hc.N = v,
+        PieceType::L => hc.L = v,
+        PieceType::P => hc.P = v,
+        _ => {}
+    }
+}
+
+/// 各駒種の最大枚数 (玉を除く)
+fn max_piece_count(t: PieceType) -> u8 {
+    match t {
+        PieceType::R => 2,
+        PieceType::B => 2,
+        PieceType::G => 4,
+        PieceType::S => 4,
+        PieceType::N => 4,
+        PieceType::L => 4,
+        PieceType::P => 18,
+        _ => 0,
+    }
+}
+
 /// 将棋の駒枚数上限を超えていないか検証する
 /// (盤上 + 持ち駒の合計が、各駒種の最大枚数以内であること)
 fn piece_count_valid(initial: &InitialData) -> bool {
-    let h = &initial.hands;
     let mut counts = HashMap::new();
     for p in &initial.pieces {
         let base = p.piece_type.unpromote();
         if base == PieceType::K { continue; }
         *counts.entry(base).or_insert(0u8) += 1;
     }
-    *counts.entry(PieceType::R).or_insert(0) += h.attacker.R + h.defender.R;
-    *counts.entry(PieceType::B).or_insert(0) += h.attacker.B + h.defender.B;
-    *counts.entry(PieceType::G).or_insert(0) += h.attacker.G + h.defender.G;
-    *counts.entry(PieceType::S).or_insert(0) += h.attacker.S + h.defender.S;
-    *counts.entry(PieceType::N).or_insert(0) += h.attacker.N + h.defender.N;
-    *counts.entry(PieceType::L).or_insert(0) += h.attacker.L + h.defender.L;
-    *counts.entry(PieceType::P).or_insert(0) += h.attacker.P + h.defender.P;
-
-    // 各駒種の最大枚数 (玉を除く)
-    let max = |t: PieceType| -> u8 {
-        match t {
-            PieceType::R => 2,
-            PieceType::B => 2,
-            PieceType::G => 4,
-            PieceType::S => 4,
-            PieceType::N => 4,
-            PieceType::L => 4,
-            PieceType::P => 18,
-            _ => 0,
-        }
-    };
-    for (&t, &c) in &counts {
-        if c > max(t) { return false; }
+    // 持ち駒の枚数を加算
+    let atk = initial.hands.attacker.to_array();
+    let def = initial.hands.defender.to_array();
+    for (i, &t) in HAND_TYPES.iter().enumerate() {
+        *counts.entry(t).or_insert(0) += atk[i] + def[i];
     }
-    true
+    counts.iter().all(|(&t, &c)| c <= max_piece_count(t))
 }
 
 fn basic_validity(initial: &InitialData) -> bool {
@@ -117,39 +126,115 @@ fn basic_validity(initial: &InitialData) -> bool {
     true
 }
 
+/// 局面の構造的シグネチャを計算する（左右反転を正規化して同一視）
+/// 守り方玉からの相対座標で表現するため、盤面上の位置が違っても
+/// 構造が同じなら同じシグネチャになる
 fn structural_signature(initial: &InitialData) -> String {
     let dk = match initial.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K) {
         Some(k) => k,
         None => return String::new(),
     };
 
+    /// 相対座標のリストをソートする
+    fn sort_rel(rel: &mut [(Owner, PieceType, i8, i8)]) {
+        rel.sort_by(|a, b| {
+            format!("{:?}", a.0).cmp(&format!("{:?}", b.0))
+                .then(format!("{:?}", a.1).cmp(&format!("{:?}", b.1)))
+                .then(a.3.cmp(&b.3))
+                .then(a.2.cmp(&b.2))
+        });
+    }
+
     let mut rel_base: Vec<_> = initial.pieces.iter()
         .map(|p| (p.owner, p.piece_type, p.x - dk.x, p.y - dk.y))
         .collect();
-    rel_base.sort_by(|a, b| {
-        format!("{:?}", a.0).cmp(&format!("{:?}", b.0))
-            .then(format!("{:?}", a.1).cmp(&format!("{:?}", b.1)))
-            .then(a.3.cmp(&b.3))
-            .then(a.2.cmp(&b.2))
-    });
+    sort_rel(&mut rel_base);
 
     let mut rel_mirror: Vec<_> = initial.pieces.iter()
         .map(|p| (p.owner, p.piece_type, -(p.x - dk.x), p.y - dk.y))
         .collect();
-    rel_mirror.sort_by(|a, b| {
-        format!("{:?}", a.0).cmp(&format!("{:?}", b.0))
-            .then(format!("{:?}", a.1).cmp(&format!("{:?}", b.1)))
-            .then(a.3.cmp(&b.3))
-            .then(a.2.cmp(&b.2))
-    });
+    sort_rel(&mut rel_mirror);
 
+    // 左右反転を正規化: 辞書順で小さい方を採用
     let a = format!("{:?}{:?}", rel_base, initial.hands);
     let b = format!("{:?}{:?}", rel_mirror, initial.hands);
     if a < b { a } else { b }
 }
 
-/// 一手詰め用のランダム候補生成
-fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
+/// ランダム候補生成のパラメータ
+struct CandidateParams {
+    /// 攻め方の駒数 (最小, 最大)
+    atk_count: (i8, i8),
+    /// 攻め方の駒配置範囲 (守り方玉からの相対x最小, x最大, y最小, y最大)
+    atk_range: (i8, i8, i8, i8),
+    /// 守り方の駒数 (最小, 最大)
+    def_count: (i8, i8),
+    /// 守り方の駒配置範囲
+    def_range: (i8, i8, i8, i8),
+    /// 通常持ち駒を追加する確率
+    hand_prob: f64,
+    /// 大駒(飛・角)の持ち駒を追加する確率
+    major_hand_prob: f64,
+}
+
+/// 駒種配列: 金・銀を多めに含めて出現確率を調整
+const ATK_PIECE_TYPES: [PieceType; 9] = [
+    PieceType::R, PieceType::B, PieceType::G, PieceType::S,
+    PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S,
+];
+const DEF_PIECE_TYPES: [PieceType; 9] = [
+    PieceType::G, PieceType::S, PieceType::P, PieceType::N,
+    PieceType::L, PieceType::G, PieceType::S, PieceType::R, PieceType::B,
+];
+const HAND_MINOR_TYPES: [PieceType; 5] = [
+    PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L,
+];
+const HAND_MAJOR_TYPES: [PieceType; 2] = [PieceType::R, PieceType::B];
+
+/// 持ち駒に1枚追加するヘルパー
+fn add_hand_piece(hands: &mut HandsData, t: PieceType) {
+    match t {
+        PieceType::P => hands.attacker.P = 1,
+        PieceType::S => hands.attacker.S = 1,
+        PieceType::G => hands.attacker.G = 1,
+        PieceType::N => hands.attacker.N = 1,
+        PieceType::L => hands.attacker.L = 1,
+        PieceType::R => hands.attacker.R = 1,
+        PieceType::B => hands.attacker.B = 1,
+        _ => {}
+    }
+}
+
+/// 守り方玉の周辺にランダムに駒を配置する共通処理
+fn place_pieces_near_king(
+    rng: &mut Rng,
+    pieces: &mut Vec<PieceData>,
+    used: &mut HashSet<(i8, i8)>,
+    dk: &PieceData,
+    owner: Owner,
+    count: usize,
+    types: &[PieceType],
+    range: (i8, i8, i8, i8),
+) {
+    for _ in 0..count {
+        let t = *rng.pick(types);
+        let mut x;
+        let mut y;
+        let mut guard = 0;
+        loop {
+            x = (dk.x + rng.ri(range.0, range.1)).max(1).min(9);
+            y = (dk.y + rng.ri(range.2, range.3)).max(1).min(9);
+            guard += 1;
+            if !used.contains(&(x, y)) || guard >= 40 { break; }
+        }
+        if used.contains(&(x, y)) { continue; }
+        used.insert((x, y));
+        pieces.push(PieceData { x, y, owner, piece_type: t });
+    }
+}
+
+/// 手数に応じたパラメータでランダム候補局面を生成する
+fn random_candidate(rng: &mut Rng, params: &CandidateParams) -> Option<InitialData> {
     let mut pieces = Vec::new();
     let mut used = HashSet::new();
 
@@ -161,204 +246,47 @@ fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
     pieces.push(ak);
     pieces.push(dk.clone());
 
-    // 攻め方の駒: 1〜2枚
-    let atk_count = rng.ri(1, 2) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S];
-    for _ in 0..atk_count {
-        let t = *rng.pick(&atk_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-2, 2)).max(1).min(9);
-            y = (dk.y + rng.ri(-1, 3)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
-    }
+    // 攻め方の駒を配置
+    let atk_count = rng.ri(params.atk_count.0, params.atk_count.1) as usize;
+    place_pieces_near_king(rng, &mut pieces, &mut used, &dk, Owner::Attacker,
+        atk_count, &ATK_PIECE_TYPES, params.atk_range);
 
-    // 玉方の駒: 0〜1枚
-    let def_count = rng.ri(0, 1) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::R, PieceType::B];
-    for _ in 0..def_count {
-        let t = *rng.pick(&def_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-1, 1)).max(1).min(9);
-            y = (dk.y + rng.ri(-1, 1)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Defender, piece_type: t });
-    }
+    // 守り方の駒を配置
+    let def_count = rng.ri(params.def_count.0, params.def_count.1) as usize;
+    place_pieces_near_king(rng, &mut pieces, &mut used, &dk, Owner::Defender,
+        def_count, &DEF_PIECE_TYPES, params.def_range);
 
-    // 持ち駒: 低確率
+    // 持ち駒をランダムに追加
     let mut hands = empty_hands_data();
-    if rng.next_f64() < 0.2 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
-        match rng.pick(&hand_types) {
-            PieceType::P => hands.attacker.P = 1,
-            PieceType::S => hands.attacker.S = 1,
-            PieceType::G => hands.attacker.G = 1,
-            PieceType::N => hands.attacker.N = 1,
-            PieceType::L => hands.attacker.L = 1,
-            _ => {}
-        }
+    if rng.next_f64() < params.hand_prob {
+        add_hand_piece(&mut hands, *rng.pick(&HAND_MINOR_TYPES));
+    }
+    if rng.next_f64() < params.major_hand_prob {
+        add_hand_piece(&mut hands, *rng.pick(&HAND_MAJOR_TYPES));
     }
 
     Some(InitialData { pieces, hands, side_to_move: Owner::Attacker })
 }
 
-/// 三手詰め用のランダム候補生成
-fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
-    let mut pieces = Vec::new();
-    let mut used = HashSet::new();
-
-    let dk = PieceData { x: rng.ri(2, 8), y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
-    let ak = PieceData { x: rng.ri(1, 9), y: rng.ri(7, 9), owner: Owner::Attacker, piece_type: PieceType::K };
-    if (dk.x - ak.x).abs() <= 1 && (dk.y - ak.y).abs() <= 1 { return None; }
-    used.insert((dk.x, dk.y));
-    used.insert((ak.x, ak.y));
-    pieces.push(ak);
-    pieces.push(dk.clone());
-
-    let atk_count = rng.ri(2, 3) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S];
-    for _ in 0..atk_count {
-        let t = *rng.pick(&atk_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-3, 3)).max(1).min(9);
-            y = (dk.y + rng.ri(-2, 4)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
+/// 手数ごとの候補生成パラメータ
+fn candidate_params(mate_length: u32) -> CandidateParams {
+    match mate_length {
+        1 => CandidateParams {
+            atk_count: (1, 2), atk_range: (-2, 2, -1, 3),
+            def_count: (0, 1), def_range: (-1, 1, -1, 1),
+            hand_prob: 0.2, major_hand_prob: 0.0,
+        },
+        3 => CandidateParams {
+            atk_count: (2, 3), atk_range: (-3, 3, -2, 4),
+            def_count: (0, 2), def_range: (-2, 2, -1, 2),
+            hand_prob: 0.3, major_hand_prob: 0.1,
+        },
+        _ => CandidateParams {
+            atk_count: (2, 4), atk_range: (-4, 4, -2, 5),
+            def_count: (1, 3), def_range: (-2, 2, -1, 3),
+            hand_prob: 0.4, major_hand_prob: 0.15,
+        },
     }
-
-    let def_count = rng.ri(0, 2) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::N, PieceType::L, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
-    for _ in 0..def_count {
-        let t = *rng.pick(&def_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-2, 2)).max(1).min(9);
-            y = (dk.y + rng.ri(-1, 2)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Defender, piece_type: t });
-    }
-
-    let mut hands = empty_hands_data();
-    if rng.next_f64() < 0.3 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
-        match rng.pick(&hand_types) {
-            PieceType::P => hands.attacker.P = 1,
-            PieceType::S => hands.attacker.S = 1,
-            PieceType::G => hands.attacker.G = 1,
-            PieceType::N => hands.attacker.N = 1,
-            PieceType::L => hands.attacker.L = 1,
-            _ => {}
-        }
-    }
-    if rng.next_f64() < 0.1 {
-        let hand_types = [PieceType::R, PieceType::B];
-        match rng.pick(&hand_types) {
-            PieceType::R => hands.attacker.R = 1,
-            PieceType::B => hands.attacker.B = 1,
-            _ => {}
-        }
-    }
-
-    Some(InitialData { pieces, hands, side_to_move: Owner::Attacker })
-}
-
-fn random_candidate_5(rng: &mut Rng) -> Option<InitialData> {
-    let mut pieces = Vec::new();
-    let mut used = HashSet::new();
-
-    let dk = PieceData { x: rng.ri(2, 8), y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
-    let ak = PieceData { x: rng.ri(1, 9), y: rng.ri(7, 9), owner: Owner::Attacker, piece_type: PieceType::K };
-    if (dk.x - ak.x).abs() <= 1 && (dk.y - ak.y).abs() <= 1 { return None; }
-    used.insert((dk.x, dk.y));
-    used.insert((ak.x, ak.y));
-    pieces.push(ak);
-    pieces.push(dk.clone());
-
-    let atk_count = rng.ri(2, 4) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::R, PieceType::G, PieceType::S];
-    for _ in 0..atk_count {
-        let t = *rng.pick(&atk_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-4, 4)).max(1).min(9);
-            y = (dk.y + rng.ri(-2, 5)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
-    }
-
-    let def_count = rng.ri(1, 3) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::N, PieceType::L, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
-    for _ in 0..def_count {
-        let t = *rng.pick(&def_types);
-        let mut x;
-        let mut y;
-        let mut g = 0;
-        loop {
-            x = (dk.x + rng.ri(-2, 2)).max(1).min(9);
-            y = (dk.y + rng.ri(-1, 3)).max(1).min(9);
-            g += 1;
-            if !used.contains(&(x, y)) || g >= 40 { break; }
-        }
-        if used.contains(&(x, y)) { continue; }
-        used.insert((x, y));
-        pieces.push(PieceData { x, y, owner: Owner::Defender, piece_type: t });
-    }
-
-    let mut hands = empty_hands_data();
-    if rng.next_f64() < 0.4 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
-        match rng.pick(&hand_types) {
-            PieceType::P => hands.attacker.P = 1,
-            PieceType::S => hands.attacker.S = 1,
-            PieceType::G => hands.attacker.G = 1,
-            PieceType::N => hands.attacker.N = 1,
-            PieceType::L => hands.attacker.L = 1,
-            _ => {}
-        }
-    }
-    if rng.next_f64() < 0.15 {
-        let hand_types = [PieceType::R, PieceType::B];
-        match rng.pick(&hand_types) {
-            PieceType::R => hands.attacker.R = 1,
-            PieceType::B => hands.attacker.B = 1,
-            _ => {}
-        }
-    }
-
-    Some(InitialData { pieces, hands, side_to_move: Owner::Attacker })
 }
 
 fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
@@ -420,19 +348,10 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
             }
         }
         "tweak-hand" => {
-            let types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L, PieceType::R, PieceType::B];
-            let t = *rng.pick(&types);
+            // ランダムに1種の持ち駒を0か1に変更
+            let t = *rng.pick(&HAND_TYPES);
             let v = rng.ri(0, 1) as u8;
-            match t {
-                PieceType::P => cand.hands.attacker.P = v,
-                PieceType::S => cand.hands.attacker.S = v,
-                PieceType::G => cand.hands.attacker.G = v,
-                PieceType::N => cand.hands.attacker.N = v,
-                PieceType::L => cand.hands.attacker.L = v,
-                PieceType::R => cand.hands.attacker.R = v,
-                PieceType::B => cand.hands.attacker.B = v,
-                _ => {}
-            }
+            set_hand_count(&mut cand.hands.attacker, t, v);
         }
         _ => {}
     }
@@ -464,7 +383,7 @@ fn score_puzzle(initial: &InitialData, solution: &[Move]) -> i32 {
 /// Higher score = harder puzzle.
 fn difficulty_score(initial: &InitialData, solution: &[Move]) -> i32 {
     let h = &initial.hands.attacker;
-    let hand_piece_count = (h.R + h.B + h.G + h.S + h.P) as i32;
+    let hand_piece_count = h.total() as i32;
     let has_rook_in_hand = (h.R > 0) as i32;
     let has_bishop_in_hand = (h.B > 0) as i32;
 
@@ -542,8 +461,8 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
     Some((final_initial, final_solution, score))
 }
 
-/// Replay the solution, remove unused attacker hand pieces, and re-validate.
-/// Returns None if the puzzle can't be fixed (unused hand pieces that can't be removed).
+/// 解の手順を再生して使われなかった攻め方の持ち駒を除去し、再検証する。
+/// 除去後に問題として成立しない場合は None を返す。
 fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length: u32) -> Option<(InitialData, Vec<Move>)> {
     let mut final_state = initial.to_state();
     for m in &solution {
@@ -551,23 +470,18 @@ fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length:
     }
     let remaining = &final_state.hands.attacker;
     if remaining.iter().sum::<u8>() == 0 {
-        return Some((initial, solution)); // nothing to strip
+        return Some((initial, solution));
     }
-    // Strip unused hand pieces
-    initial.hands.attacker.R = initial.hands.attacker.R.saturating_sub(remaining[0]);
-    initial.hands.attacker.B = initial.hands.attacker.B.saturating_sub(remaining[1]);
-    initial.hands.attacker.G = initial.hands.attacker.G.saturating_sub(remaining[2]);
-    initial.hands.attacker.S = initial.hands.attacker.S.saturating_sub(remaining[3]);
-    initial.hands.attacker.N = initial.hands.attacker.N.saturating_sub(remaining[4]);
-    initial.hands.attacker.L = initial.hands.attacker.L.saturating_sub(remaining[5]);
-    initial.hands.attacker.P = initial.hands.attacker.P.saturating_sub(remaining[6]);
-    // Re-validate: stripping hand pieces might change the solution
+    // 使われなかった持ち駒を初期局面から差し引く
+    let mut atk = initial.hands.attacker.to_array();
+    for i in 0..7 {
+        atk[i] = atk[i].saturating_sub(remaining[i]);
+    }
+    initial.hands.attacker = HandCount::from_array(&atk);
+    // 再検証: 持ち駒を減らすと解が変わる可能性がある
     let new_state = initial.to_state();
-    if let Some(new_sol) = validate_tsume_puzzle(&new_state, mate_length) {
-        Some((initial, new_sol))
-    } else {
-        None // reject: can't strip unused hand pieces
-    }
+    validate_tsume_puzzle(&new_state, mate_length)
+        .map(|new_sol| (initial, new_sol))
 }
 
 /// Mirror the board so the defender king is on the right side (x >= 5),
@@ -758,29 +672,29 @@ fn diversify_order(
     result
 }
 
-/// Key representing the piece composition (types + hands, ignoring positions)
+/// 駒種を1文字の略称に変換する
+fn piece_type_char(t: PieceType) -> &'static str {
+    match t.unpromote() {
+        PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
+        PieceType::S => "S", PieceType::N => "N", PieceType::L => "L",
+        PieceType::P => "P", _ => "?",
+    }
+}
+
+/// 駒構成をキーにする（駒種 + 持ち駒、位置は無視）
+/// 同じ駒構成のパズルが多すぎないように制限するために使う
 fn composition_key(initial: &InitialData) -> String {
-    let mut atk_types: Vec<&str> = initial.pieces.iter()
-        .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
-        .map(|p| match p.piece_type {
-            PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
-            PieceType::S => "S", PieceType::N => "N", PieceType::L => "L",
-            PieceType::P => "P", _ => "?",
-        })
-        .collect();
-    atk_types.sort();
-    let mut def_types: Vec<&str> = initial.pieces.iter()
-        .filter(|p| p.owner == Owner::Defender && p.piece_type != PieceType::K)
-        .map(|p| match p.piece_type {
-            PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
-            PieceType::S => "S", PieceType::N => "N", PieceType::L => "L",
-            PieceType::P => "P", _ => "?",
-        })
-        .collect();
-    def_types.sort();
+    let sorted_types = |owner: Owner| -> String {
+        let mut types: Vec<&str> = initial.pieces.iter()
+            .filter(|p| p.owner == owner && p.piece_type != PieceType::K)
+            .map(|p| piece_type_char(p.piece_type))
+            .collect();
+        types.sort();
+        types.join("")
+    };
     let h = &initial.hands.attacker;
     format!("a:{} d:{} h:R{}B{}G{}S{}N{}L{}P{}",
-        atk_types.join(""), def_types.join(""),
+        sorted_types(Owner::Attacker), sorted_types(Owner::Defender),
         h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
@@ -844,11 +758,8 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
             .filter_map(|&i| {
                 let mut rng = Rng::new(seed.wrapping_add(i as u64).wrapping_mul(2654435761));
-                let cand = match mate_length {
-                    1 => random_candidate_1(&mut rng),
-                    3 => random_candidate_3(&mut rng),
-                    _ => random_candidate_5(&mut rng),
-                };
+                let params = candidate_params(mate_length);
+                let cand = random_candidate(&mut rng, &params);
                 let cand = cand?;
                 validate_and_prune(&cand, mate_length)
             })
@@ -1176,9 +1087,10 @@ mod tests {
     #[test]
     fn test_random_candidate_1_generates_valid() {
         let mut rng = Rng::new(42);
+        let params = candidate_params(1);
         let mut found = false;
         for _ in 0..100 {
-            if let Some(init) = random_candidate_1(&mut rng) {
+            if let Some(init) = random_candidate(&mut rng, &params) {
                 assert!(basic_validity(&init));
                 found = true;
                 break;
@@ -1190,9 +1102,10 @@ mod tests {
     #[test]
     fn test_random_candidate_3_generates_valid() {
         let mut rng = Rng::new(42);
+        let params = candidate_params(3);
         let mut found = false;
         for _ in 0..100 {
-            if let Some(init) = random_candidate_3(&mut rng) {
+            if let Some(init) = random_candidate(&mut rng, &params) {
                 assert!(basic_validity(&init));
                 found = true;
                 break;
@@ -1204,9 +1117,10 @@ mod tests {
     #[test]
     fn test_random_candidate_5_generates_valid() {
         let mut rng = Rng::new(42);
+        let params = candidate_params(5);
         let mut found = false;
         for _ in 0..100 {
-            if let Some(init) = random_candidate_5(&mut rng) {
+            if let Some(init) = random_candidate(&mut rng, &params) {
                 assert!(basic_validity(&init));
                 found = true;
                 break;
