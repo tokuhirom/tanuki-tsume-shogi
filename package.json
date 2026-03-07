@@ -1,0 +1,12 @@
+{
+  "name": "tanuki-tsune-shogi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node scripts/generate.js",
+    "validate": "node scripts/validate.js",
+    "build:puzzles": "node scripts/generate.js --count=100 --seed=20260307",
+    "serve": "python3 -m http.server 5173 -d docs"
+  }
+}
