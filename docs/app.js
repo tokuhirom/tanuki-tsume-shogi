@@ -380,20 +380,21 @@ function isHiddenAttackerKing(piece) {
 }
 
 function boardViewport() {
-  // If hand pieces exist, drops can go anywhere — show full board width
-  const hands = state.gameState.hands;
-  const hasHandPiece = Object.values(hands.attacker).some((c) => c > 0)
-    || Object.values(hands.defender).some((c) => c > 0);
-  if (hasHandPiece) {
-    return { minX: 1, maxX: 9, minY: 1, maxY: 9 };
-  }
-
   const points = [];
   for (const [k, p] of state.gameState.board.entries()) {
     if (isHiddenAttackerKing(p)) continue;
     const [x, y] = k.split(",").map(Number);
     points.push({ x, y });
   }
+
+  // 持ち駒がある場合、合法な打ち先もビューポートに含める
+  const moves = legalMoves(state.gameState);
+  for (const m of moves) {
+    if (m.drop) {
+      points.push({ x: m.to[0], y: m.to[1] });
+    }
+  }
+
   if (points.length === 0) {
     return { minX: 1, maxX: 9, minY: 1, maxY: 9 };
   }
