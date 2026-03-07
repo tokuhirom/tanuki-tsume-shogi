@@ -134,6 +134,25 @@ h1, h2 { margin: 8px 0 12px; }
   cursor: pointer;
 }
 
+.board button.edge-top { border-top-width: 3px; }
+.board button.edge-bottom { border-bottom-width: 3px; }
+.board button.edge-left { border-left-width: 3px; }
+.board button.edge-right { border-right-width: 3px; }
+
+.coord {
+  width: 20px;
+  min-width: 20px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5a452b;
+  user-select: none;
+}
+
+.coord.corner {
+  color: transparent;
+}
+
 .piece {
   display: inline-block;
 }

@@ -192,6 +192,48 @@ function scorePuzzle(initial, solution) {
   return atkTypes * 2 + dropCount * 5 + promoteCount * 3 + uniqueTargets * 2 - Math.max(0, pieceCount - 9);
 }
 
+function removePieceAt(initial, index) {
+  return {
+    pieces: initial.pieces.filter((_, i) => i !== index),
+    hands: {
+      attacker: { ...initial.hands.attacker },
+      defender: { ...initial.hands.defender },
+    },
+    sideToMove: initial.sideToMove,
+  };
+}
+
+function pruneInitial(initial, mateLength) {
+  let cur = cloneInitial(initial);
+  let changed = true;
+
+  while (changed) {
+    changed = false;
+    const order = cur.pieces
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => p.type !== "K")
+      // Prefer removing distant/defender pieces first.
+      .sort((a, b) => {
+        if (a.p.owner !== b.p.owner) return a.p.owner === "defender" ? -1 : 1;
+        const ay = Math.abs(a.p.y - 5);
+        const by = Math.abs(b.p.y - 5);
+        return by - ay;
+      });
+
+    for (const { i } of order) {
+      const cand = removePieceAt(cur, i);
+      if (!basicValidity(cand)) continue;
+      const r = validateTsumePuzzle(createState(cand), mateLength);
+      if (!r.ok) continue;
+      cur = cand;
+      changed = true;
+      break;
+    }
+  }
+
+  return cur;
+}
+
 function validateState(initial, mateLength) {
   const st = createState(initial);
   const res = validateTsumePuzzle(st, mateLength);
@@ -289,6 +331,7 @@ function expand(base, count, mateLength, rand) {
   const srcPool = pool.length > 0 ? pool : base;
   const out = [];
   let prevStruct = "";
+  const minimizedCache = new Map();
 
   for (let i = 0; i < count; i += 1) {
     let src = weightedPick(rand, srcPool);
@@ -299,13 +342,22 @@ function expand(base, count, mateLength, rand) {
     }
     prevStruct = structuralSignature(src.initial);
 
+    const srcSig = JSON.stringify(src.initial);
+    let minimized = minimizedCache.get(srcSig);
+    if (!minimized) {
+      const pruned = pruneInitial(src.initial, mateLength);
+      const rechecked = validateState(pruned, mateLength);
+      minimized = rechecked || src;
+      minimizedCache.set(srcSig, minimized);
+    }
+
     out.push({
       id: i + 1,
       mateLength,
-      initial: src.initial,
-      solution: src.solution,
+      initial: minimized.initial,
+      solution: minimized.solution,
       quality: "validated",
-      score: src.score,
+      score: minimized.score,
     });
   }
 
