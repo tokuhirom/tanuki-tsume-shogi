@@ -10,6 +10,20 @@ function loadPuzzle(length, id) {
   return p;
 }
 
+async function playMove(page, move) {
+  if (move.drop) {
+    await page.getByRole('button', { name: new RegExp(`^${move.drop} x`) }).click();
+    await page.locator(`button[data-x='${move.to[0]}'][data-y='${move.to[1]}']`).click();
+  } else {
+    await page.locator(`button[data-x='${move.from[0]}'][data-y='${move.from[1]}']`).click();
+    await page.locator(`button[data-x='${move.to[0]}'][data-y='${move.to[1]}']`).click();
+  }
+  const promoteDialog = page.getByText('成りますか？');
+  if (await promoteDialog.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: move.promote ? '成る' : '成らない' }).click();
+  }
+}
+
 test('can open puzzle, play first move, and restore by reload', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
   const first = puzzle.solution[0];
@@ -22,22 +36,26 @@ test('can open puzzle, play first move, and restore by reload', async ({ page })
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
   await expect(page).toHaveURL(/\?mate=3&id=1$/);
 
-  if (first.drop) {
-    await page.getByRole('button', { name: new RegExp(`^${first.drop} x`) }).click();
-    await page.locator(`button[data-x='${first.to[0]}'][data-y='${first.to[1]}']`).click();
-  } else {
-    await page.locator(`button[data-x='${first.from[0]}'][data-y='${first.from[1]}']`).click();
-    await page.locator(`button[data-x='${first.to[0]}'][data-y='${first.to[1]}']`).click();
-  }
-
-  const promoteDialog = page.getByText('成りますか？');
-  if (await promoteDialog.isVisible().catch(() => false)) {
-    await page.getByRole('button', { name: first.promote ? '成る' : '成らない' }).click();
-  }
+  await playMove(page, first);
 
   await expect(page.getByText(/正解。次の一手へ。|クリア！/)).toBeVisible();
 
   await page.reload();
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
   await expect(page).toHaveURL(/\?mate=3&id=1$/);
+});
+
+test('can fully solve 3手詰 #1 and mark clear', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+
+  await page.goto('/?mate=3&id=1');
+  await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
+
+  for (let i = 0; i < puzzle.solution.length; i += 2) {
+    await playMove(page, puzzle.solution[i]);
+  }
+
+  await expect(page.getByText('クリア！ localStorage に記録しました。')).toBeVisible();
+  const key = 'tanuki-tsume:v1:clear:3:1';
+  await expect.poll(async () => page.evaluate((k) => localStorage.getItem(k), key)).toBe('true');
 });
