@@ -398,11 +398,40 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
         (InitialData::from_state(&state), solution)
     };
 
+    // Remove unused attacker hand pieces; reject if stripping fails
+    let (final_initial, final_solution) = strip_unused_hand(final_initial, final_solution, mate_length)?;
+
     // Normalize: mirror to right side if defender king is on the left half
     let (final_initial, final_solution) = normalize_right(final_initial, final_solution);
 
     let score = score_puzzle(&final_initial, &final_solution);
     Some((final_initial, final_solution, score))
+}
+
+/// Replay the solution, remove unused attacker hand pieces, and re-validate.
+/// Returns None if the puzzle can't be fixed (unused hand pieces that can't be removed).
+fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length: u32) -> Option<(InitialData, Vec<Move>)> {
+    let mut final_state = initial.to_state();
+    for m in &solution {
+        final_state = apply_move(&final_state, m);
+    }
+    let remaining = &final_state.hands.attacker;
+    if remaining.iter().sum::<u8>() == 0 {
+        return Some((initial, solution)); // nothing to strip
+    }
+    // Strip unused hand pieces
+    initial.hands.attacker.R = initial.hands.attacker.R.saturating_sub(remaining[0]);
+    initial.hands.attacker.B = initial.hands.attacker.B.saturating_sub(remaining[1]);
+    initial.hands.attacker.G = initial.hands.attacker.G.saturating_sub(remaining[2]);
+    initial.hands.attacker.S = initial.hands.attacker.S.saturating_sub(remaining[3]);
+    initial.hands.attacker.P = initial.hands.attacker.P.saturating_sub(remaining[4]);
+    // Re-validate: stripping hand pieces might change the solution
+    let new_state = initial.to_state();
+    if let Some(new_sol) = validate_tsume_puzzle(&new_state, mate_length) {
+        Some((initial, new_sol))
+    } else {
+        None // reject: can't strip unused hand pieces
+    }
 }
 
 /// Mirror the board so the defender king is on the right side (x >= 5),
