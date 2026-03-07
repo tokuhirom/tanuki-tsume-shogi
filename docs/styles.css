@@ -53,6 +53,17 @@ main {
   letter-spacing: 0.08em;
 }
 
+.wrong-badge {
+  display: inline-block;
+  margin: 4px 0 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, #666, #444);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
 .fx-sparkles {
   position: absolute;
   inset: 0;

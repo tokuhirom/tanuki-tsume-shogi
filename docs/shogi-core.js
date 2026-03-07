@@ -423,6 +423,19 @@ function forcedMateWithin(state, plies, memo) {
   return res;
 }
 
+export function findBestDefense(state, remainingPlies) {
+  const moves = legalMoves(state);
+  if (moves.length === 0) return null;
+
+  const memo = new Map();
+  for (const m of moves) {
+    const next = applyMove(state, m);
+    const result = forcedMateWithin(next, remainingPlies - 1, memo);
+    if (!result.mate) return m;
+  }
+  return moves[0];
+}
+
 export function validateTsumePuzzle(state, mateLength) {
   if (mateLength % 2 === 0 || mateLength <= 0) {
     return { ok: false, reason: "mate length must be positive odd" };

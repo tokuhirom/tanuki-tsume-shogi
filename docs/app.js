@@ -2,7 +2,9 @@ import {
   applyMove,
   cloneState,
   createState,
+  findBestDefense,
   formatMove,
+  isInCheck,
   legalMoves,
   normalizeMove,
   pieceToText,
@@ -40,6 +42,7 @@ const state = {
   promotionPrompt: null,
   lastMove: null,
   showSolution: false,
+  puzzleResult: null,
   buildInfo: { branch: "unknown", commit: "unknown", builtAt: "unknown" },
 };
 
@@ -183,6 +186,7 @@ function goPuzzle(p) {
   state.promotionPrompt = null;
   state.lastMove = null;
   state.showSolution = false;
+  state.puzzleResult = null;
   state.message = isCleared(state.mateLength, p.id)
     ? "✅ クリア済み — もう一度解けます"
     : "攻め方の手を選んでください";
@@ -211,12 +215,8 @@ function goPrevPuzzle() {
   }
 }
 
-function isPuzzleCleared() {
-  return state.ply >= state.puzzle.solution.length;
-}
-
-function currentExpectedMove() {
-  return normalizeMove(state.puzzle.solution[state.ply]);
+function isPuzzleFinished() {
+  return state.puzzleResult !== null;
 }
 
 function getMoveTargets() {
@@ -243,16 +243,18 @@ function getMoveTargets() {
 
 function tryUserMove(candidate) {
   if (!state.puzzle || !state.gameState) return false;
-  const expected = currentExpectedMove();
-  if (!sameMove(candidate, expected)) {
-    return false;
-  }
+  if (isPuzzleFinished()) return false;
+
+  const legal = legalMoves(state.gameState);
+  const isLegal = legal.some((m) => sameMove(m, candidate));
+  if (!isLegal) return false;
 
   state.history.push({
     gameState: cloneState(state.gameState),
     ply: state.ply,
     message: state.message,
     lastMove: state.lastMove,
+    puzzleResult: state.puzzleResult,
   });
 
   state.gameState = applyMove(state.gameState, candidate);
@@ -262,24 +264,37 @@ function tryUserMove(candidate) {
   state.selectedSquare = null;
   state.selectedHand = null;
 
-  while (state.ply < state.puzzle.solution.length && state.gameState.sideToMove === "defender") {
-    const auto = normalizeMove(state.puzzle.solution[state.ply]);
-    state.gameState = applyMove(state.gameState, auto);
-    state.lastMove = auto;
-    playMoveSound();
-    state.ply += 1;
-  }
+  const defenderMoves = legalMoves(state.gameState);
+  const defenderInCheck = isInCheck(state.gameState, "defender");
 
-  if (state.ply >= state.puzzle.solution.length) {
+  if (defenderMoves.length === 0 && defenderInCheck) {
     markClear(state.mateLength, state.puzzle.id);
     state.message = "クリア！";
+    state.puzzleResult = "clear";
     state.clearFxUntil = Date.now() + 1500;
     playClearSound();
+  } else if (state.ply >= state.puzzle.mateLength) {
+    state.message = "不正解… 詰みませんでした。";
+    state.puzzleResult = "wrong";
+  } else if (defenderMoves.length === 0) {
+    state.message = "不正解…";
+    state.puzzleResult = "wrong";
   } else {
-    state.message = "正解！ 次の一手へ。";
+    const remaining = state.puzzle.mateLength - state.ply;
+    const defense = findBestDefense(state.gameState, remaining);
+    state.gameState = applyMove(state.gameState, defense);
+    state.lastMove = defense;
+    playMoveSound();
+    state.ply += 1;
+    state.message = "次の一手へ。";
   }
+
   render();
   return true;
+}
+
+function retryPuzzle() {
+  goPuzzle(state.puzzle);
 }
 
 function undoOneTurn() {
@@ -288,6 +303,7 @@ function undoOneTurn() {
   state.gameState = prev.gameState;
   state.ply = prev.ply;
   state.lastMove = prev.lastMove;
+  state.puzzleResult = prev.puzzleResult;
   state.selectedSquare = null;
   state.selectedHand = null;
   state.promotionPrompt = null;
@@ -342,7 +358,7 @@ function boardViewport() {
 function onSquareClick(x, y) {
   if (state.gameState.sideToMove !== "attacker") return;
   if (state.promotionPrompt) return;
-  if (isPuzzleCleared()) return;
+  if (isPuzzleFinished()) return;
   const target = boardPiece(x, y);
 
   if (state.selectedHand) {
@@ -391,17 +407,12 @@ function onSquareClick(x, y) {
   if (!canPromote) {
     if (!tryUserMove(moveBase)) {
       state.selectedSquare = null;
-      state.message = "攻め方の手を選んでください";
       render();
     }
     return;
   }
   if (moving.type === "P" && y === 1) {
-    if (!tryUserMove({ ...moveBase, promote: true })) {
-      state.selectedSquare = null;
-      state.message = "攻め方の手を選んでください";
-      render();
-    }
+    tryUserMove({ ...moveBase, promote: true });
     return;
   }
   state.promotionPrompt = moveBase;
@@ -419,7 +430,7 @@ function choosePromotion(promote) {
   if (tryUserMove(alt)) return;
 
   state.selectedSquare = null;
-  state.message = "その手は正解ではありません。";
+  state.message = "攻め方の手を選んでください";
   render();
 }
 
@@ -498,7 +509,7 @@ function renderHands() {
       h("button", {
         class: `btn hand-btn${state.selectedHand === piece ? " primary" : ""}`,
         onclick: () => {
-          if (isPuzzleCleared()) return;
+          if (isPuzzleFinished()) return;
           state.selectedHand = state.selectedHand === piece ? null : piece;
           state.selectedSquare = null;
           state.message = state.selectedHand ? `${PIECE_LABEL[piece]}を打つ場所を選んでください` : "攻め方の手を選んでください";
@@ -514,7 +525,7 @@ function renderBoard() {
   const table = h("table", { class: "board" });
   const kanji = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
   const fileLabel = (x) => String(x);
-  const targets = isPuzzleCleared() ? new Set() : getMoveTargets();
+  const targets = isPuzzleFinished() ? new Set() : getMoveTargets();
   const lm = state.lastMove;
 
   const head = h("tr");
@@ -575,7 +586,9 @@ function renderSolutionToggle() {
 
 function renderPuzzle() {
   const isClearFx = Date.now() < state.clearFxUntil;
-  const cleared = isPuzzleCleared();
+  const cleared = state.puzzleResult === "clear";
+  const wrong = state.puzzleResult === "wrong";
+  const finished = isPuzzleFinished();
   const fxNodes = isClearFx
     ? h("div", { class: "fx-sparkles" }, Array.from({ length: 12 }).map((_, i) =>
       h("span", { style: `--i:${i}` }, "◆")
@@ -597,6 +610,7 @@ function renderPuzzle() {
       ]),
       h("h2", {}, `${state.mateLength}手詰 #${state.puzzle.id}`),
       cleared ? h("div", { class: "clear-badge" }, "CLEAR!") : null,
+      wrong ? h("div", { class: "wrong-badge" }, "不正解…") : null,
       h("div", { class: "message" }, state.message),
       renderHands(),
       h("div", { class: "board-wrap" }, renderBoard()),
@@ -610,7 +624,9 @@ function renderPuzzle() {
           ])
         : null,
       h("div", { class: "toolbar" }, [
-        !cleared ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
+        !finished ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
+        wrong ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
+        wrong ? h("button", { class: "btn primary", onclick: retryPuzzle }, "最初からやり直す") : null,
         h("button", { class: "btn small", onclick: copyPuzzleLink }, "🔗 リンク"),
         cleared && hasNext ? h("button", { class: "btn primary", onclick: goNextPuzzle }, "次の問題へ →") : null,
       ]),

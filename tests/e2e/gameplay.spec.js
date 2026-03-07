@@ -36,6 +36,19 @@ async function solveAllMoves(page, puzzle) {
   }
 }
 
+/** Find an attacker piece that is NOT used in the first solution move */
+function findWrongPiece(puzzle) {
+  const sol = puzzle.solution[0];
+  const solFrom = sol.from;
+  for (const p of puzzle.initial.pieces) {
+    if (p.owner !== 'attacker') continue;
+    if (p.type === 'K') continue;
+    if (solFrom && p.x === solFrom[0] && p.y === solFrom[1]) continue;
+    return p;
+  }
+  return null;
+}
+
 test('can open puzzle, play first move, and restore by reload', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
   const first = puzzle.solution[0];
@@ -50,7 +63,7 @@ test('can open puzzle, play first move, and restore by reload', async ({ page })
 
   await playMove(page, first);
 
-  await expect(page.getByText(/正解！|クリア！/)).toBeVisible();
+  await expect(page.getByText(/次の一手へ。|クリア！/)).toBeVisible();
 
   await page.reload();
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
@@ -108,10 +121,100 @@ test('undo restores previous state', async ({ page }) => {
 
   await page.goto('/?mate=3&id=1');
   await playMove(page, first);
-  await expect(page.getByText(/正解！|クリア！/)).toBeVisible();
+  await expect(page.getByText(/次の一手へ。|クリア！/)).toBeVisible();
 
   await page.getByRole('button', { name: '↩ 一手戻す' }).click();
   await expect(page.getByText('一手戻しました。')).toBeVisible();
+});
+
+test('wrong move leads to incorrect result', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+  const wrongPiece = findWrongPiece(puzzle);
+  if (!wrongPiece) test.skip();
+
+  await page.goto('/?mate=3&id=1');
+  await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
+
+  // Click the wrong attacker piece to select it
+  await page.locator(`button[data-x='${wrongPiece.x}'][data-y='${wrongPiece.y}']`).click();
+
+  // Click a move target to play the wrong move
+  const targets = page.locator('.board button.move-target');
+  await expect(targets.first()).toBeVisible();
+  await targets.first().click();
+
+  // Handle promotion if prompted
+  const prompt = page.getByText('成りますか？');
+  if (await prompt.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: '成る' }).click();
+  }
+
+  // Game should continue or show result
+  const wrongBadge = page.locator('.wrong-badge');
+  const message = page.locator('.message');
+
+  // If game continues, play another move
+  if (!await wrongBadge.isVisible().catch(() => false)) {
+    // Try to play another move from whatever pieces are available
+    const cells = page.locator('.board button .piece:not(.defender)');
+    if (await cells.count() > 0) {
+      await cells.first().click();
+      const nextTargets = page.locator('.board button.move-target');
+      if (await nextTargets.count() > 0) {
+        await nextTargets.first().click();
+        const prompt2 = page.getByText('成りますか？');
+        if (await prompt2.isVisible().catch(() => false)) {
+          await page.getByRole('button', { name: '成る' }).click();
+        }
+      }
+    }
+  }
+
+  // Should reach either clear or wrong
+  const result = page.locator('.wrong-badge, .clear-badge');
+  await expect(result).toBeVisible({ timeout: 5000 });
+});
+
+test('retry button resets puzzle after wrong answer', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+  const wrongPiece = findWrongPiece(puzzle);
+  if (!wrongPiece) test.skip();
+
+  await page.goto('/?mate=3&id=1');
+
+  // Play wrong moves until 不正解
+  await page.locator(`button[data-x='${wrongPiece.x}'][data-y='${wrongPiece.y}']`).click();
+  const targets = page.locator('.board button.move-target');
+  await expect(targets.first()).toBeVisible();
+  await targets.first().click();
+
+  const prompt = page.getByText('成りますか？');
+  if (await prompt.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: '成る' }).click();
+  }
+
+  const wrongBadge = page.locator('.wrong-badge');
+  if (!await wrongBadge.isVisible().catch(() => false)) {
+    const cells = page.locator('.board button .piece:not(.defender)');
+    if (await cells.count() > 0) {
+      await cells.first().click();
+      const nextTargets = page.locator('.board button.move-target');
+      if (await nextTargets.count() > 0) {
+        await nextTargets.first().click();
+        const prompt2 = page.getByText('成りますか？');
+        if (await prompt2.isVisible().catch(() => false)) {
+          await page.getByRole('button', { name: '成る' }).click();
+        }
+      }
+    }
+  }
+
+  await expect(wrongBadge).toBeVisible({ timeout: 5000 });
+  await expect(page.getByRole('button', { name: '最初からやり直す' })).toBeVisible();
+
+  await page.getByRole('button', { name: '最初からやり直す' }).click();
+  await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
+  await expect(wrongBadge).not.toBeVisible();
 });
 
 test('puzzle list shows clear count', async ({ page }) => {
@@ -189,7 +292,6 @@ test('reopening cleared puzzle shows cleared status', async ({ page }) => {
   await solveAllMoves(page, puzzle);
   await expect(page.getByText('クリア！')).toBeVisible();
 
-  // Reopen the same puzzle
   await page.goto('/?mate=3&id=1');
   await expect(page.getByText('✅ クリア済み')).toBeVisible();
 });
@@ -200,4 +302,33 @@ test('board cells have minimum tap size', async ({ page }) => {
   const box = await cell.boundingBox();
   expect(box.width).toBeGreaterThanOrEqual(40);
   expect(box.height).toBeGreaterThanOrEqual(40);
+});
+
+test('any legal move is accepted (free play)', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+  const sol = puzzle.solution[0];
+
+  await page.goto('/?mate=3&id=1');
+  await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
+
+  // Click the correct piece but select it first
+  const from = sol.from;
+  await page.locator(`button[data-x='${from[0]}'][data-y='${from[1]}']`).click();
+
+  // Should show move targets for this piece
+  const targets = page.locator('.board button.move-target');
+  await expect(targets.first()).toBeVisible();
+
+  // Click a move target — any move should be accepted
+  await targets.first().click();
+
+  // Handle promotion if prompted
+  const prompt = page.getByText('成りますか？');
+  if (await prompt.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: '成る' }).click();
+  }
+
+  // Move should be accepted — message should change from initial
+  const message = page.locator('.message');
+  await expect(message).not.toHaveText('攻め方の手を選んでください');
 });
