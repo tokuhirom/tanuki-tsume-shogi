@@ -1,5 +1,6 @@
 import {
   applyMove,
+  cloneState,
   createState,
   formatMove,
   normalizeMove,
@@ -29,6 +30,7 @@ const state = {
   message: "",
   clearFxUntil: 0,
   soundEnabled: isSoundEnabled(),
+  history: [],
 };
 
 let audioCtx = null;
@@ -130,6 +132,7 @@ function goPuzzle(p) {
   state.puzzle = p;
   state.gameState = createState(p.initial);
   state.ply = 0;
+  state.history = [];
   state.selectedSquare = null;
   state.selectedHand = null;
   state.message = "攻め方の手を選んでください";
@@ -145,10 +148,15 @@ function tryUserMove(candidate) {
   if (!state.puzzle || !state.gameState) return;
   const expected = currentExpectedMove();
   if (!sameMove(candidate, expected)) {
-    state.message = "その手は不正解です。もう一度考えてみよう。";
-    render();
+    // Mistakes are ignored quietly to keep puzzle flow smooth.
     return;
   }
+
+  state.history.push({
+    gameState: cloneState(state.gameState),
+    ply: state.ply,
+    message: state.message,
+  });
 
   state.gameState = applyMove(state.gameState, candidate);
   playMoveSound();
@@ -171,6 +179,18 @@ function tryUserMove(candidate) {
   } else {
     state.message = "正解。次の一手へ。";
   }
+  render();
+}
+
+function undoOneTurn() {
+  if (state.history.length === 0) return;
+  const prev = state.history.pop();
+  state.gameState = prev.gameState;
+  state.ply = prev.ply;
+  state.selectedSquare = null;
+  state.selectedHand = null;
+  state.clearFxUntil = 0;
+  state.message = "一手戻しました。";
   render();
 }
 
@@ -337,6 +357,7 @@ function renderPuzzle() {
       fxNodes,
       h("div", { class: "row" }, [
       h("button", { class: "btn", onclick: () => goList(state.mateLength) }, "問題一覧へ"),
+      h("button", { class: "btn", onclick: undoOneTurn }, "一手戻す"),
       soundToggleButton(),
       h("h2", {}, `${state.mateLength}手詰 #${state.puzzle.id}`),
       ]),
