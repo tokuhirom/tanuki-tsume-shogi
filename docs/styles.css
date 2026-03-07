@@ -166,18 +166,30 @@ h1, h2 { margin: 8px 0 12px; }
   border-collapse: collapse;
 }
 
+.board td {
+  padding: 0;
+  width: var(--cell-size);
+  height: var(--cell-size);
+}
+
 .board button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: var(--cell-size);
   height: var(--cell-size);
   border: 1px solid #7c5c35;
   background: var(--board);
   font-size: 18px;
   font-weight: 700;
+  line-height: 1;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   padding: 0;
+  margin: 0;
   position: relative;
+  vertical-align: top;
 }
 
 .board button.edge-top { border-top-width: 3px; }
