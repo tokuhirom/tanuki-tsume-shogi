@@ -112,14 +112,9 @@ fn basic_validity(initial: &InitialData) -> bool {
         if !seen.insert((p.x, p.y)) { return false; }
     }
 
-    let ak = initial.pieces.iter().find(|p| p.owner == Owner::Attacker && p.piece_type == PieceType::K);
+    // 守り方の玉は必須（攻め方の玉は不要）
     let dk = initial.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K);
-    let (ak, dk) = match (ak, dk) {
-        (Some(a), Some(d)) => (a, d),
-        _ => return false,
-    };
-
-    if (ak.x - dk.x).abs() <= 1 && (ak.y - dk.y).abs() <= 1 { return false; }
+    if dk.is_none() { return false; }
 
     if !piece_count_valid(initial) { return false; }
 
@@ -239,11 +234,7 @@ fn random_candidate(rng: &mut Rng, params: &CandidateParams) -> Option<InitialDa
     let mut used = HashSet::new();
 
     let dk = PieceData { x: rng.ri(2, 8), y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
-    let ak = PieceData { x: rng.ri(1, 9), y: rng.ri(7, 9), owner: Owner::Attacker, piece_type: PieceType::K };
-    if (dk.x - ak.x).abs() <= 1 && (dk.y - ak.y).abs() <= 1 { return None; }
     used.insert((dk.x, dk.y));
-    used.insert((ak.x, ak.y));
-    pieces.push(ak);
     pieces.push(dk.clone());
 
     // 攻め方の駒を配置
@@ -439,11 +430,24 @@ fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
     cur
 }
 
+/// 攻め方の玉を除去する（curated puzzles に含まれている場合の正規化用）
+fn strip_attacker_king(initial: &InitialData) -> InitialData {
+    InitialData {
+        pieces: initial.pieces.iter()
+            .filter(|p| !(p.owner == Owner::Attacker && p.piece_type == PieceType::K))
+            .cloned()
+            .collect(),
+        hands: initial.hands.clone(),
+        side_to_move: initial.side_to_move,
+    }
+}
+
 fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(InitialData, Vec<Move>, i32)> {
-    let state = initial.to_state();
+    let normalized = strip_attacker_king(initial);
+    let state = normalized.to_state();
     let solution = validate_tsume_puzzle(&state, mate_length)?;
 
-    let pruned = prune_initial(initial, mate_length);
+    let pruned = prune_initial(&normalized, mate_length);
     let pruned_state = pruned.to_state();
     let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_puzzle(&pruned_state, mate_length) {
         (InitialData::from_state(&pruned_state), pruned_sol)
@@ -871,18 +875,19 @@ mod tests {
 
     #[test]
     fn test_basic_validity_no_attacker_king() {
+        // 攻め方の玉がなくても valid
         let init = mk_initial(vec![
             PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
             PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
         ]);
-        assert!(!basic_validity(&init));
+        assert!(basic_validity(&init));
     }
 
     #[test]
-    fn test_basic_validity_kings_adjacent() {
+    fn test_basic_validity_no_defender_king() {
+        // 守り方の玉がないと invalid
         let init = mk_initial(vec![
-            PieceData { x: 5, y: 5, owner: Owner::Attacker, piece_type: PieceType::K },
-            PieceData { x: 5, y: 4, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
         ]);
         assert!(!basic_validity(&init));
     }
