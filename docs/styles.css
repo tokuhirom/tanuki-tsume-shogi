@@ -154,10 +154,12 @@ h1, h2 { margin: 8px 0 12px; }
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
-  padding: 8px 0;
+  padding: 10px 0;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .puzzle-num.clear {
@@ -327,14 +329,53 @@ h1, h2 { margin: 8px 0 12px; }
   color: #3f2f1d;
 }
 
+/* --- 成り選択モーダル --- */
+.promo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.promo-modal {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 20px 24px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  min-width: 200px;
+}
+
+.promo-modal .promo-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.promo-modal .promo-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.promo-modal .btn {
+  min-width: 80px;
+  font-size: 18px;
+  padding: 12px 16px;
+}
+
 /* --- Responsive --- */
 @media (max-width: 400px) {
-  :root { --cell-size: min(34px, calc((100vw - 48px) / 9)); }
+  :root { --cell-size: min(38px, calc((100vw - 36px) / 9)); }
   .top-hero { grid-template-columns: 1fr; }
-  .puzzle-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .puzzle-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   main { padding: 4px; }
   .panel { padding: 8px; }
-  .board button { font-size: min(15px, calc(var(--cell-size) * 0.44)); }
+  .board button { font-size: min(16px, calc(var(--cell-size) * 0.44)); }
   .coord { width: 14px; min-width: 14px; font-size: 10px; }
 }
 

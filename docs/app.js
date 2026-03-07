@@ -691,15 +691,7 @@ function renderPuzzle() {
       h("div", { class: "message" }, state.message),
       renderHands(),
       h("div", { class: "board-wrap" }, renderBoard()),
-      state.promotionPrompt
-        ? h("div", { class: "log" }, [
-            h("div", {}, "成りますか？"),
-            h("div", { class: "row" }, [
-              h("button", { class: "btn primary", onclick: () => choosePromotion(true) }, "成る"),
-              h("button", { class: "btn", onclick: () => choosePromotion(false) }, "成らない"),
-            ]),
-          ])
-        : null,
+      null,
       h("div", { class: "toolbar" }, [
         !finished ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
         wrong ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
@@ -714,11 +706,26 @@ function renderPuzzle() {
   ]);
 }
 
+function renderPromotionModal() {
+  if (!state.promotionPrompt) return null;
+  return h("div", { class: "promo-overlay", onclick: (e) => { if (e.target === e.currentTarget) { choosePromotion(false); } } }, [
+    h("div", { class: "promo-modal" }, [
+      h("div", { class: "promo-title" }, "成りますか？"),
+      h("div", { class: "promo-buttons" }, [
+        h("button", { class: "btn primary", onclick: () => choosePromotion(true) }, "成る"),
+        h("button", { class: "btn", onclick: () => choosePromotion(false) }, "不成"),
+      ]),
+    ]),
+  ]);
+}
+
 function render() {
   app.innerHTML = "";
   if (state.screen === "title") app.append(renderTitle());
   if (state.screen === "list") app.append(renderList());
   if (state.screen === "puzzle") app.append(renderPuzzle());
+  const modal = renderPromotionModal();
+  if (modal) app.append(modal);
 }
 
 async function navigateToRoute(route, { replace = false } = {}) {

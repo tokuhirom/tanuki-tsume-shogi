@@ -10,6 +10,7 @@
     "mine:9": "node scripts/mine-curated.js --mate=9 --tries=16000",
     "add:curated": "node scripts/add-curated.js",
     "build:puzzles": "cd generator && cargo run --release -- --seed=20260307",
+    "build": "npm run build:puzzles && npm run validate && npm run build:info",
     "serve": "python3 -m http.server 5173 -d docs",
     "test:e2e": "playwright test",
     "build:info": "node scripts/write-build-info.js"
