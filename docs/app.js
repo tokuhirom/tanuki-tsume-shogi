@@ -200,14 +200,14 @@ function h(tag, attrs = {}, children = []) {
 }
 
 async function loadPuzzles(len) {
-  const res = await fetch(`./puzzles/${len}.json?v=20260307b`);
+  const res = await fetch(`./puzzles/${len}.json?v=${state.buildInfo.commit}`);
   if (!res.ok) throw new Error("問題データの読み込みに失敗しました");
   return res.json();
 }
 
 async function loadBuildInfo() {
   try {
-    const res = await fetch("./build-info.json?v=20260307b");
+    const res = await fetch(`./build-info.json?v=${Date.now()}`);
     if (!res.ok) return;
     const json = await res.json();
     state.buildInfo = {

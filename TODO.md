@@ -23,7 +23,6 @@
 ## 開発環境
 
 - [ ] validate 処理を Rust に統合する（JSでは遅い）
-- [ ] キャッシュバスト値 `?v=20260307b` をビルド時に動的生成する
 - [ ] E2E テストに N/L 駒の持ち駒ラベル対応を追加
 
 ## 後続
@@ -50,3 +49,4 @@
 - [x] oxlint 導入 + CI 追加
 - [x] cargo clippy 導入 + CI 追加（警告ゼロ化）
 - [x] lefthook で pre-commit (oxlint, clippy) / pre-push (test) を設定
+- [x] キャッシュバスト値を commit hash で動的生成
