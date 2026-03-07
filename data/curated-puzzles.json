@@ -1,0 +1,39 @@
+{
+  "3": [
+    {
+      "pieces": [
+        { "x": 2, "y": 1, "owner": "defender", "type": "G" },
+        { "x": 3, "y": 2, "owner": "defender", "type": "K" },
+        { "x": 4, "y": 3, "owner": "attacker", "type": "R" },
+        { "x": 4, "y": 4, "owner": "attacker", "type": "G" },
+        { "x": 9, "y": 8, "owner": "attacker", "type": "K" }
+      ],
+      "hands": {
+        "attacker": { "R": 0, "B": 0, "G": 0, "S": 0, "P": 0 },
+        "defender": { "R": 0, "B": 0, "G": 0, "S": 0, "P": 0 }
+      },
+      "sideToMove": "attacker"
+    }
+  ],
+  "5": [
+    {
+      "pieces": [
+        { "x": 6, "y": 1, "owner": "defender", "type": "K" },
+        { "x": 8, "y": 1, "owner": "defender", "type": "S" },
+        { "x": 5, "y": 4, "owner": "attacker", "type": "G" },
+        { "x": 6, "y": 4, "owner": "defender", "type": "P" },
+        { "x": 5, "y": 5, "owner": "attacker", "type": "P" },
+        { "x": 8, "y": 5, "owner": "attacker", "type": "R" },
+        { "x": 8, "y": 7, "owner": "attacker", "type": "S" },
+        { "x": 9, "y": 9, "owner": "attacker", "type": "K" }
+      ],
+      "hands": {
+        "attacker": { "R": 0, "B": 0, "G": 0, "S": 0, "P": 0 },
+        "defender": { "R": 0, "B": 0, "G": 0, "S": 0, "P": 0 }
+      },
+      "sideToMove": "attacker"
+    }
+  ],
+  "7": [],
+  "9": []
+}

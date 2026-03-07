@@ -261,18 +261,21 @@ function renderTitle() {
 }
 
 function renderList() {
+  const hasPuzzles = state.puzzles.length > 0;
   return h("section", { class: "panel" }, [
     h("div", { class: "row" }, [
       h("button", { class: "btn", onclick: goTitle }, "タイトルへ戻る"),
       soundToggleButton(),
       h("h2", {}, `${state.mateLength}手詰 - 問題一覧`),
     ]),
-    h("div", { class: "puzzle-grid" }, state.puzzles.map((p) =>
-      h("button", {
-        class: `puzzle-num${isCleared(state.mateLength, p.id) ? " clear" : ""}`,
-        onclick: () => goPuzzle(p),
-      }, p.id)
-    )),
+    hasPuzzles
+      ? h("div", { class: "puzzle-grid" }, state.puzzles.map((p) =>
+          h("button", {
+            class: `puzzle-num${isCleared(state.mateLength, p.id) ? " clear" : ""}`,
+            onclick: () => goPuzzle(p),
+          }, p.id)
+        ))
+      : h("p", { class: "log" }, "この手数カテゴリは検証済み問題を準備中です。"),
   ]);
 }
 

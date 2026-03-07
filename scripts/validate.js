@@ -12,7 +12,12 @@ for (const n of lengths) {
     continue;
   }
   const puzzles = JSON.parse(fs.readFileSync(file, "utf-8"));
+  const checked = new Set();
   for (const p of puzzles) {
+    const sig = JSON.stringify(p.initial);
+    if (checked.has(sig)) continue;
+    checked.add(sig);
+
     const st = createState(p.initial);
     const res = validateTsumePuzzle(st, n);
     if (!res.ok) {
@@ -22,7 +27,7 @@ for (const n of lengths) {
     }
   }
   if (failed === 0) {
-    console.log(`[OK] ${file}: ${puzzles.length}問`);
+    console.log(`[OK] ${file}: ${puzzles.length}問 (unique ${checked.size})`);
   }
 }
 

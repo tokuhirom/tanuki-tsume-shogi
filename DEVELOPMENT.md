@@ -22,6 +22,12 @@
 - `validator`:
   - ルール適合性・唯一解・手数厳密性を検証
 
+### 補足: 生成アルゴリズム
+
+- ランダム生成のみでは品質が安定しないため、終局形からの逆算発想を取り入れる
+- 逆算または近傍探索で得た候補を `validator` で厳密検証し、合格局面のみ採用する
+- 参考: https://memo.sugyan.com/entry/2017/11/19/220631
+
 ## 重要方針
 
 ### 1. 問題生成と配信を分離する
@@ -88,3 +94,12 @@
 - バージョン付き問題データを配信
 - 問題差し替え時は互換性を崩さないように `localStorage` キーをバージョニングする
 
+## 生成運用メモ
+
+- 問題生成: `npm run generate`
+- 問題検証: `npm run validate`
+- 7手詰探索: `npm run mine:7 > /tmp/found7.json`
+- 9手詰探索: `npm run mine:9 > /tmp/found9.json`
+- 探索結果取り込み: `npm run add:curated -- --file=/tmp/found7.json`
+
+`mine:*` は長時間実行を想定。見つかった局面だけ `data/curated-puzzles.json` に追記し、再生成する。
