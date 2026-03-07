@@ -21,12 +21,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -123,12 +117,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -219,12 +207,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -321,12 +303,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -411,12 +387,6 @@
           "y": 2,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -513,12 +483,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -609,12 +573,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -705,12 +663,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -801,12 +753,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -897,12 +843,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -993,12 +933,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1089,12 +1023,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 1,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1185,12 +1113,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1281,12 +1203,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 1,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1377,12 +1293,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 8,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1467,12 +1377,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1563,12 +1467,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1659,12 +1557,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1755,12 +1647,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 8,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1851,12 +1737,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -1953,12 +1833,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2049,12 +1923,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2145,12 +2013,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2241,12 +2103,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2337,12 +2193,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2439,12 +2289,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2535,12 +2379,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 1,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2637,12 +2475,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2730,12 +2562,6 @@
           "y": 3,
           "owner": "defender",
           "type": "N"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2832,12 +2658,6 @@
           "y": 3,
           "owner": "defender",
           "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -2925,12 +2745,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3015,12 +2829,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3114,12 +2922,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3204,12 +3006,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3297,12 +3093,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 9,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3399,12 +3189,6 @@
           "y": 2,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3492,12 +3276,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3582,12 +3360,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3687,12 +3459,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3783,12 +3549,6 @@
           "y": 2,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3876,12 +3636,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -3972,12 +3726,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4071,12 +3819,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4167,12 +3909,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4260,12 +3996,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4350,12 +4080,6 @@
           "y": 3,
           "owner": "defender",
           "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4443,12 +4167,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4533,12 +4251,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4626,12 +4338,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4722,12 +4428,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4818,12 +4518,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4911,12 +4605,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -4998,12 +4686,6 @@
           "y": 2,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5091,12 +4773,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5178,12 +4854,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 3,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5277,12 +4947,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5358,12 +5022,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 7,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5451,12 +5109,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 4,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5532,12 +5184,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5631,12 +5277,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5724,12 +5364,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5811,12 +5445,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5898,12 +5526,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -5997,12 +5619,6 @@
           "y": 7,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6084,12 +5700,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6189,12 +5799,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6276,12 +5880,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6381,12 +5979,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6468,12 +6060,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 6,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6567,12 +6153,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6654,12 +6234,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 7,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6753,12 +6327,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "B"
-        },
-        {
-          "x": 3,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6858,12 +6426,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -6957,12 +6519,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7056,12 +6612,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7149,12 +6699,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7248,12 +6792,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7341,12 +6879,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 4,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7443,12 +6975,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7536,12 +7062,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7635,12 +7155,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7725,12 +7239,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7818,12 +7326,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -7911,12 +7413,6 @@
           "y": 3,
           "owner": "defender",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8001,12 +7497,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8094,12 +7584,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8193,12 +7677,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8286,12 +7764,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 8,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8385,12 +7857,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8478,12 +7944,6 @@
           "y": 3,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 3,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8577,12 +8037,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8670,12 +8124,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 5,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8757,12 +8205,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8850,12 +8292,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -8943,12 +8379,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -9036,12 +8466,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -9129,12 +8553,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 7,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -9222,12 +8640,6 @@
           "y": 4,
           "owner": "attacker",
           "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -9315,12 +8727,6 @@
           "y": 5,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 9,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {
@@ -9414,12 +8820,6 @@
           "y": 6,
           "owner": "attacker",
           "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 7,
-          "owner": "attacker",
-          "type": "K"
         }
       ],
       "hands": {

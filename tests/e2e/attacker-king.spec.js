@@ -40,3 +40,14 @@ test('attacker king in source data does not block drops on visible empty squares
   await target.click();
   await expect(target).toHaveClass(/last-move/);
 });
+
+test('1手詰 #54 allows dropping Gold on 9,9', async ({ page }) => {
+  await page.goto('/?mate=1&id=54');
+  await expect(page.getByRole('heading', { name: '1手詰 #54' })).toBeVisible();
+
+  await page.getByRole('button', { name: /^金 ×1$/ }).click();
+  const target = page.locator("button[data-x='9'][data-y='9']");
+  await expect(target).toHaveClass(/move-target/);
+  await target.click();
+  await expect(target).toHaveClass(/last-move/);
+});
