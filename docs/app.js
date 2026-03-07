@@ -32,6 +32,7 @@ const state = {
   soundEnabled: isSoundEnabled(),
   history: [],
   promotionPrompt: null,
+  buildInfo: { branch: "unknown", commit: "unknown", builtAt: "unknown" },
 };
 
 function parseRoute() {
@@ -133,6 +134,21 @@ async function loadPuzzles(len) {
   const res = await fetch(`./puzzles/${len}.json?v=20260307b`);
   if (!res.ok) throw new Error("問題データの読み込みに失敗しました");
   return res.json();
+}
+
+async function loadBuildInfo() {
+  try {
+    const res = await fetch("./build-info.json?v=20260307b");
+    if (!res.ok) return;
+    const json = await res.json();
+    state.buildInfo = {
+      branch: json.branch || "unknown",
+      commit: json.commit || "unknown",
+      builtAt: json.builtAt || "unknown",
+    };
+  } catch {
+    // ignore
+  }
 }
 
 function goTitle() {
@@ -337,25 +353,27 @@ async function copyPuzzleLink() {
 }
 
 function renderTitle() {
+  const bi = state.buildInfo;
   return h("section", { class: "panel" }, [
     h("div", { class: "row" }, [soundToggleButton()]),
     h("div", { class: "top-hero" }, [
       h("div", {}, [
         h("h1", {}, "たぬき詰将棋"),
         h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦。"),
-        h("div", { class: "row" }, [
-          h("a", {
-            class: "btn",
-            href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
-            target: "_blank",
-            rel: "noopener noreferrer",
-          }, "GitHubで見る"),
-        ]),
         h("div", { class: "grid4" }, lengths.map((n) =>
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
+        h("div", { class: "log" }, `branch: ${bi.branch} / built: ${bi.builtAt} / commit: ${bi.commit}`),
       ]),
       h("img", { src: "./assets/tanuki.svg", alt: "タヌキ" }),
+    ]),
+    h("div", { class: "app-footer" }, [
+      h("a", {
+        class: "footer-link",
+        href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
+        target: "_blank",
+        rel: "noopener noreferrer",
+      }, "GitHub"),
     ]),
   ]);
 }
@@ -488,6 +506,7 @@ function render() {
 }
 
 async function boot() {
+  await loadBuildInfo();
   const route = parseRoute();
   if (route.screen === "title") {
     goTitle();

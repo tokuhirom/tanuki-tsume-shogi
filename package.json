@@ -11,7 +11,8 @@
     "add:curated": "node scripts/add-curated.js",
     "build:puzzles": "node scripts/generate.js --count=100 --seed=20260307",
     "serve": "python3 -m http.server 5173 -d docs",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "build:info": "node scripts/write-build-info.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2"
