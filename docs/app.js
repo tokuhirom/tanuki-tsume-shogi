@@ -343,6 +343,14 @@ function renderTitle() {
       h("div", {}, [
         h("h1", {}, "たぬき詰将棋"),
         h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦。"),
+        h("div", { class: "row" }, [
+          h("a", {
+            class: "btn",
+            href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
+            target: "_blank",
+            rel: "noopener noreferrer",
+          }, "GitHubで見る"),
+        ]),
         h("div", { class: "grid4" }, lengths.map((n) =>
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
