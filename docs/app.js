@@ -178,6 +178,45 @@ function boardPiece(x, y) {
   return state.gameState.board.get(`${x},${y}`) || null;
 }
 
+function isHiddenAttackerKing(piece) {
+  return piece && piece.owner === "attacker" && piece.type === "K";
+}
+
+function boardViewport() {
+  const points = [];
+  for (const [k, p] of state.gameState.board.entries()) {
+    if (isHiddenAttackerKing(p)) continue;
+    const [x, y] = k.split(",").map(Number);
+    points.push({ x, y });
+  }
+  if (points.length === 0) {
+    return { minX: 1, maxX: 9, minY: 1, maxY: 9 };
+  }
+
+  let minX = Math.min(...points.map((p) => p.x));
+  let maxX = Math.max(...points.map((p) => p.x));
+  let minY = Math.min(...points.map((p) => p.y));
+  let maxY = Math.max(...points.map((p) => p.y));
+
+  minX = Math.max(1, minX - 1);
+  maxX = Math.min(9, maxX + 1);
+  minY = Math.max(1, minY - 1);
+  maxY = Math.min(9, maxY + 1);
+
+  while (maxX - minX + 1 < 5) {
+    if (minX > 1) minX -= 1;
+    else if (maxX < 9) maxX += 1;
+    else break;
+  }
+  while (maxY - minY + 1 < 5) {
+    if (minY > 1) minY -= 1;
+    else if (maxY < 9) maxY += 1;
+    else break;
+  }
+
+  return { minX, maxX, minY, maxY };
+}
+
 function onSquareClick(x, y) {
   if (state.gameState.sideToMove !== "attacker") return;
   const target = boardPiece(x, y);
@@ -188,7 +227,7 @@ function onSquareClick(x, y) {
   }
 
   if (!state.selectedSquare) {
-    if (target && target.owner === "attacker") {
+    if (target && target.owner === "attacker" && target.type !== "K") {
       state.selectedSquare = [x, y];
       render();
     }
@@ -253,16 +292,17 @@ function renderHands() {
 }
 
 function renderBoard() {
+  const view = boardViewport();
   const table = h("table", { class: "board" });
-  for (let y = 1; y <= 9; y += 1) {
+  for (let y = view.minY; y <= view.maxY; y += 1) {
     const tr = h("tr");
-    for (let x = 1; x <= 9; x += 1) {
+    for (let x = view.minX; x <= view.maxX; x += 1) {
       const p = boardPiece(x, y);
       const selected = state.selectedSquare && state.selectedSquare[0] === x && state.selectedSquare[1] === y;
       tr.append(h("td", {}, h("button", {
         class: selected ? "sel" : "",
         onclick: () => onSquareClick(x, y),
-      }, p ? pieceToText(p) : "")));
+      }, p && !isHiddenAttackerKing(p) ? pieceToText(p) : "")));
     }
     table.append(tr);
   }
