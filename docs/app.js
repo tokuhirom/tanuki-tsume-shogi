@@ -385,7 +385,7 @@ function renderBoard() {
   const view = boardViewport();
   const table = h("table", { class: "board" });
   const kanji = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
-  const fileLabel = (x) => String(10 - x);
+  const fileLabel = (x) => String(x);
 
   const head = h("tr");
   head.append(h("th", { class: "coord corner" }, " "));
@@ -407,8 +407,8 @@ function renderBoard() {
         : "";
       const edgeTop = y === 1 ? " edge-top" : "";
       const edgeBottom = y === 9 ? " edge-bottom" : "";
-      const edgeLeft = x === 9 ? " edge-left" : "";
-      const edgeRight = x === 1 ? " edge-right" : "";
+      const edgeLeft = x === 1 ? " edge-left" : "";
+      const edgeRight = x === 9 ? " edge-right" : "";
       tr.append(h("td", {}, h("button", {
         class: `${selected ? "sel" : ""}${edgeTop}${edgeBottom}${edgeLeft}${edgeRight}`.trim(),
         "data-x": String(x),
