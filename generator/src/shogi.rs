@@ -22,20 +22,24 @@ impl Owner {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PieceType {
-    K, R, B, G, S, P,
+    K, R, B, G, S, N, L, P,
     #[serde(rename = "+R")]
     PR,
     #[serde(rename = "+B")]
     PB,
     #[serde(rename = "+S")]
     PS,
+    #[serde(rename = "+N")]
+    PN,
+    #[serde(rename = "+L")]
+    PL,
     #[serde(rename = "+P")]
     PP,
 }
 
 impl PieceType {
     pub fn is_promotable(self) -> bool {
-        matches!(self, PieceType::R | PieceType::B | PieceType::S | PieceType::P)
+        matches!(self, PieceType::R | PieceType::B | PieceType::S | PieceType::N | PieceType::L | PieceType::P)
     }
 
     pub fn promote(self) -> PieceType {
@@ -43,6 +47,8 @@ impl PieceType {
             PieceType::R => PieceType::PR,
             PieceType::B => PieceType::PB,
             PieceType::S => PieceType::PS,
+            PieceType::N => PieceType::PN,
+            PieceType::L => PieceType::PL,
             PieceType::P => PieceType::PP,
             other => other,
         }
@@ -53,21 +59,23 @@ impl PieceType {
             PieceType::PR => PieceType::R,
             PieceType::PB => PieceType::B,
             PieceType::PS => PieceType::S,
+            PieceType::PN => PieceType::N,
+            PieceType::PL => PieceType::L,
             PieceType::PP => PieceType::P,
             other => other,
         }
     }
 
     pub fn is_promoted(self) -> bool {
-        matches!(self, PieceType::PR | PieceType::PB | PieceType::PS | PieceType::PP)
+        matches!(self, PieceType::PR | PieceType::PB | PieceType::PS | PieceType::PN | PieceType::PL | PieceType::PP)
     }
 
     pub fn is_hand_type(self) -> bool {
-        matches!(self, PieceType::R | PieceType::B | PieceType::G | PieceType::S | PieceType::P)
+        matches!(self, PieceType::R | PieceType::B | PieceType::G | PieceType::S | PieceType::N | PieceType::L | PieceType::P)
     }
 }
 
-pub const HAND_TYPES: [PieceType; 5] = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P];
+pub const HAND_TYPES: [PieceType; 7] = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Pos {
@@ -89,13 +97,13 @@ pub struct BoardPiece {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Hands {
-    pub attacker: [u8; 5], // R, B, G, S, P
-    pub defender: [u8; 5],
+    pub attacker: [u8; 7], // R, B, G, S, N, L, P
+    pub defender: [u8; 7],
 }
 
 impl Hands {
     pub fn empty() -> Self {
-        Hands { attacker: [0; 5], defender: [0; 5] }
+        Hands { attacker: [0; 7], defender: [0; 7] }
     }
 
     fn hand_idx(t: PieceType) -> usize {
@@ -104,7 +112,9 @@ impl Hands {
             PieceType::B => 1,
             PieceType::G => 2,
             PieceType::S => 3,
-            PieceType::P => 4,
+            PieceType::N => 4,
+            PieceType::L => 5,
+            PieceType::P => 6,
             _ => panic!("not a hand type"),
         }
     }
@@ -214,8 +224,9 @@ fn transform_dir(owner: Owner, dx: i8, dy: i8) -> (i8, i8) {
 fn step_moves(t: PieceType) -> &'static [(i8, i8)] {
     match t {
         PieceType::K => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)],
-        PieceType::G | PieceType::PP | PieceType::PS => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(0,1)],
+        PieceType::G | PieceType::PP | PieceType::PS | PieceType::PN | PieceType::PL => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(0,1)],
         PieceType::S => &[(-1,-1),(0,-1),(1,-1),(-1,1),(1,1)],
+        PieceType::N => &[(-1,-2),(1,-2)],
         PieceType::P => &[(0,-1)],
         _ => &[],
     }
@@ -225,6 +236,7 @@ fn slide_dirs(t: PieceType) -> &'static [(i8, i8)] {
     match t {
         PieceType::R | PieceType::PR => &[(0,-1),(1,0),(0,1),(-1,0)],
         PieceType::B | PieceType::PB => &[(1,-1),(1,1),(-1,1),(-1,-1)],
+        PieceType::L => &[(0,-1)],
         _ => &[],
     }
 }
@@ -242,9 +254,17 @@ fn is_move_promotion_legal(owner: Owner, t: PieceType, from_y: i8, to_y: i8, pro
     let can_promote = promotion_zone(owner, from_y) || promotion_zone(owner, to_y);
     if !can_promote { return !promote; }
     if !promote {
-        if t == PieceType::P {
-            if owner == Owner::Attacker && to_y == 1 { return false; }
-            if owner == Owner::Defender && to_y == 9 { return false; }
+        // 行き場のない駒の禁止: 歩・香は最奥段、桂は奥2段に不成で行けない
+        match t {
+            PieceType::P | PieceType::L => {
+                if owner == Owner::Attacker && to_y == 1 { return false; }
+                if owner == Owner::Defender && to_y == 9 { return false; }
+            }
+            PieceType::N => {
+                if owner == Owner::Attacker && to_y <= 2 { return false; }
+                if owner == Owner::Defender && to_y >= 8 { return false; }
+            }
+            _ => {}
         }
     }
     true
@@ -326,9 +346,19 @@ fn pseudo_drops(state: &State, owner: Owner) -> Vec<Move> {
             for x in 1..=9i8 {
                 let p = Pos::new(x, y);
                 if state.get(p).is_some() { continue; }
+                // 行き場のない場所への打ち駒禁止
+                match t {
+                    PieceType::P | PieceType::L => {
+                        if owner == Owner::Attacker && y == 1 { continue; }
+                        if owner == Owner::Defender && y == 9 { continue; }
+                    }
+                    PieceType::N => {
+                        if owner == Owner::Attacker && y <= 2 { continue; }
+                        if owner == Owner::Defender && y >= 8 { continue; }
+                    }
+                    _ => {}
+                }
                 if t == PieceType::P {
-                    if owner == Owner::Attacker && y == 1 { continue; }
-                    if owner == Owner::Defender && y == 9 { continue; }
                     if has_pawn_on_file(state, owner, x) { continue; }
                 }
                 out.push(Move { from: None, to: [x, y], drop: Some(t), promote: false });
@@ -612,6 +642,9 @@ pub fn validate_tsume_puzzle(state: &State, mate_length: u32) -> Option<Vec<Move
         return None;
     }
 
+    // 初期局面で既に王手がかかっていてはならない
+    if is_in_check(state, Owner::Defender) { return None; }
+
     let mut memo = HashMap::new();
     let within = forced_mate_within(state, mate_length, &mut memo);
     if !within.mate { return None; }
@@ -653,12 +686,16 @@ pub struct HandCount {
     #[serde(default)]
     pub S: u8,
     #[serde(default)]
+    pub N: u8,
+    #[serde(default)]
+    pub L: u8,
+    #[serde(default)]
     pub P: u8,
 }
 
 impl Default for HandCount {
     fn default() -> Self {
-        HandCount { R: 0, B: 0, G: 0, S: 0, P: 0 }
+        HandCount { R: 0, B: 0, G: 0, S: 0, N: 0, L: 0, P: 0 }
     }
 }
 
@@ -677,8 +714,8 @@ impl InitialData {
             let pos = Pos::new(p.x, p.y);
             state.set(pos, Some(BoardPiece { owner: p.owner, piece_type: p.piece_type }));
         }
-        state.hands.attacker = [self.hands.attacker.R, self.hands.attacker.B, self.hands.attacker.G, self.hands.attacker.S, self.hands.attacker.P];
-        state.hands.defender = [self.hands.defender.R, self.hands.defender.B, self.hands.defender.G, self.hands.defender.S, self.hands.defender.P];
+        state.hands.attacker = [self.hands.attacker.R, self.hands.attacker.B, self.hands.attacker.G, self.hands.attacker.S, self.hands.attacker.N, self.hands.attacker.L, self.hands.attacker.P];
+        state.hands.defender = [self.hands.defender.R, self.hands.defender.B, self.hands.defender.G, self.hands.defender.S, self.hands.defender.N, self.hands.defender.L, self.hands.defender.P];
         state.side_to_move = self.side_to_move;
         state
     }
@@ -702,14 +739,18 @@ impl InitialData {
                     B: state.hands.attacker[1],
                     G: state.hands.attacker[2],
                     S: state.hands.attacker[3],
-                    P: state.hands.attacker[4],
+                    N: state.hands.attacker[4],
+                    L: state.hands.attacker[5],
+                    P: state.hands.attacker[6],
                 },
                 defender: HandCount {
                     R: state.hands.defender[0],
                     B: state.hands.defender[1],
                     G: state.hands.defender[2],
                     S: state.hands.defender[3],
-                    P: state.hands.defender[4],
+                    N: state.hands.defender[4],
+                    L: state.hands.defender[5],
+                    P: state.hands.defender[6],
                 },
             },
             side_to_move: state.side_to_move,

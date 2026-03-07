@@ -12,8 +12,8 @@ import {
 } from "./shogi-core.js";
 
 const PIECE_LABEL = {
-  K: "玉", R: "飛", B: "角", G: "金", S: "銀", P: "歩",
-  "+R": "龍", "+B": "馬", "+S": "全", "+P": "と",
+  K: "玉", R: "飛", B: "角", G: "金", S: "銀", N: "桂", L: "香", P: "歩",
+  "+R": "龍", "+B": "馬", "+S": "全", "+N": "圭", "+L": "杏", "+P": "と",
 };
 
 const app = document.getElementById("app");

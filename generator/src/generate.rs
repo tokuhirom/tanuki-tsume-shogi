@@ -68,6 +68,8 @@ fn piece_count_valid(initial: &InitialData) -> bool {
     *counts.entry(PieceType::B).or_insert(0) += h.attacker.B + h.defender.B;
     *counts.entry(PieceType::G).or_insert(0) += h.attacker.G + h.defender.G;
     *counts.entry(PieceType::S).or_insert(0) += h.attacker.S + h.defender.S;
+    *counts.entry(PieceType::N).or_insert(0) += h.attacker.N + h.defender.N;
+    *counts.entry(PieceType::L).or_insert(0) += h.attacker.L + h.defender.L;
     *counts.entry(PieceType::P).or_insert(0) += h.attacker.P + h.defender.P;
 
     // 各駒種の最大枚数 (玉を除く)
@@ -77,6 +79,8 @@ fn piece_count_valid(initial: &InitialData) -> bool {
             PieceType::B => 2,
             PieceType::G => 4,
             PieceType::S => 4,
+            PieceType::N => 4,
+            PieceType::L => 4,
             PieceType::P => 18,
             _ => 0,
         }
@@ -159,7 +163,7 @@ fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
 
     // 攻め方の駒: 1〜2枚
     let atk_count = rng.ri(1, 2) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S];
+    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S];
     for _ in 0..atk_count {
         let t = *rng.pick(&atk_types);
         let mut x;
@@ -176,9 +180,9 @@ fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
         pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
     }
 
-    // 玉方の駒: 0〜1枚 (金銀歩が中心、飛角は低確率)
+    // 玉方の駒: 0〜1枚
     let def_count = rng.ri(0, 1) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -198,11 +202,13 @@ fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
     // 持ち駒: 低確率
     let mut hands = empty_hands_data();
     if rng.next_f64() < 0.2 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G];
+        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
         match rng.pick(&hand_types) {
             PieceType::P => hands.attacker.P = 1,
             PieceType::S => hands.attacker.S = 1,
             PieceType::G => hands.attacker.G = 1,
+            PieceType::N => hands.attacker.N = 1,
+            PieceType::L => hands.attacker.L = 1,
             _ => {}
         }
     }
@@ -224,7 +230,7 @@ fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
     pieces.push(dk.clone());
 
     let atk_count = rng.ri(2, 3) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S];
+    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S];
     for _ in 0..atk_count {
         let t = *rng.pick(&atk_types);
         let mut x;
@@ -242,7 +248,7 @@ fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
     }
 
     let def_count = rng.ri(0, 2) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::N, PieceType::L, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -261,11 +267,13 @@ fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
 
     let mut hands = empty_hands_data();
     if rng.next_f64() < 0.3 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G];
+        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
         match rng.pick(&hand_types) {
             PieceType::P => hands.attacker.P = 1,
             PieceType::S => hands.attacker.S = 1,
             PieceType::G => hands.attacker.G = 1,
+            PieceType::N => hands.attacker.N = 1,
+            PieceType::L => hands.attacker.L = 1,
             _ => {}
         }
     }
@@ -294,7 +302,7 @@ fn random_candidate_5(rng: &mut Rng) -> Option<InitialData> {
     pieces.push(dk.clone());
 
     let atk_count = rng.ri(2, 4) as usize;
-    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P, PieceType::R, PieceType::G, PieceType::S];
+    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P, PieceType::R, PieceType::G, PieceType::S];
     for _ in 0..atk_count {
         let t = *rng.pick(&atk_types);
         let mut x;
@@ -312,7 +320,7 @@ fn random_candidate_5(rng: &mut Rng) -> Option<InitialData> {
     }
 
     let def_count = rng.ri(1, 3) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::N, PieceType::L, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -331,11 +339,13 @@ fn random_candidate_5(rng: &mut Rng) -> Option<InitialData> {
 
     let mut hands = empty_hands_data();
     if rng.next_f64() < 0.4 {
-        let hand_types = [PieceType::P, PieceType::S, PieceType::G];
+        let hand_types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L];
         match rng.pick(&hand_types) {
             PieceType::P => hands.attacker.P = 1,
             PieceType::S => hands.attacker.S = 1,
             PieceType::G => hands.attacker.G = 1,
+            PieceType::N => hands.attacker.N = 1,
+            PieceType::L => hands.attacker.L = 1,
             _ => {}
         }
     }
@@ -375,13 +385,13 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
                 .collect();
             if movable.is_empty() { return None; }
             let idx = *rng.pick(&movable);
-            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P];
+            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
             cand.pieces[idx].piece_type = *rng.pick(&types);
         }
         "add-piece" => {
             let owners = [Owner::Attacker, Owner::Defender];
             let owner = *rng.pick(&owners);
-            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P];
+            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
             let t = *rng.pick(&types);
             if let Some(dk) = cand.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K) {
                 let x = (dk.x + rng.ri(-3, 3)).max(1).min(9);
@@ -410,13 +420,15 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
             }
         }
         "tweak-hand" => {
-            let types = [PieceType::P, PieceType::S, PieceType::G, PieceType::R, PieceType::B];
+            let types = [PieceType::P, PieceType::S, PieceType::G, PieceType::N, PieceType::L, PieceType::R, PieceType::B];
             let t = *rng.pick(&types);
             let v = rng.ri(0, 1) as u8;
             match t {
                 PieceType::P => cand.hands.attacker.P = v,
                 PieceType::S => cand.hands.attacker.S = v,
                 PieceType::G => cand.hands.attacker.G = v,
+                PieceType::N => cand.hands.attacker.N = v,
+                PieceType::L => cand.hands.attacker.L = v,
                 PieceType::R => cand.hands.attacker.R = v,
                 PieceType::B => cand.hands.attacker.B = v,
                 _ => {}
@@ -546,7 +558,9 @@ fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length:
     initial.hands.attacker.B = initial.hands.attacker.B.saturating_sub(remaining[1]);
     initial.hands.attacker.G = initial.hands.attacker.G.saturating_sub(remaining[2]);
     initial.hands.attacker.S = initial.hands.attacker.S.saturating_sub(remaining[3]);
-    initial.hands.attacker.P = initial.hands.attacker.P.saturating_sub(remaining[4]);
+    initial.hands.attacker.N = initial.hands.attacker.N.saturating_sub(remaining[4]);
+    initial.hands.attacker.L = initial.hands.attacker.L.saturating_sub(remaining[5]);
+    initial.hands.attacker.P = initial.hands.attacker.P.saturating_sub(remaining[6]);
     // Re-validate: stripping hand pieces might change the solution
     let new_state = initial.to_state();
     if let Some(new_sol) = validate_tsume_puzzle(&new_state, mate_length) {
@@ -624,6 +638,8 @@ fn puzzle_features(init: &InitialData, sol: &[Move]) -> Vec<i32> {
     let has_b = atk_pieces.iter().any(|p| p.piece_type == PieceType::B) as i32;
     let has_g = atk_pieces.iter().any(|p| p.piece_type == PieceType::G) as i32;
     let has_s = atk_pieces.iter().any(|p| p.piece_type == PieceType::S) as i32;
+    let has_n = atk_pieces.iter().any(|p| p.piece_type == PieceType::N) as i32;
+    let has_l = atk_pieces.iter().any(|p| p.piece_type == PieceType::L) as i32;
     let has_p = atk_pieces.iter().any(|p| p.piece_type == PieceType::P) as i32;
 
     let h = &init.hands.attacker;
@@ -631,6 +647,8 @@ fn puzzle_features(init: &InitialData, sol: &[Move]) -> Vec<i32> {
     let hand_b = (h.B > 0) as i32;
     let hand_g = (h.G > 0) as i32;
     let hand_s = (h.S > 0) as i32;
+    let hand_n = (h.N > 0) as i32;
+    let hand_l = (h.L > 0) as i32;
     let hand_p = (h.P > 0) as i32;
 
     let atk_moves: Vec<_> = sol.iter().step_by(2).collect();
@@ -645,8 +663,8 @@ fn puzzle_features(init: &InitialData, sol: &[Move]) -> Vec<i32> {
     let dk_region_y = ((dk.1 - 1) / 3) as i32;
 
     vec![
-        has_r * 3, has_b * 3, has_g * 3, has_s * 3, has_p * 3,  // board piece types
-        hand_r * 4, hand_b * 4, hand_g * 4, hand_s * 4, hand_p * 4,  // hand pieces
+        has_r * 3, has_b * 3, has_g * 3, has_s * 3, has_n * 3, has_l * 3, has_p * 3,
+        hand_r * 4, hand_b * 4, hand_g * 4, hand_s * 4, hand_n * 4, hand_l * 4, hand_p * 4,
         has_drop * 3, has_promote * 3,
         piece_count, def_count,
         dk_region_x * 5, dk_region_y * 5,  // king position (high weight to avoid repeats)
@@ -746,7 +764,8 @@ fn composition_key(initial: &InitialData) -> String {
         .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
         .map(|p| match p.piece_type {
             PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
-            PieceType::S => "S", PieceType::P => "P", _ => "?",
+            PieceType::S => "S", PieceType::N => "N", PieceType::L => "L",
+            PieceType::P => "P", _ => "?",
         })
         .collect();
     atk_types.sort();
@@ -754,14 +773,15 @@ fn composition_key(initial: &InitialData) -> String {
         .filter(|p| p.owner == Owner::Defender && p.piece_type != PieceType::K)
         .map(|p| match p.piece_type {
             PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
-            PieceType::S => "S", PieceType::P => "P", _ => "?",
+            PieceType::S => "S", PieceType::N => "N", PieceType::L => "L",
+            PieceType::P => "P", _ => "?",
         })
         .collect();
     def_types.sort();
     let h = &initial.hands.attacker;
-    format!("a:{} d:{} h:R{}B{}G{}S{}P{}",
+    format!("a:{} d:{} h:R{}B{}G{}S{}N{}L{}P{}",
         atk_types.join(""), def_types.join(""),
-        h.R, h.B, h.G, h.S, h.P)
+        h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
 pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32) -> Vec<Puzzle> {

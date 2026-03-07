@@ -6,16 +6,20 @@ const PIECE_LABEL = {
   B: "角",
   G: "金",
   S: "銀",
+  N: "桂",
+  L: "香",
   P: "歩",
   "+R": "龍",
   "+B": "馬",
   "+S": "全",
+  "+N": "圭",
+  "+L": "杏",
   "+P": "と",
 };
 
-const PROMOTABLE = new Set(["R", "B", "S", "P"]);
+const PROMOTABLE = new Set(["R", "B", "S", "N", "L", "P"]);
 
-const HAND_TYPES = ["R", "B", "G", "S", "P"];
+const HAND_TYPES = ["R", "B", "G", "S", "N", "L", "P"];
 
 const STEP_MOVES = {
   K: [
@@ -32,6 +36,7 @@ const STEP_MOVES = {
     [-1, -1], [0, -1], [1, -1],
     [-1, 1],            [1, 1],
   ],
+  N: [[-1, -2], [1, -2]],
   P: [[0, -1]],
   "+P": [
     [-1, -1], [0, -1], [1, -1],
@@ -43,11 +48,22 @@ const STEP_MOVES = {
     [-1, 0],            [1, 0],
               [0, 1],
   ],
+  "+N": [
+    [-1, -1], [0, -1], [1, -1],
+    [-1, 0],            [1, 0],
+              [0, 1],
+  ],
+  "+L": [
+    [-1, -1], [0, -1], [1, -1],
+    [-1, 0],            [1, 0],
+              [0, 1],
+  ],
 };
 
 const SLIDING_MOVES = {
   R: [[0, -1], [1, 0], [0, 1], [-1, 0]],
   B: [[1, -1], [1, 1], [-1, 1], [-1, -1]],
+  L: [[0, -1]],
   "+R": [[0, -1], [1, 0], [0, 1], [-1, 0]],
   "+B": [[1, -1], [1, 1], [-1, 1], [-1, -1]],
 };
@@ -164,7 +180,11 @@ function isMovePromotionLegal(owner, type, fromY, toY, promoteFlag) {
   const canPromote = promotionZone(owner, fromY) || promotionZone(owner, toY);
   if (!canPromote) return !promoteFlag;
   if (!promoteFlag) {
-    if (type === "P" && ((owner === "attacker" && toY === 1) || (owner === "defender" && toY === 9))) {
+    // 行き場のない駒の禁止
+    if ((type === "P" || type === "L") && ((owner === "attacker" && toY === 1) || (owner === "defender" && toY === 9))) {
+      return false;
+    }
+    if (type === "N" && ((owner === "attacker" && toY <= 2) || (owner === "defender" && toY >= 8))) {
       return false;
     }
   }
@@ -252,11 +272,10 @@ function pseudoDrops(state, owner) {
     for (let y = 1; y <= 9; y += 1) {
       for (let x = 1; x <= 9; x += 1) {
         if (squareOccupied(state, x, y)) continue;
-        if (type === "P") {
-          if (owner === "attacker" && y === 1) continue;
-          if (owner === "defender" && y === 9) continue;
-          if (hasPawnOnFile(state, owner, x)) continue;
-        }
+        // 行き場のない場所への打ち駒禁止
+        if ((type === "P" || type === "L") && ((owner === "attacker" && y === 1) || (owner === "defender" && y === 9))) continue;
+        if (type === "N" && ((owner === "attacker" && y <= 2) || (owner === "defender" && y >= 8))) continue;
+        if (type === "P" && hasPawnOnFile(state, owner, x)) continue;
         out.push({ drop: type, to: [x, y], promote: false });
       }
     }
