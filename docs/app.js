@@ -388,16 +388,16 @@ function renderBoard() {
   const fileLabel = (x) => String(10 - x);
 
   const head = h("tr");
-  head.append(h("th", { class: "coord corner" }, ""));
+  head.append(h("th", { class: "coord corner" }, " "));
   for (let x = view.minX; x <= view.maxX; x += 1) {
     head.append(h("th", { class: "coord file" }, fileLabel(x)));
   }
-  head.append(h("th", { class: "coord corner" }, ""));
+  head.append(h("th", { class: "coord corner" }, " "));
   table.append(head);
 
   for (let y = view.minY; y <= view.maxY; y += 1) {
     const tr = h("tr");
-    tr.append(h("th", { class: "coord rank" }, kanji[y]));
+    tr.append(h("th", { class: "coord corner" }, " "));
     for (let x = view.minX; x <= view.maxX; x += 1) {
       const p = boardPiece(x, y);
       const selected = state.selectedSquare && state.selectedSquare[0] === x && state.selectedSquare[1] === y;
@@ -405,10 +405,10 @@ function renderBoard() {
       const pieceNode = text
         ? h("span", { class: `piece${p.owner === "defender" ? " defender" : ""}` }, text)
         : "";
-      const edgeTop = y === view.minY ? " edge-top" : "";
-      const edgeBottom = y === view.maxY ? " edge-bottom" : "";
-      const edgeLeft = x === view.minX ? " edge-left" : "";
-      const edgeRight = x === view.maxX ? " edge-right" : "";
+      const edgeTop = y === 1 ? " edge-top" : "";
+      const edgeBottom = y === 9 ? " edge-bottom" : "";
+      const edgeLeft = x === 9 ? " edge-left" : "";
+      const edgeRight = x === 1 ? " edge-right" : "";
       tr.append(h("td", {}, h("button", {
         class: `${selected ? "sel" : ""}${edgeTop}${edgeBottom}${edgeLeft}${edgeRight}`.trim(),
         onclick: () => onSquareClick(x, y),
@@ -417,14 +417,6 @@ function renderBoard() {
     tr.append(h("th", { class: "coord rank" }, kanji[y]));
     table.append(tr);
   }
-
-  const foot = h("tr");
-  foot.append(h("th", { class: "coord corner" }, ""));
-  for (let x = view.minX; x <= view.maxX; x += 1) {
-    foot.append(h("th", { class: "coord file" }, fileLabel(x)));
-  }
-  foot.append(h("th", { class: "coord corner" }, ""));
-  table.append(foot);
 
   return table;
 }
