@@ -3,6 +3,7 @@ import {
   cloneState,
   createState,
   formatMove,
+  legalMoves,
   normalizeMove,
   pieceToText,
   sameMove,
@@ -218,17 +219,21 @@ function currentExpectedMove() {
 
 function getMoveTargets() {
   if (!state.selectedSquare && !state.selectedHand) return new Set();
-  const expected = currentExpectedMove();
   const targets = new Set();
+  const moves = legalMoves(state.gameState);
 
   if (state.selectedHand) {
-    if (expected.drop === state.selectedHand) {
-      targets.add(`${expected.to[0]},${expected.to[1]}`);
+    for (const m of moves) {
+      if (m.drop === state.selectedHand) {
+        targets.add(`${m.to[0]},${m.to[1]}`);
+      }
     }
   } else if (state.selectedSquare) {
     const [sx, sy] = state.selectedSquare;
-    if (expected.from && expected.from[0] === sx && expected.from[1] === sy) {
-      targets.add(`${expected.to[0]},${expected.to[1]}`);
+    for (const m of moves) {
+      if (m.from && m.from[0] === sx && m.from[1] === sy) {
+        targets.add(`${m.to[0]},${m.to[1]}`);
+      }
     }
   }
   return targets;
