@@ -108,6 +108,7 @@ export function emptyHands() {
 export function createState({ pieces, hands, sideToMove }) {
   const board = new Map();
   for (const p of pieces) {
+    if (p.owner === "attacker" && p.type === "K") continue;
     board.set(key(p.x, p.y), { owner: p.owner, type: p.type });
   }
   return {
