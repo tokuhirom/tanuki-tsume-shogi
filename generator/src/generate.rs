@@ -538,24 +538,56 @@ fn diversify_order(
     result
 }
 
+/// Key representing the piece composition (types + hands, ignoring positions)
+fn composition_key(initial: &InitialData) -> String {
+    let mut atk_types: Vec<&str> = initial.pieces.iter()
+        .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
+        .map(|p| match p.piece_type {
+            PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
+            PieceType::S => "S", PieceType::P => "P", _ => "?",
+        })
+        .collect();
+    atk_types.sort();
+    let mut def_types: Vec<&str> = initial.pieces.iter()
+        .filter(|p| p.owner == Owner::Defender && p.piece_type != PieceType::K)
+        .map(|p| match p.piece_type {
+            PieceType::R => "R", PieceType::B => "B", PieceType::G => "G",
+            PieceType::S => "S", PieceType::P => "P", _ => "?",
+        })
+        .collect();
+    def_types.sort();
+    let h = &initial.hands.attacker;
+    format!("a:{} d:{} h:R{}B{}G{}S{}P{}",
+        atk_types.join(""), def_types.join(""),
+        h.R, h.B, h.G, h.S, h.P)
+}
+
 pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
+    let mut comp_count: HashMap<String, u32> = HashMap::new();
+    let max_per_composition: u32 = 3; // At most 3 puzzles with identical piece composition
     let mut results: Vec<(InitialData, Vec<Move>, i32)> = Vec::new();
 
-    let mut add_result = |initial: InitialData, solution: Vec<Move>, score: i32, sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>| -> bool {
+    let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
+                      sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>,
+                      comp_count: &mut HashMap<String, u32>| -> bool {
         let sig = serde_json::to_string(&initial).unwrap_or_default();
         let ssig = structural_signature(&initial);
         if sig_set.contains(&sig) || struct_set.contains(&ssig) { return false; }
+        let ckey = composition_key(&initial);
+        let count = comp_count.get(&ckey).copied().unwrap_or(0);
+        if count >= max_per_composition { return false; }
         sig_set.insert(sig);
         struct_set.insert(ssig);
+        *comp_count.entry(ckey).or_insert(0) += 1;
         true
     };
 
     // Add curated puzzles
     for initial in curated_seeds {
         if let Some((fin, sol, score)) = validate_and_prune(initial, mate_length) {
-            if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set) {
+            if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count) {
                 results.push((fin, sol, score));
             }
         }
@@ -566,7 +598,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         let mirrored = initial.mirror();
         if basic_validity(&mirrored) {
             if let Some((fin, sol, score)) = validate_and_prune(&mirrored, mate_length) {
-                if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set) {
+                if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count) {
                     results.push((fin, sol, score));
                 }
             }
@@ -602,7 +634,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
 
         for (fin, sol, score) in found {
             if results.len() as u32 >= max { break; }
-            if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set) {
+            if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count) {
                 results.push((fin.clone(), sol, score));
 
                 // Try mutations of found puzzles
@@ -611,7 +643,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                     if results.len() as u32 >= max { break; }
                     if let Some(mutated) = mutate_initial(&mut rng, &fin) {
                         if let Some((mfin, msol, mscore)) = validate_and_prune(&mutated, mate_length) {
-                            if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set) {
+                            if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set, &mut comp_count) {
                                 results.push((mfin, msol, mscore));
                             }
                         }
@@ -622,7 +654,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 let mirrored = fin.mirror();
                 if basic_validity(&mirrored) {
                     if let Some((mfin, msol, mscore)) = validate_and_prune(&mirrored, mate_length) {
-                        if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set) {
+                        if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set, &mut comp_count) {
                             results.push((mfin, msol, mscore));
                         }
                     }
@@ -647,7 +679,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
 
             if let Some(cand) = mutate_initial(&mut rng, &seed_initial) {
                 if let Some((fin, sol, score)) = validate_and_prune(&cand, mate_length) {
-                    if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set) {
+                    if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count) {
                         results.push((fin, sol, score));
                     }
                 }
