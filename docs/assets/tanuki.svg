@@ -1,22 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="たぬきのイラスト">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 280" role="img" aria-label="たぬきのイラスト">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#ffe6b3"/>
       <stop offset="100%" stop-color="#f5c56e"/>
     </linearGradient>
   </defs>
-  <rect width="320" height="240" fill="url(#bg)" rx="24"/>
-  <ellipse cx="160" cy="138" rx="82" ry="70" fill="#7a4f2f"/>
-  <ellipse cx="160" cy="152" rx="56" ry="46" fill="#f3e6cc"/>
-  <circle cx="124" cy="123" r="20" fill="#fff"/>
-  <circle cx="196" cy="123" r="20" fill="#fff"/>
-  <circle cx="124" cy="126" r="9" fill="#222"/>
-  <circle cx="196" cy="126" r="9" fill="#222"/>
-  <ellipse cx="160" cy="145" rx="12" ry="9" fill="#222"/>
-  <path d="M145 161 Q160 174 175 161" fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"/>
-  <ellipse cx="92" cy="78" rx="22" ry="28" fill="#7a4f2f"/>
-  <ellipse cx="228" cy="78" rx="22" ry="28" fill="#7a4f2f"/>
-  <ellipse cx="92" cy="84" rx="11" ry="14" fill="#f3e6cc"/>
-  <ellipse cx="228" cy="84" rx="11" ry="14" fill="#f3e6cc"/>
-  <ellipse cx="160" cy="210" rx="88" ry="18" fill="#000" opacity="0.12"/>
+  <rect width="320" height="280" fill="url(#bg)" rx="24"/>
+
+  <!-- shadow -->
+  <ellipse cx="160" cy="260" rx="90" ry="14" fill="#000" opacity="0.1"/>
+
+  <!-- tail (fluffy, behind body) -->
+  <ellipse cx="232" cy="210" rx="38" ry="28" fill="#6b3f1f" transform="rotate(-25 232 210)"/>
+  <ellipse cx="238" cy="206" rx="22" ry="16" fill="#8b5e3c" transform="rotate(-25 238 206)"/>
+
+  <!-- body -->
+  <ellipse cx="160" cy="200" rx="68" ry="56" fill="#8b5e3c"/>
+  <!-- belly -->
+  <ellipse cx="160" cy="210" rx="44" ry="38" fill="#f5e6c8"/>
+
+  <!-- head -->
+  <ellipse cx="160" cy="120" rx="62" ry="54" fill="#8b5e3c"/>
+
+  <!-- ears (pointed, tanuki-like) -->
+  <polygon points="108,82 94,42 122,72" fill="#8b5e3c"/>
+  <polygon points="212,82 226,42 198,72" fill="#8b5e3c"/>
+  <!-- ear inner -->
+  <polygon points="110,80 100,52 120,74" fill="#d4a574"/>
+  <polygon points="210,80 220,52 200,74" fill="#d4a574"/>
+
+  <!-- face white/cream area -->
+  <ellipse cx="160" cy="130" rx="42" ry="34" fill="#f5e6c8"/>
+
+  <!-- eye mask (dark raccoon-dog markings) -->
+  <ellipse cx="132" cy="112" rx="22" ry="16" fill="#3d2b1a"/>
+  <ellipse cx="188" cy="112" rx="22" ry="16" fill="#3d2b1a"/>
+
+  <!-- eyes (white + pupil) -->
+  <circle cx="132" cy="112" r="10" fill="#fff"/>
+  <circle cx="188" cy="112" r="10" fill="#fff"/>
+  <circle cx="134" cy="114" r="6" fill="#1a1a1a"/>
+  <circle cx="190" cy="114" r="6" fill="#1a1a1a"/>
+  <!-- eye highlight -->
+  <circle cx="136" cy="111" r="2.5" fill="#fff"/>
+  <circle cx="192" cy="111" r="2.5" fill="#fff"/>
+
+  <!-- nose -->
+  <ellipse cx="160" cy="132" rx="8" ry="6" fill="#1a1a1a"/>
+  <!-- nose highlight -->
+  <ellipse cx="158" cy="130" rx="3" ry="2" fill="#444"/>
+
+  <!-- mouth -->
+  <path d="M152 140 Q160 150 168 140" fill="none" stroke="#3d2b1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- cheek marks -->
+  <line x1="110" y1="126" x2="96" y2="122" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="110" y1="130" x2="96" y2="128" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="110" y1="134" x2="96" y2="134" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="126" x2="224" y2="122" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="130" x2="224" y2="128" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="134" x2="224" y2="134" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- dark line from forehead center -->
+  <line x1="160" y1="76" x2="160" y2="96" stroke="#3d2b1a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- feet -->
+  <ellipse cx="130" cy="248" rx="18" ry="10" fill="#3d2b1a"/>
+  <ellipse cx="190" cy="248" rx="18" ry="10" fill="#3d2b1a"/>
+
+  <!-- leaf on head -->
+  <g transform="translate(160 58) rotate(-15)">
+    <ellipse cx="0" cy="-12" rx="14" ry="8" fill="#5a9e2f"/>
+    <line x1="0" y1="-18" x2="0" y2="-4" stroke="#3d7a1a" stroke-width="1.5"/>
+    <line x1="-6" y1="-14" x2="0" y2="-10" stroke="#3d7a1a" stroke-width="1"/>
+    <line x1="6" y1="-14" x2="0" y2="-10" stroke="#3d7a1a" stroke-width="1"/>
+    <!-- stem -->
+    <line x1="0" y1="-4" x2="2" y2="4" stroke="#3d7a1a" stroke-width="2" stroke-linecap="round"/>
+  </g>
 </svg>
