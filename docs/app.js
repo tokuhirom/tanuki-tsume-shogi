@@ -27,15 +27,14 @@ function formatBuildTime(isoStr) {
 function renderFooter() {
   const bi = state.buildInfo;
   return h("div", { class: "page-footer" }, [
-    h("div", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${formatBuildTime(bi.builtAt)}`),
-    h("div", { class: "app-footer" }, [
-      h("a", {
-        class: "footer-link",
-        href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
-        target: "_blank",
-        rel: "noopener noreferrer",
-      }, "GitHub"),
-    ]),
+    h("span", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${formatBuildTime(bi.builtAt)}`),
+    h("span", { class: "footer-sep" }, " · "),
+    h("a", {
+      class: "footer-link",
+      href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
+      target: "_blank",
+      rel: "noopener noreferrer",
+    }, "GitHub"),
   ]);
 }
 
@@ -591,24 +590,30 @@ function renderList() {
   ]);
 }
 
-function renderHands() {
+// 駒台（盤面右側に配置する持ち駒表示）
+function renderKomadai() {
   const hands = state.gameState.hands.attacker;
   const pieces = Object.entries(hands).filter(([, c]) => c > 0);
-  if (pieces.length === 0) return null;
-  return h("div", { class: "hand-area" }, [
-    h("div", { class: "hand-label" }, "持ち駒"),
-    h("div", { class: "row" }, pieces.map(([piece, count]) =>
-      h("button", {
-        class: `btn hand-btn${state.selectedHand === piece ? " primary" : ""}`,
-        onclick: () => {
-          if (isPuzzleFinished()) return;
-          state.selectedHand = state.selectedHand === piece ? null : piece;
-          state.selectedSquare = null;
-          state.message = state.selectedHand ? `${PIECE_LABEL[piece]}を打つ場所を選んでください` : "攻め方の手を選んでください";
-          render();
-        },
-      }, `${PIECE_LABEL[piece] || piece} ×${count}`)
-    )),
+  const kanjiNum = ["", "", "二", "三", "四", "五", "六", "七", "八", "九"];
+  return h("div", { class: "komadai" }, [
+    h("div", { class: "komadai-label" }, "持駒"),
+    pieces.length === 0
+      ? h("div", { class: "komadai-empty" }, "なし")
+      : h("div", { class: "komadai-pieces" }, pieces.map(([piece, count]) =>
+          h("button", {
+            class: `komadai-piece${state.selectedHand === piece ? " sel" : ""}`,
+            onclick: () => {
+              if (isPuzzleFinished()) return;
+              state.selectedHand = state.selectedHand === piece ? null : piece;
+              state.selectedSquare = null;
+              state.message = state.selectedHand ? `${PIECE_LABEL[piece]}を打つ場所を選んでください` : "攻め方の手を選んでください";
+              render();
+            },
+          }, [
+            h("span", { class: "komadai-char" }, PIECE_LABEL[piece] || piece),
+            count > 1 ? h("span", { class: "komadai-count" }, kanjiNum[count] || String(count)) : null,
+          ])
+        )),
   ]);
 }
 
@@ -704,8 +709,7 @@ function renderPuzzle() {
       cleared ? h("div", { class: "clear-badge" }, "CLEAR!") : null,
       wrong ? h("div", { class: "wrong-badge" }, "不正解…") : null,
       h("div", { class: "message" }, state.message),
-      renderHands(),
-      h("div", { class: "board-wrap" }, renderBoard()),
+      h("div", { class: "board-wrap" }, [renderBoard(), renderKomadai()]),
       null,
       h("div", { class: "toolbar" }, [
         !finished ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,

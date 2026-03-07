@@ -17,7 +17,7 @@ body {
   font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at 20% 10%, var(--bg-1), var(--bg-0));
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 main {
@@ -137,9 +137,6 @@ h1, h2 { margin: 8px 0 12px; }
 .top-hero img { width: 100%; }
 
 .build-info {
-  margin-top: 8px;
-  font-size: 11px;
-  color: #8a7357;
 }
 
 /* --- Puzzle list --- */
@@ -172,6 +169,7 @@ h1, h2 { margin: 8px 0 12px; }
   overflow-x: auto;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   margin-top: 10px;
 }
 
@@ -249,27 +247,76 @@ h1, h2 { margin: 8px 0 12px; }
   color: #c03020;
 }
 
-/* --- Hand pieces --- */
-.hand-area {
-  margin-top: 8px;
+/* --- 駒台（持ち駒） --- */
+.komadai {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--board);
+  border: 2px solid #7c5c35;
+  border-radius: 6px;
+  padding: 6px 4px;
+  min-width: 40px;
+  margin-left: 6px;
+  align-self: flex-start;
 }
 
-.hand-label {
-  font-size: 13px;
+.komadai-label {
+  font-size: 11px;
   font-weight: 700;
   color: #5a452b;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.15em;
   margin-bottom: 4px;
 }
 
-.row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.komadai-empty {
+  font-size: 11px;
+  color: #8a7357;
+  writing-mode: vertical-rl;
 }
 
-.hand-btn {
-  min-width: 58px;
-  font-size: 16px;
+.komadai-pieces {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.komadai-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+}
+
+.komadai-piece.sel {
+  background: #daa54a;
+  border-color: #a54f1b;
+}
+
+.komadai-char {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.komadai-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5a452b;
+  line-height: 1;
+  margin-top: 1px;
 }
 
 /* --- Message --- */
@@ -311,11 +358,13 @@ h1, h2 { margin: 8px 0 12px; }
 /* --- フッター --- */
 .page-footer {
   margin-top: 12px;
+  font-size: 11px;
+  color: #8a7357;
+  text-align: center;
 }
 
-.app-footer {
-  margin-top: 4px;
-  text-align: right;
+.footer-sep {
+  color: #b5a28a;
 }
 
 .footer-link {
@@ -377,6 +426,10 @@ h1, h2 { margin: 8px 0 12px; }
   .panel { padding: 8px; }
   .board button { font-size: min(16px, calc(var(--cell-size) * 0.44)); }
   .coord { width: 14px; min-width: 14px; font-size: 10px; }
+  .komadai { min-width: 32px; padding: 4px 2px; margin-left: 4px; }
+  .komadai-piece { width: 30px; height: 34px; }
+  .komadai-char { font-size: 15px; }
+  .komadai-count { font-size: 10px; }
 }
 
 @media (min-width: 401px) and (max-width: 640px) {

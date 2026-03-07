@@ -286,7 +286,7 @@ test('hand pieces show Japanese labels', async ({ page }) => {
   if (!withHand) test.skip();
 
   await page.goto(`/?mate=3&id=${withHand.id}`);
-  await expect(page.getByText('持ち駒')).toBeVisible();
+  await expect(page.getByText('持駒')).toBeVisible();
 });
 
 test('cleared puzzles shown in green on puzzle list', async ({ page }) => {
