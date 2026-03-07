@@ -8,6 +8,11 @@ import {
   sameMove,
 } from "./shogi-core.js";
 
+const PIECE_LABEL = {
+  K: "玉", R: "飛", B: "角", G: "金", S: "銀", P: "歩",
+  "+R": "龍", "+B": "馬", "+S": "全", "+P": "と",
+};
+
 const app = document.getElementById("app");
 const lengths = [3, 5];
 
@@ -32,6 +37,8 @@ const state = {
   soundEnabled: isSoundEnabled(),
   history: [],
   promotionPrompt: null,
+  lastMove: null,
+  showSolution: false,
   buildInfo: { branch: "unknown", commit: "unknown", builtAt: "unknown" },
 };
 
@@ -107,7 +114,7 @@ function toggleSound() {
 function soundToggleButton() {
   return h(
     "button",
-    { class: "btn", onclick: toggleSound },
+    { class: "btn small", onclick: toggleSound },
     state.soundEnabled ? "🔊 音: ON" : "🔈 音: OFF",
   );
 }
@@ -173,21 +180,64 @@ function goPuzzle(p) {
   state.selectedSquare = null;
   state.selectedHand = null;
   state.promotionPrompt = null;
+  state.lastMove = null;
+  state.showSolution = false;
   state.message = "攻め方の手を選んでください";
   state.screen = "puzzle";
   setRoute({ mateLength: state.mateLength, puzzleId: p.id });
   render();
 }
 
+function goNextPuzzle() {
+  if (!state.puzzle || !state.puzzles.length) return;
+  const idx = state.puzzles.findIndex((p) => p.id === state.puzzle.id);
+  const next = state.puzzles[idx + 1];
+  if (next) {
+    goPuzzle(next);
+  } else {
+    goList(state.mateLength);
+  }
+}
+
+function goPrevPuzzle() {
+  if (!state.puzzle || !state.puzzles.length) return;
+  const idx = state.puzzles.findIndex((p) => p.id === state.puzzle.id);
+  const prev = state.puzzles[idx - 1];
+  if (prev) {
+    goPuzzle(prev);
+  }
+}
+
+function isPuzzleCleared() {
+  return state.ply >= state.puzzle.solution.length;
+}
+
 function currentExpectedMove() {
   return normalizeMove(state.puzzle.solution[state.ply]);
 }
 
+function getMoveTargets() {
+  if (!state.selectedSquare && !state.selectedHand) return new Set();
+  const expected = currentExpectedMove();
+  const targets = new Set();
+
+  if (state.selectedHand) {
+    if (expected.drop === state.selectedHand) {
+      targets.add(`${expected.to[0]},${expected.to[1]}`);
+    }
+  } else if (state.selectedSquare) {
+    const [sx, sy] = state.selectedSquare;
+    if (expected.from && expected.from[0] === sx && expected.from[1] === sy) {
+      targets.add(`${expected.to[0]},${expected.to[1]}`);
+    }
+  }
+  return targets;
+}
+
 function tryUserMove(candidate) {
-  if (!state.puzzle || !state.gameState) return;
+  if (!state.puzzle || !state.gameState) return false;
   const expected = currentExpectedMove();
   if (!sameMove(candidate, expected)) {
-    // Mistakes are ignored quietly to keep puzzle flow smooth.
     return false;
   }
 
@@ -195,9 +245,11 @@ function tryUserMove(candidate) {
     gameState: cloneState(state.gameState),
     ply: state.ply,
     message: state.message,
+    lastMove: state.lastMove,
   });
 
   state.gameState = applyMove(state.gameState, candidate);
+  state.lastMove = candidate;
   playMoveSound();
   state.ply += 1;
   state.selectedSquare = null;
@@ -206,17 +258,18 @@ function tryUserMove(candidate) {
   while (state.ply < state.puzzle.solution.length && state.gameState.sideToMove === "defender") {
     const auto = normalizeMove(state.puzzle.solution[state.ply]);
     state.gameState = applyMove(state.gameState, auto);
+    state.lastMove = auto;
     playMoveSound();
     state.ply += 1;
   }
 
   if (state.ply >= state.puzzle.solution.length) {
     markClear(state.mateLength, state.puzzle.id);
-    state.message = "クリア！ localStorage に記録しました。";
+    state.message = "クリア！";
     state.clearFxUntil = Date.now() + 1500;
     playClearSound();
   } else {
-    state.message = "正解。次の一手へ。";
+    state.message = "正解！ 次の一手へ。";
   }
   render();
   return true;
@@ -227,6 +280,7 @@ function undoOneTurn() {
   const prev = state.history.pop();
   state.gameState = prev.gameState;
   state.ply = prev.ply;
+  state.lastMove = prev.lastMove;
   state.selectedSquare = null;
   state.selectedHand = null;
   state.promotionPrompt = null;
@@ -281,16 +335,22 @@ function boardViewport() {
 function onSquareClick(x, y) {
   if (state.gameState.sideToMove !== "attacker") return;
   if (state.promotionPrompt) return;
+  if (isPuzzleCleared()) return;
   const target = boardPiece(x, y);
 
   if (state.selectedHand) {
-    tryUserMove({ drop: state.selectedHand, to: [x, y], promote: false });
+    if (!tryUserMove({ drop: state.selectedHand, to: [x, y], promote: false })) {
+      state.selectedHand = null;
+      state.message = "そこには打てません。";
+      render();
+    }
     return;
   }
 
   if (!state.selectedSquare) {
     if (target && target.owner === "attacker" && target.type !== "K") {
       state.selectedSquare = [x, y];
+      state.message = "移動先を選んでください";
       render();
     }
     return;
@@ -299,6 +359,14 @@ function onSquareClick(x, y) {
   const [fx, fy] = state.selectedSquare;
   if (fx === x && fy === y) {
     state.selectedSquare = null;
+    state.message = "攻め方の手を選んでください";
+    render();
+    return;
+  }
+
+  if (target && target.owner === "attacker" && target.type !== "K") {
+    state.selectedSquare = [x, y];
+    state.message = "移動先を選んでください";
     render();
     return;
   }
@@ -315,11 +383,19 @@ function onSquareClick(x, y) {
     (inZone(fy) || inZone(y));
 
   if (!canPromote) {
-    tryUserMove(moveBase);
+    if (!tryUserMove(moveBase)) {
+      state.selectedSquare = null;
+      state.message = "その手は正解ではありません。";
+      render();
+    }
     return;
   }
   if (moving.type === "P" && y === 1) {
-    tryUserMove({ ...moveBase, promote: true });
+    if (!tryUserMove({ ...moveBase, promote: true })) {
+      state.selectedSquare = null;
+      state.message = "その手は正解ではありません。";
+      render();
+    }
     return;
   }
   state.promotionPrompt = moveBase;
@@ -333,11 +409,9 @@ function choosePromotion(promote) {
   state.promotionPrompt = null;
   if (tryUserMove(move)) return;
 
-  // If the opposite promotion flag is the expected move, apply it so tap feels responsive.
   const alt = { ...base, promote: !promote };
   if (tryUserMove(alt)) return;
 
-  // If neither worked, reopen prompt to avoid silent dead-end feeling.
   state.promotionPrompt = base;
   render();
 }
@@ -350,9 +424,9 @@ async function copyPuzzleLink() {
   const text = url.toString();
   try {
     await navigator.clipboard.writeText(text);
-    state.message = "問題リンクをコピーしました。";
+    state.message = "リンクをコピーしました。";
   } catch {
-    state.message = `問題リンク: ${text}`;
+    state.message = `リンク: ${text}`;
   }
   render();
 }
@@ -360,18 +434,20 @@ async function copyPuzzleLink() {
 function renderTitle() {
   const bi = state.buildInfo;
   return h("section", { class: "panel" }, [
-    h("div", { class: "row" }, [soundToggleButton()]),
     h("div", { class: "top-hero" }, [
       h("div", {}, [
         h("h1", {}, "たぬき詰将棋"),
-        h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦。"),
+        h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦！"),
         h("div", { class: "grid4" }, lengths.map((n) =>
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
-        h("div", { class: "log" }, `branch: ${bi.branch} / built: ${bi.builtAt} / commit: ${bi.commit}`),
       ]),
       h("img", { src: "./assets/tanuki.svg", alt: "タヌキ" }),
     ]),
+    h("div", { class: "toolbar" }, [
+      soundToggleButton(),
+    ]),
+    h("div", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${bi.builtAt}`),
     h("div", { class: "app-footer" }, [
       h("a", {
         class: "footer-link",
@@ -385,12 +461,15 @@ function renderTitle() {
 
 function renderList() {
   const hasPuzzles = state.puzzles.length > 0;
+  const cleared = state.puzzles.filter((p) => isCleared(state.mateLength, p.id)).length;
   return h("section", { class: "panel" }, [
-    h("div", { class: "row" }, [
-      h("button", { class: "btn", onclick: goTitle }, "タイトルへ戻る"),
+    h("div", { class: "toolbar" }, [
+      h("button", { class: "btn small", onclick: goTitle }, "← タイトル"),
+      h("span", { class: "spacer" }),
       soundToggleButton(),
-      h("h2", {}, `${state.mateLength}手詰 - 問題一覧`),
     ]),
+    h("h2", {}, `${state.mateLength}手詰`),
+    h("p", {}, `クリア: ${cleared} / ${state.puzzles.length}`),
     hasPuzzles
       ? h("div", { class: "puzzle-grid" }, state.puzzles.map((p) =>
           h("button", {
@@ -404,17 +483,23 @@ function renderList() {
 
 function renderHands() {
   const hands = state.gameState.hands.attacker;
-  return h("div", { class: "row" }, Object.entries(hands)
-    .filter(([, c]) => c > 0)
-    .map(([piece, count]) => h("button", {
-      class: `btn hand-btn${state.selectedHand === piece ? " primary" : ""}`,
-      onclick: () => {
-        state.selectedHand = state.selectedHand === piece ? null : piece;
-        state.selectedSquare = null;
-        render();
-      },
-    }, `${piece} x${count}`))
-  );
+  const pieces = Object.entries(hands).filter(([, c]) => c > 0);
+  if (pieces.length === 0) return null;
+  return h("div", { class: "hand-area" }, [
+    h("div", { class: "hand-label" }, "持ち駒"),
+    h("div", { class: "row" }, pieces.map(([piece, count]) =>
+      h("button", {
+        class: `btn hand-btn${state.selectedHand === piece ? " primary" : ""}`,
+        onclick: () => {
+          if (isPuzzleCleared()) return;
+          state.selectedHand = state.selectedHand === piece ? null : piece;
+          state.selectedSquare = null;
+          state.message = state.selectedHand ? `${PIECE_LABEL[piece]}を打つ場所を選んでください` : "攻め方の手を選んでください";
+          render();
+        },
+      }, `${PIECE_LABEL[piece] || piece} ×${count}`)
+    )),
+  ]);
 }
 
 function renderBoard() {
@@ -422,6 +507,8 @@ function renderBoard() {
   const table = h("table", { class: "board" });
   const kanji = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
   const fileLabel = (x) => String(x);
+  const targets = isPuzzleCleared() ? new Set() : getMoveTargets();
+  const lm = state.lastMove;
 
   const head = h("tr");
   head.append(h("th", { class: "coord corner" }, " "));
@@ -437,16 +524,25 @@ function renderBoard() {
     for (let x = view.minX; x <= view.maxX; x += 1) {
       const p = boardPiece(x, y);
       const selected = state.selectedSquare && state.selectedSquare[0] === x && state.selectedSquare[1] === y;
+      const isTarget = targets.has(`${x},${y}`);
+      const isLastMove = lm && lm.to[0] === x && lm.to[1] === y;
       const text = p && !isHiddenAttackerKing(p) ? pieceToText(p).replace(/^v/, "") : "";
+      const isPromoted = p && p.type.startsWith("+");
       const pieceNode = text
-        ? h("span", { class: `piece${p.owner === "defender" ? " defender" : ""}` }, text)
+        ? h("span", { class: `piece${p.owner === "defender" ? " defender" : ""}${isPromoted ? " promoted" : ""}` }, text)
         : "";
       const edgeTop = y === 1 ? " edge-top" : "";
       const edgeBottom = y === 9 ? " edge-bottom" : "";
       const edgeLeft = x === 1 ? " edge-left" : "";
       const edgeRight = x === 9 ? " edge-right" : "";
+      const classes = [
+        selected ? "sel" : "",
+        isTarget ? "move-target" : "",
+        isLastMove && !selected ? "last-move" : "",
+        edgeTop, edgeBottom, edgeLeft, edgeRight,
+      ].filter(Boolean).join(" ");
       tr.append(h("td", {}, h("button", {
-        class: `${selected ? "sel" : ""}${edgeTop}${edgeBottom}${edgeLeft}${edgeRight}`.trim(),
+        class: classes,
         "data-x": String(x),
         "data-y": String(y),
         onclick: () => onSquareClick(x, y),
@@ -459,34 +555,42 @@ function renderBoard() {
   return table;
 }
 
-function renderSolutionPreview() {
+function renderSolutionToggle() {
+  if (!state.showSolution) {
+    return h("div", { class: "solution-toggle", onclick: () => { state.showSolution = true; render(); } }, "▶ 手順を表示");
+  }
   const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
   return h("div", { class: "log" }, [
-    h("strong", {}, "手順メモ（開発版）"),
+    h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 手順を隠す"),
     h("div", {}, list.join(" / ")),
   ]);
 }
 
 function renderPuzzle() {
   const isClearFx = Date.now() < state.clearFxUntil;
+  const cleared = isPuzzleCleared();
   const fxNodes = isClearFx
     ? h("div", { class: "fx-sparkles" }, Array.from({ length: 12 }).map((_, i) =>
       h("span", { style: `--i:${i}` }, "◆")
     ))
     : null;
 
+  const hasPrev = state.puzzles.findIndex((p) => p.id === state.puzzle.id) > 0;
+  const hasNext = state.puzzles.findIndex((p) => p.id === state.puzzle.id) < state.puzzles.length - 1;
+
   return h("section", { class: "panel" }, [
     h("div", { class: `puzzle-panel${isClearFx ? " victory" : ""}` }, [
       fxNodes,
-      h("div", { class: "row" }, [
-      h("button", { class: "btn", onclick: () => goList(state.mateLength) }, "問題一覧へ"),
-      h("button", { class: "btn", onclick: undoOneTurn }, "一手戻す"),
-      h("button", { class: "btn", onclick: copyPuzzleLink }, "リンクをコピー"),
-      soundToggleButton(),
-      h("h2", {}, `${state.mateLength}手詰 #${state.puzzle.id}`),
+      h("div", { class: "toolbar" }, [
+        h("button", { class: "btn small", onclick: () => goList(state.mateLength) }, "← 一覧"),
+        hasPrev ? h("button", { class: "btn small", onclick: goPrevPuzzle }, "◀ 前") : null,
+        hasNext ? h("button", { class: "btn small", onclick: goNextPuzzle }, "次 ▶") : null,
+        h("span", { class: "spacer" }),
+        soundToggleButton(),
       ]),
-      isClearFx ? h("div", { class: "clear-badge" }, "CLEAR!") : null,
-      h("p", {}, state.message),
+      h("h2", {}, `${state.mateLength}手詰 #${state.puzzle.id}`),
+      cleared ? h("div", { class: "clear-badge" }, "CLEAR!") : null,
+      h("div", { class: "message" }, state.message),
       renderHands(),
       h("div", { class: "board-wrap" }, renderBoard()),
       state.promotionPrompt
@@ -498,7 +602,12 @@ function renderPuzzle() {
             ]),
           ])
         : null,
-      renderSolutionPreview(),
+      h("div", { class: "toolbar" }, [
+        !cleared ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,
+        h("button", { class: "btn small", onclick: copyPuzzleLink }, "🔗 リンク"),
+        cleared && hasNext ? h("button", { class: "btn primary", onclick: goNextPuzzle }, "次の問題へ →") : null,
+      ]),
+      renderSolutionToggle(),
     ]),
   ]);
 }

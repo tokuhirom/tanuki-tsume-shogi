@@ -7,6 +7,7 @@
   --accent: #d96b24;
   --board: #e7be78;
   --clear: #4b8f29;
+  --cell-size: 44px;
 }
 
 * { box-sizing: border-box; }
@@ -20,9 +21,9 @@ body {
 }
 
 main {
-  max-width: 960px;
+  max-width: 480px;
   margin: 0 auto;
-  padding: 16px;
+  padding: 12px;
 }
 
 .panel {
@@ -71,6 +72,20 @@ main {
 
 h1, h2 { margin: 8px 0 12px; }
 
+/* --- Toolbar --- */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.toolbar .spacer {
+  flex: 1;
+}
+
+/* --- Buttons --- */
 .grid4 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -85,19 +100,38 @@ h1, h2 { margin: 8px 0 12px; }
   font-size: 16px;
   padding: 10px 12px;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  opacity: 0.7;
 }
 
 .btn.primary { background: var(--accent); color: #fff; border-color: #a54f1b; }
 
+.btn.small {
+  font-size: 13px;
+  padding: 6px 10px;
+}
+
+/* --- Title screen --- */
 .top-hero {
   display: grid;
-  grid-template-columns: 1fr 180px;
+  grid-template-columns: 1fr 160px;
   gap: 12px;
   align-items: center;
 }
 
 .top-hero img { width: 100%; }
 
+.build-info {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #8a7357;
+}
+
+/* --- Puzzle list --- */
 .puzzle-grid {
   margin-top: 10px;
   display: grid;
@@ -111,6 +145,8 @@ h1, h2 { margin: 8px 0 12px; }
   background: #fff;
   padding: 8px 0;
   font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .puzzle-num.clear {
@@ -118,26 +154,49 @@ h1, h2 { margin: 8px 0 12px; }
   color: var(--clear);
 }
 
-.board-wrap { overflow-x: auto; }
+/* --- Board --- */
+.board-wrap {
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
 
 .board {
-  margin-top: 10px;
   border-collapse: collapse;
 }
 
 .board button {
-  width: 38px;
-  height: 38px;
+  width: var(--cell-size);
+  height: var(--cell-size);
   border: 1px solid #7c5c35;
   background: var(--board);
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  position: relative;
 }
 
 .board button.edge-top { border-top-width: 3px; }
 .board button.edge-bottom { border-bottom-width: 3px; }
 .board button.edge-left { border-left-width: 3px; }
 .board button.edge-right { border-right-width: 3px; }
+
+.board button.sel {
+  outline: 3px solid #1f77b4;
+  z-index: 1;
+}
+
+.board button.move-target {
+  background: #daa54a;
+}
+
+.board button.last-move {
+  background: #d4c07a;
+}
 
 .coord {
   width: 20px;
@@ -161,17 +220,45 @@ h1, h2 { margin: 8px 0 12px; }
   transform: rotate(180deg);
 }
 
-.board button.sel { outline: 3px solid #1f77b4; }
+.piece.promoted {
+  color: #c03020;
+}
+
+/* --- Hand pieces --- */
+.hand-area {
+  margin-top: 8px;
+}
+
+.hand-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a452b;
+  margin-bottom: 4px;
+}
 
 .row {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 8px;
 }
 
-.hand-btn { min-width: 58px; }
+.hand-btn {
+  min-width: 58px;
+  font-size: 16px;
+}
 
+/* --- Message --- */
+.message {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ddd4c0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* --- Log / solution --- */
 .log {
   margin-top: 8px;
   padding: 8px;
@@ -181,6 +268,14 @@ h1, h2 { margin: 8px 0 12px; }
   font-size: 14px;
 }
 
+.solution-toggle {
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: #8a7357;
+}
+
+/* --- Footer --- */
 .app-footer {
   margin-top: 10px;
   text-align: right;
@@ -197,9 +292,16 @@ h1, h2 { margin: 8px 0 12px; }
   color: #3f2f1d;
 }
 
-@media (max-width: 640px) {
+/* --- Responsive --- */
+@media (max-width: 400px) {
+  :root { --cell-size: 40px; }
   .top-hero { grid-template-columns: 1fr; }
   .puzzle-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  main { padding: 8px; }
+}
+
+@media (min-width: 401px) and (max-width: 640px) {
+  .top-hero { grid-template-columns: 1fr; }
 }
 
 @keyframes victoryGlow {
