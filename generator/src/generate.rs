@@ -109,6 +109,73 @@ fn structural_signature(initial: &InitialData) -> String {
     if a < b { a } else { b }
 }
 
+/// 一手詰め用のランダム候補生成
+fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
+    let mut pieces = Vec::new();
+    let mut used = HashSet::new();
+
+    let dk = PieceData { x: rng.ri(2, 8), y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
+    let ak = PieceData { x: rng.ri(1, 9), y: rng.ri(7, 9), owner: Owner::Attacker, piece_type: PieceType::K };
+    if (dk.x - ak.x).abs() <= 1 && (dk.y - ak.y).abs() <= 1 { return None; }
+    used.insert((dk.x, dk.y));
+    used.insert((ak.x, ak.y));
+    pieces.push(ak);
+    pieces.push(dk.clone());
+
+    // 攻め方の駒: 1〜2枚
+    let atk_count = rng.ri(1, 2) as usize;
+    let atk_types = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S];
+    for _ in 0..atk_count {
+        let t = *rng.pick(&atk_types);
+        let mut x;
+        let mut y;
+        let mut g = 0;
+        loop {
+            x = (dk.x + rng.ri(-2, 2)).max(1).min(9);
+            y = (dk.y + rng.ri(-1, 3)).max(1).min(9);
+            g += 1;
+            if !used.contains(&(x, y)) || g >= 40 { break; }
+        }
+        if used.contains(&(x, y)) { continue; }
+        used.insert((x, y));
+        pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
+    }
+
+    // 玉方の駒: 0〜1枚
+    let def_count = rng.ri(0, 1) as usize;
+    let def_types = [PieceType::G, PieceType::S, PieceType::P];
+    for _ in 0..def_count {
+        let t = *rng.pick(&def_types);
+        let mut x;
+        let mut y;
+        let mut g = 0;
+        loop {
+            x = (dk.x + rng.ri(-1, 1)).max(1).min(9);
+            y = (dk.y + rng.ri(-1, 1)).max(1).min(9);
+            g += 1;
+            if !used.contains(&(x, y)) || g >= 40 { break; }
+        }
+        if used.contains(&(x, y)) { continue; }
+        used.insert((x, y));
+        pieces.push(PieceData { x, y, owner: Owner::Defender, piece_type: t });
+    }
+
+    // 持ち駒: 低確率
+    let mut hands = empty_hands_data();
+    if rng.next_f64() < 0.2 {
+        let hand_types = [PieceType::P, PieceType::S, PieceType::G];
+        match rng.pick(&hand_types) {
+            PieceType::P => hands.attacker.P = 1,
+            PieceType::S => hands.attacker.S = 1,
+            PieceType::G => hands.attacker.G = 1,
+            _ => {}
+        }
+    }
+
+    Some(InitialData { pieces, hands, side_to_move: Owner::Attacker })
+}
+
+/// 三手詰め用のランダム候補生成
 fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
     let mut pieces = Vec::new();
     let mut used = HashSet::new();
@@ -730,10 +797,10 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
             .filter_map(|&i| {
                 let mut rng = Rng::new(seed.wrapping_add(i as u64).wrapping_mul(2654435761));
-                let cand = if mate_length == 3 {
-                    random_candidate_3(&mut rng)
-                } else {
-                    random_candidate_5(&mut rng)
+                let cand = match mate_length {
+                    1 => random_candidate_1(&mut rng),
+                    3 => random_candidate_3(&mut rng),
+                    _ => random_candidate_5(&mut rng),
                 };
                 let cand = cand?;
                 validate_and_prune(&cand, mate_length)

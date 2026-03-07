@@ -17,7 +17,7 @@ const PIECE_LABEL = {
 };
 
 const app = document.getElementById("app");
-const lengths = [3, 5];
+const lengths = [1, 3, 5];
 
 function puzzleHash(puzzle) {
   const src = JSON.stringify(puzzle.initial);
@@ -496,7 +496,7 @@ function renderTitle() {
     h("div", { class: "top-hero" }, [
       h("div", {}, [
         h("h1", {}, "たぬき詰将棋"),
-        h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦！"),
+        h("p", {}, "タヌキと一緒に、1手詰・3手詰・5手詰をサクサク挑戦！"),
         h("div", { class: "grid4" }, lengths.map((n) =>
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
