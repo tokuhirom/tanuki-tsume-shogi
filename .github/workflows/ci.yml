@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build-and-check:
+  check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -22,16 +22,51 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate puzzle data (deterministic seed)
-        run: node scripts/generate.js --count=100 --seed=20260307 --attempts=0 --attempts79=0
-
       - name: Syntax check
         run: |
-          node --check src/shogi-core.js
-          node --check scripts/generate.js
-          node --check scripts/validate.js
           node --check docs/app.js
+          node --check docs/shogi-core.js
+          node --check scripts/validate.js
+          node --check scripts/mine-curated.js
+          node --check scripts/add-curated.js
+          node --check scripts/write-build-info.js
 
-      # TODO: Enable this once strict puzzle validation passes in generation pipeline.
-      # - name: Validate puzzle data
-      #   run: npm run validate
+      - name: Validate puzzle data
+        run: npm run validate
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: npx playwright test
+
+  rust:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run generator tests
+        working-directory: generator
+        run: cargo test
