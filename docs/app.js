@@ -33,6 +33,24 @@ const state = {
   history: [],
 };
 
+function parseRoute() {
+  const params = new URLSearchParams(window.location.search);
+  const mate = Number(params.get("mate"));
+  const id = Number(params.get("id"));
+  if (!lengths.includes(mate)) return { screen: "title" };
+  if (!Number.isInteger(id) || id <= 0) return { screen: "list", mateLength: mate };
+  return { screen: "puzzle", mateLength: mate, puzzleId: id };
+}
+
+function setRoute({ mateLength = null, puzzleId = null } = {}) {
+  const url = new URL(window.location.href);
+  url.searchParams.delete("mate");
+  url.searchParams.delete("id");
+  if (mateLength) url.searchParams.set("mate", String(mateLength));
+  if (puzzleId) url.searchParams.set("id", String(puzzleId));
+  window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+}
+
 let audioCtx = null;
 
 function ensureAudio() {
@@ -118,6 +136,7 @@ async function loadPuzzles(len) {
 
 function goTitle() {
   state.screen = "title";
+  setRoute();
   render();
 }
 
@@ -125,6 +144,7 @@ async function goList(len) {
   state.mateLength = len;
   state.puzzles = await loadPuzzles(len);
   state.screen = "list";
+  setRoute({ mateLength: len });
   render();
 }
 
@@ -137,6 +157,7 @@ function goPuzzle(p) {
   state.selectedHand = null;
   state.message = "攻め方の手を選んでください";
   state.screen = "puzzle";
+  setRoute({ mateLength: state.mateLength, puzzleId: p.id });
   render();
 }
 
