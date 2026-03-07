@@ -770,3 +770,546 @@ impl InitialData {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- ヘルパー ---
+
+    fn empty_hands_data() -> HandsData {
+        HandsData { attacker: HandCount::default(), defender: HandCount::default() }
+    }
+
+    /// 最小限の局面を作る: 攻め方玉(ax,ay), 守り方玉(dx,dy), 追加駒リスト
+    fn make_state(ak: (i8, i8), dk: (i8, i8), extra: &[(i8, i8, Owner, PieceType)]) -> State {
+        let mut pieces = vec![
+            PieceData { x: ak.0, y: ak.1, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: dk.0, y: dk.1, owner: Owner::Defender, piece_type: PieceType::K },
+        ];
+        for &(x, y, owner, pt) in extra {
+            pieces.push(PieceData { x, y, owner, piece_type: pt });
+        }
+        let init = InitialData { pieces, hands: empty_hands_data(), side_to_move: Owner::Attacker };
+        init.to_state()
+    }
+
+    fn make_state_with_hands(ak: (i8, i8), dk: (i8, i8), extra: &[(i8, i8, Owner, PieceType)], hands: HandsData) -> State {
+        let mut pieces = vec![
+            PieceData { x: ak.0, y: ak.1, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: dk.0, y: dk.1, owner: Owner::Defender, piece_type: PieceType::K },
+        ];
+        for &(x, y, owner, pt) in extra {
+            pieces.push(PieceData { x, y, owner, piece_type: pt });
+        }
+        let init = InitialData { pieces, hands, side_to_move: Owner::Attacker };
+        init.to_state()
+    }
+
+    // --- PieceType テスト ---
+
+    #[test]
+    fn test_promote_unpromote() {
+        let promotable = [PieceType::R, PieceType::B, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
+        let promoted  = [PieceType::PR, PieceType::PB, PieceType::PS, PieceType::PN, PieceType::PL, PieceType::PP];
+        for (base, prom) in promotable.iter().zip(promoted.iter()) {
+            assert!(base.is_promotable());
+            assert_eq!(base.promote(), *prom);
+            assert_eq!(prom.unpromote(), *base);
+            assert!(!base.is_promoted());
+            assert!(prom.is_promoted());
+        }
+    }
+
+    #[test]
+    fn test_non_promotable() {
+        assert!(!PieceType::K.is_promotable());
+        assert!(!PieceType::G.is_promotable());
+        assert_eq!(PieceType::K.promote(), PieceType::K);
+        assert_eq!(PieceType::G.promote(), PieceType::G);
+    }
+
+    #[test]
+    fn test_is_hand_type() {
+        for &t in &HAND_TYPES {
+            assert!(t.is_hand_type());
+        }
+        assert!(!PieceType::K.is_hand_type());
+        assert!(!PieceType::PR.is_hand_type());
+    }
+
+    // --- Owner テスト ---
+
+    #[test]
+    fn test_owner_opposite() {
+        assert_eq!(Owner::Attacker.opposite(), Owner::Defender);
+        assert_eq!(Owner::Defender.opposite(), Owner::Attacker);
+    }
+
+    // --- Pos テスト ---
+
+    #[test]
+    fn test_pos_validity() {
+        assert!(Pos::new(1, 1).is_valid());
+        assert!(Pos::new(9, 9).is_valid());
+        assert!(!Pos::new(0, 1).is_valid());
+        assert!(!Pos::new(1, 10).is_valid());
+    }
+
+    // --- Hands テスト ---
+
+    #[test]
+    fn test_hands_operations() {
+        let mut h = Hands::empty();
+        assert_eq!(h.get(Owner::Attacker, PieceType::P), 0);
+        h.add(Owner::Attacker, PieceType::P, 3);
+        assert_eq!(h.get(Owner::Attacker, PieceType::P), 3);
+        h.sub(Owner::Attacker, PieceType::P, 1);
+        assert_eq!(h.get(Owner::Attacker, PieceType::P), 2);
+        // saturating_sub で 0 以下にならない
+        h.sub(Owner::Attacker, PieceType::P, 10);
+        assert_eq!(h.get(Owner::Attacker, PieceType::P), 0);
+    }
+
+    #[test]
+    fn test_hands_each_type() {
+        let mut h = Hands::empty();
+        for &t in &HAND_TYPES {
+            h.add(Owner::Attacker, t, 1);
+            assert_eq!(h.get(Owner::Attacker, t), 1);
+            assert_eq!(h.get(Owner::Defender, t), 0);
+        }
+    }
+
+    // --- 駒の動き テスト ---
+
+    #[test]
+    fn test_gold_moves() {
+        // 中央に金を置いて合法手を確認（6方向に動ける）
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::G)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        assert_eq!(moves.len(), 6); // 金は6方向
+    }
+
+    #[test]
+    fn test_silver_moves() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::S)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        // 銀は5方向、成りゾーン外なので成りなし
+        assert_eq!(moves.len(), 5);
+    }
+
+    #[test]
+    fn test_knight_moves() {
+        // 桂馬を5,5に置く（攻め方）→ (4,3)と(6,3)に跳べる
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::N)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        assert!(targets.contains(&(4, 3)));
+        assert!(targets.contains(&(6, 3)));
+        // 3段目に入るので成りも生成される
+        assert!(moves.iter().any(|m| m.promote));
+    }
+
+    #[test]
+    fn test_knight_must_promote_at_1_2_row() {
+        // 桂馬を5,4に置く → (4,2)と(6,2)に跳べるが、2段目なので成り必須
+        let state = make_state((5, 9), (5, 1), &[(5, 4, Owner::Attacker, PieceType::N)]);
+        let piece = state.get(Pos::new(5, 4)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 4), piece);
+        // 全ての手が成りでなければならない
+        for m in &moves {
+            assert!(m.promote, "桂馬が2段目に不成で移動できてしまう: {:?}", m);
+        }
+    }
+
+    #[test]
+    fn test_lance_slides_forward() {
+        // 香車を5,5に置く → 前方(5,4), (5,3), (5,2)まで進める(5,1に玉がある)
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::L)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        assert!(targets.contains(&(5, 4)));
+        assert!(targets.contains(&(5, 3)));
+        assert!(targets.contains(&(5, 2)));
+        assert!(targets.contains(&(5, 1))); // 守り方玉を取れる
+        assert!(!targets.contains(&(5, 6))); // 後ろには進めない
+    }
+
+    #[test]
+    fn test_lance_must_promote_at_row_1() {
+        // 香車を5,2に置く → (5,1)に進むときは成り必須
+        let state = make_state((5, 9), (9, 1), &[(5, 2, Owner::Attacker, PieceType::L)]);
+        let piece = state.get(Pos::new(5, 2)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 2), piece);
+        let to_1 = moves.iter().filter(|m| m.to[1] == 1).collect::<Vec<_>>();
+        assert!(!to_1.is_empty());
+        for m in &to_1 {
+            assert!(m.promote, "香車が1段目に不成で移動できてしまう");
+        }
+    }
+
+    #[test]
+    fn test_lance_blocked_by_piece() {
+        // 香車を5,5に置き、5,3に味方の駒 → 5,4までしか進めない
+        let state = make_state((5, 9), (5, 1), &[
+            (5, 5, Owner::Attacker, PieceType::L),
+            (5, 3, Owner::Attacker, PieceType::P),
+        ]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        assert!(targets.contains(&(5, 4)));
+        assert!(!targets.contains(&(5, 3))); // 味方駒でブロック
+    }
+
+    #[test]
+    fn test_rook_slides() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        // 上4マス(5,1まで)+下3マス(5,8まで、5,9は味方玉)+左4+右4 = 4+3+4+4 = 15 目的地
+        // 成りゾーンに入る手は成り/不成の2通りあるので、手の数はもう少し多い
+        assert!(moves.len() >= 15);
+    }
+
+    #[test]
+    fn test_promoted_rook_has_diagonal_steps() {
+        let state = make_state((1, 9), (9, 1), &[(5, 5, Owner::Attacker, PieceType::PR)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        // 龍は斜め1マスも動ける
+        assert!(targets.contains(&(4, 4)));
+        assert!(targets.contains(&(6, 4)));
+        assert!(targets.contains(&(4, 6)));
+        assert!(targets.contains(&(6, 6)));
+    }
+
+    #[test]
+    fn test_promoted_bishop_has_orthogonal_steps() {
+        let state = make_state((1, 9), (9, 1), &[(5, 5, Owner::Attacker, PieceType::PB)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        // 馬は十字1マスも動ける
+        assert!(targets.contains(&(5, 4)));
+        assert!(targets.contains(&(5, 6)));
+        assert!(targets.contains(&(4, 5)));
+        assert!(targets.contains(&(6, 5)));
+    }
+
+    #[test]
+    fn test_promoted_knight_moves_like_gold() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::PN)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        assert_eq!(moves.len(), 6); // 金と同じ6方向
+    }
+
+    #[test]
+    fn test_promoted_lance_moves_like_gold() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::PL)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        assert_eq!(moves.len(), 6);
+    }
+
+    #[test]
+    fn test_pawn_moves_forward() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::P)]);
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        assert_eq!(moves.len(), 1);
+        assert_eq!(moves[0].to, [5, 4]);
+    }
+
+    // --- 王手・合法手 テスト ---
+
+    #[test]
+    fn test_is_in_check() {
+        // 飛車で王手
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
+        assert!(is_in_check(&state, Owner::Defender));
+        assert!(!is_in_check(&state, Owner::Attacker));
+    }
+
+    #[test]
+    fn test_not_in_check() {
+        let state = make_state((5, 9), (5, 1), &[(3, 5, Owner::Attacker, PieceType::G)]);
+        assert!(!is_in_check(&state, Owner::Defender));
+    }
+
+    #[test]
+    fn test_knight_check() {
+        // 桂馬で王手: 玉(5,1)、桂(4,3) → (5,1)に到達不可能 (桂の動きは(-1,-2),(1,-2))
+        // 桂(6,3)なら (5,1)に到達可能 (6-1=5, 3-2=1)
+        let state = make_state((5, 9), (5, 1), &[(6, 3, Owner::Attacker, PieceType::N)]);
+        assert!(is_in_check(&state, Owner::Defender));
+    }
+
+    #[test]
+    fn test_lance_check() {
+        // 香車で王手: 玉(5,1)、香(5,5) → 前方直進で到達可能
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::L)]);
+        assert!(is_in_check(&state, Owner::Defender));
+    }
+
+    #[test]
+    fn test_legal_moves_no_self_check() {
+        // 合法手は自玉を王手に晒さない手のみ
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::G)]);
+        let moves = legal_moves(&state);
+        for m in &moves {
+            let next = apply_move(&state, m);
+            assert!(!is_in_check(&next, Owner::Attacker));
+        }
+    }
+
+    // --- 駒の取り・持ち駒 テスト ---
+
+    #[test]
+    fn test_capture_adds_to_hand() {
+        // 金で敵の銀を取る → 持ち駒に銀が加わる
+        let state = make_state((5, 9), (5, 1), &[
+            (5, 5, Owner::Attacker, PieceType::G),
+            (5, 4, Owner::Defender, PieceType::S),
+        ]);
+        let m = Move { from: Some([5, 5]), to: [5, 4], drop: None, promote: false };
+        let next = apply_move(&state, &m);
+        assert_eq!(next.hands.get(Owner::Attacker, PieceType::S), 1);
+    }
+
+    #[test]
+    fn test_capture_promoted_adds_unpromoted() {
+        // 成銀を取ったら持ち駒は銀
+        let state = make_state((5, 9), (5, 1), &[
+            (5, 5, Owner::Attacker, PieceType::G),
+            (5, 4, Owner::Defender, PieceType::PS),
+        ]);
+        let m = Move { from: Some([5, 5]), to: [5, 4], drop: None, promote: false };
+        let next = apply_move(&state, &m);
+        assert_eq!(next.hands.get(Owner::Attacker, PieceType::S), 1);
+    }
+
+    // --- 打ち駒 テスト ---
+
+    #[test]
+    fn test_drop_pawn_restrictions() {
+        // 歩は1段目に打てない（攻め方の場合）
+        let mut hands = empty_hands_data();
+        hands.attacker.P = 1;
+        let state = make_state_with_hands((5, 9), (5, 1), &[], hands);
+        let drops = pseudo_drops(&state, Owner::Attacker);
+        let pawn_drops: Vec<_> = drops.iter().filter(|m| m.drop == Some(PieceType::P)).collect();
+        assert!(pawn_drops.iter().all(|m| m.to[1] != 1), "歩が1段目に打ててしまう");
+    }
+
+    #[test]
+    fn test_drop_lance_restrictions() {
+        let mut hands = empty_hands_data();
+        hands.attacker.L = 1;
+        let state = make_state_with_hands((5, 9), (5, 1), &[], hands);
+        let drops = pseudo_drops(&state, Owner::Attacker);
+        let lance_drops: Vec<_> = drops.iter().filter(|m| m.drop == Some(PieceType::L)).collect();
+        assert!(lance_drops.iter().all(|m| m.to[1] != 1), "香が1段目に打てしまう");
+    }
+
+    #[test]
+    fn test_drop_knight_restrictions() {
+        let mut hands = empty_hands_data();
+        hands.attacker.N = 1;
+        let state = make_state_with_hands((5, 9), (5, 1), &[], hands);
+        let drops = pseudo_drops(&state, Owner::Attacker);
+        let knight_drops: Vec<_> = drops.iter().filter(|m| m.drop == Some(PieceType::N)).collect();
+        assert!(knight_drops.iter().all(|m| m.to[1] > 2), "桂が1〜2段目に打てしまう");
+    }
+
+    #[test]
+    fn test_nifu_prohibition() {
+        // 二歩禁止: 同じ筋に歩があると打てない
+        let mut hands = empty_hands_data();
+        hands.attacker.P = 1;
+        let state = make_state_with_hands(
+            (5, 9), (5, 1),
+            &[(3, 5, Owner::Attacker, PieceType::P)],
+            hands,
+        );
+        let drops = pseudo_drops(&state, Owner::Attacker);
+        let pawn_3 = drops.iter().filter(|m| m.drop == Some(PieceType::P) && m.to[0] == 3).count();
+        assert_eq!(pawn_3, 0, "二歩が許可されてしまう");
+    }
+
+    #[test]
+    fn test_pawn_drop_mate_forbidden() {
+        // 打ち歩詰め禁止テスト
+        // 守り方玉(5,1)、攻め方金(4,1)(6,1)(5,2)で囲い、攻め方が歩を(5,1)の上に打って詰み→禁止
+        // ただし実際に打ち歩詰めの局面を作るのは複雑なので、関数の存在確認のみ
+        let mut hands = empty_hands_data();
+        hands.attacker.P = 1;
+        let state = make_state_with_hands(
+            (5, 9), (5, 1),
+            &[
+                (4, 1, Owner::Attacker, PieceType::G),
+                (6, 1, Owner::Attacker, PieceType::G),
+                (4, 2, Owner::Attacker, PieceType::G),
+                (6, 2, Owner::Attacker, PieceType::G),
+            ],
+            hands,
+        );
+        let legal = legal_moves(&state);
+        // 歩を5,2に打つと打ち歩詰め → その手は合法手に含まれないはず
+        let pawn_drop_52 = legal.iter().find(|m| m.drop == Some(PieceType::P) && m.to == [5, 2]);
+        assert!(pawn_drop_52.is_none(), "打ち歩詰めが許可されてしまう");
+    }
+
+    // --- apply_move テスト ---
+
+    #[test]
+    fn test_apply_move_changes_side() {
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::G)]);
+        let m = Move { from: Some([5, 5]), to: [5, 4], drop: None, promote: false };
+        let next = apply_move(&state, &m);
+        assert_eq!(next.side_to_move, Owner::Defender);
+    }
+
+    #[test]
+    fn test_apply_move_promotion() {
+        // 銀を3段目に移動して成る
+        let state = make_state((5, 9), (5, 1), &[(5, 4, Owner::Attacker, PieceType::S)]);
+        let m = Move { from: Some([5, 4]), to: [5, 3], drop: None, promote: true };
+        let next = apply_move(&state, &m);
+        let piece = next.get(Pos::new(5, 3)).unwrap();
+        assert_eq!(piece.piece_type, PieceType::PS);
+    }
+
+    #[test]
+    fn test_apply_drop() {
+        let mut hands = empty_hands_data();
+        hands.attacker.G = 1;
+        let state = make_state_with_hands((5, 9), (5, 1), &[], hands);
+        let m = Move { from: None, to: [5, 5], drop: Some(PieceType::G), promote: false };
+        let next = apply_move(&state, &m);
+        assert_eq!(next.hands.get(Owner::Attacker, PieceType::G), 0);
+        let piece = next.get(Pos::new(5, 5)).unwrap();
+        assert_eq!(piece.piece_type, PieceType::G);
+        assert_eq!(piece.owner, Owner::Attacker);
+    }
+
+    // --- 詰め判定テスト ---
+
+    #[test]
+    fn test_validate_one_move_mate() {
+        // 一手詰め: 守り方玉(1,1)、銀(2,1)が逃げ道を塞ぐ
+        // 持ち駒の金を(1,2)に打って詰み
+        // 銀(2,1)が(1,2)を守るので玉は金を取れない
+        let mut hands = empty_hands_data();
+        hands.attacker.G = 1;
+        let state = make_state_with_hands((5, 9), (1, 1), &[
+            (2, 1, Owner::Attacker, PieceType::S),
+        ], hands);
+        assert!(!is_in_check(&state, Owner::Defender), "初期局面で王手がかかっている");
+        let result = validate_tsume_puzzle(&state, 1);
+        assert!(result.is_some(), "一手詰めが検出されない");
+    }
+
+    #[test]
+    fn test_validate_rejects_already_in_check() {
+        // 初期状態で既に王手 → 無効
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
+        assert!(is_in_check(&state, Owner::Defender));
+        let result = validate_tsume_puzzle(&state, 1);
+        assert!(result.is_none(), "初期局面で王手の問題が通ってしまう");
+    }
+
+    #[test]
+    fn test_validate_rejects_even_mate_length() {
+        let state = make_state((5, 9), (5, 1), &[]);
+        assert!(validate_tsume_puzzle(&state, 2).is_none());
+        assert!(validate_tsume_puzzle(&state, 0).is_none());
+    }
+
+    // --- InitialData 変換テスト ---
+
+    #[test]
+    fn test_state_roundtrip() {
+        let init = InitialData {
+            pieces: vec![
+                PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+                PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::N },
+            ],
+            hands: empty_hands_data(),
+            side_to_move: Owner::Attacker,
+        };
+        let state = init.to_state();
+        let back = InitialData::from_state(&state);
+        assert_eq!(back.pieces.len(), 3);
+        assert_eq!(back.side_to_move, Owner::Attacker);
+    }
+
+    #[test]
+    fn test_mirror() {
+        let init = InitialData {
+            pieces: vec![
+                PieceData { x: 2, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            ],
+            hands: empty_hands_data(),
+            side_to_move: Owner::Attacker,
+        };
+        let mirrored = init.mirror();
+        let dk = mirrored.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K).unwrap();
+        assert_eq!(dk.x, 8); // 10 - 2 = 8
+        assert_eq!(dk.y, 1);
+    }
+
+    // --- JSON シリアライズテスト ---
+
+    #[test]
+    fn test_piece_type_serialize() {
+        let json = serde_json::to_string(&PieceType::PR).unwrap();
+        assert_eq!(json, "\"+R\"");
+        let json = serde_json::to_string(&PieceType::PN).unwrap();
+        assert_eq!(json, "\"+N\"");
+        let json = serde_json::to_string(&PieceType::PL).unwrap();
+        assert_eq!(json, "\"+L\"");
+    }
+
+    #[test]
+    fn test_piece_type_deserialize() {
+        let pt: PieceType = serde_json::from_str("\"+N\"").unwrap();
+        assert_eq!(pt, PieceType::PN);
+        let pt: PieceType = serde_json::from_str("\"L\"").unwrap();
+        assert_eq!(pt, PieceType::L);
+    }
+
+    // --- 守り方(Defender)の駒の動き テスト ---
+
+    #[test]
+    fn test_defender_pawn_moves_down() {
+        // 守り方の歩は下方向(+y)に動く
+        let mut state = make_state((5, 9), (5, 1), &[(3, 5, Owner::Defender, PieceType::P)]);
+        state.side_to_move = Owner::Defender;
+        let piece = state.get(Pos::new(3, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(3, 5), piece);
+        assert_eq!(moves.len(), 1);
+        assert_eq!(moves[0].to, [3, 6]);
+    }
+
+    #[test]
+    fn test_defender_knight_jumps_down() {
+        let mut state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Defender, PieceType::N)]);
+        state.side_to_move = Owner::Defender;
+        let piece = state.get(Pos::new(5, 5)).unwrap();
+        let moves = pseudo_moves_from(&state, Pos::new(5, 5), piece);
+        let targets: Vec<(i8, i8)> = moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+        // 守り方の桂は下方向にジャンプ: (4,7),(6,7)
+        assert!(targets.contains(&(4, 7)));
+        assert!(targets.contains(&(6, 7)));
+    }
+}

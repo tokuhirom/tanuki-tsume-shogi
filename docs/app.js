@@ -458,7 +458,7 @@ function onSquareClick(x, y) {
   const moving = boardPiece(fx, fy);
   if (!moving) return;
   const moveBase = { from: [fx, fy], to: [x, y], promote: false };
-  const promotable = new Set(["R", "B", "S", "P"]);
+  const promotable = new Set(["R", "B", "S", "N", "L", "P"]);
   const inZone = (yy) => yy <= 3;
   const canPromote =
     moving.owner === "attacker" &&
@@ -473,7 +473,12 @@ function onSquareClick(x, y) {
     }
     return;
   }
-  if (moving.type === "P" && y === 1) {
+  // 行き場のない駒は強制成り
+  if ((moving.type === "P" || moving.type === "L") && y === 1) {
+    tryUserMove({ ...moveBase, promote: true });
+    return;
+  }
+  if (moving.type === "N" && y <= 2) {
     tryUserMove({ ...moveBase, promote: true });
     return;
   }

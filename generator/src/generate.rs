@@ -927,3 +927,332 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         }
     }).collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn mk_hands() -> HandsData {
+        HandsData { attacker: HandCount::default(), defender: HandCount::default() }
+    }
+
+    fn mk_initial(pieces: Vec<PieceData>) -> InitialData {
+        InitialData { pieces, hands: mk_hands(), side_to_move: Owner::Attacker }
+    }
+
+    // --- basic_validity テスト ---
+
+    #[test]
+    fn test_basic_validity_ok() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert!(basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_empty() {
+        let init = mk_initial(vec![]);
+        assert!(!basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_no_attacker_king() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert!(!basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_kings_adjacent() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 5, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 4, owner: Owner::Defender, piece_type: PieceType::K },
+        ]);
+        assert!(!basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_out_of_bounds() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 0, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert!(!basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_duplicate_positions() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 3, y: 5, owner: Owner::Defender, piece_type: PieceType::S },
+        ]);
+        assert!(!basic_validity(&init));
+    }
+
+    // --- piece_count_valid テスト ---
+
+    #[test]
+    fn test_piece_count_valid_ok() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+            PieceData { x: 7, y: 5, owner: Owner::Defender, piece_type: PieceType::R },
+        ]);
+        assert!(piece_count_valid(&init)); // 飛車2枚はOK
+    }
+
+    #[test]
+    fn test_piece_count_valid_too_many_rooks() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+            PieceData { x: 7, y: 5, owner: Owner::Defender, piece_type: PieceType::R },
+            PieceData { x: 1, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+        ]);
+        assert!(!piece_count_valid(&init)); // 飛車3枚はNG
+    }
+
+    #[test]
+    fn test_piece_count_valid_promoted_counts_as_base() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::PR },
+            PieceData { x: 7, y: 5, owner: Owner::Defender, piece_type: PieceType::R },
+            PieceData { x: 1, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+        ]);
+        assert!(!piece_count_valid(&init)); // 龍+飛+飛 = 飛車3枚相当でNG
+    }
+
+    #[test]
+    fn test_piece_count_valid_hand_included() {
+        let mut init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+            PieceData { x: 7, y: 5, owner: Owner::Defender, piece_type: PieceType::R },
+        ]);
+        init.hands.attacker.R = 1;
+        assert!(!piece_count_valid(&init)); // 盤上2 + 持ち駒1 = 飛車3枚でNG
+    }
+
+    #[test]
+    fn test_piece_count_valid_knights_and_lances() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 1, y: 5, owner: Owner::Attacker, piece_type: PieceType::N },
+            PieceData { x: 2, y: 5, owner: Owner::Attacker, piece_type: PieceType::N },
+            PieceData { x: 3, y: 5, owner: Owner::Defender, piece_type: PieceType::N },
+            PieceData { x: 4, y: 5, owner: Owner::Defender, piece_type: PieceType::N },
+        ]);
+        assert!(piece_count_valid(&init)); // 桂馬4枚はOK
+    }
+
+    // --- structural_signature テスト ---
+
+    #[test]
+    fn test_structural_signature_mirror_equal() {
+        let init = mk_initial(vec![
+            PieceData { x: 3, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 2, y: 2, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let mirrored = init.mirror();
+        assert_eq!(structural_signature(&init), structural_signature(&mirrored));
+    }
+
+    #[test]
+    fn test_structural_signature_different_positions() {
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 4, y: 2, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 6, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert_ne!(structural_signature(&init1), structural_signature(&init2));
+    }
+
+    // --- difficulty_score テスト ---
+
+    #[test]
+    fn test_difficulty_score_no_hand_easier() {
+        let init_easy = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let sol_easy = vec![Move { from: Some([5, 3]), to: [5, 2], drop: None, promote: false }];
+
+        let mut init_hard = init_easy.clone();
+        init_hard.hands.attacker.R = 1;
+        let sol_hard = vec![Move { from: None, to: [5, 2], drop: Some(PieceType::R), promote: false }];
+
+        let easy = difficulty_score(&init_easy, &sol_easy);
+        let hard = difficulty_score(&init_hard, &sol_hard);
+        assert!(hard > easy, "持ち駒飛車ありの方が難易度が高いはず: easy={}, hard={}", easy, hard);
+    }
+
+    // --- score_puzzle テスト ---
+
+    #[test]
+    fn test_score_puzzle_positive() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let sol = vec![Move { from: Some([5, 3]), to: [5, 2], drop: None, promote: false }];
+        let score = score_puzzle(&init, &sol);
+        assert!(score > 0);
+    }
+
+    // --- composition_key テスト ---
+
+    #[test]
+    fn test_composition_key_same_pieces_same_key() {
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 7, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert_eq!(composition_key(&init1), composition_key(&init2));
+    }
+
+    #[test]
+    fn test_composition_key_different_pieces() {
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::S },
+        ]);
+        assert_ne!(composition_key(&init1), composition_key(&init2));
+    }
+
+    // --- Rng テスト ---
+
+    #[test]
+    fn test_rng_deterministic() {
+        let mut rng1 = Rng::new(42);
+        let mut rng2 = Rng::new(42);
+        for _ in 0..10 {
+            assert_eq!(rng1.next(), rng2.next());
+        }
+    }
+
+    #[test]
+    fn test_rng_different_seeds() {
+        let mut rng1 = Rng::new(1);
+        let mut rng2 = Rng::new(2);
+        assert_ne!(rng1.next(), rng2.next());
+    }
+
+    // --- random_candidate テスト ---
+
+    #[test]
+    fn test_random_candidate_1_generates_valid() {
+        let mut rng = Rng::new(42);
+        let mut found = false;
+        for _ in 0..100 {
+            if let Some(init) = random_candidate_1(&mut rng) {
+                assert!(basic_validity(&init));
+                found = true;
+                break;
+            }
+        }
+        assert!(found, "100回試行しても一手詰め候補が生成されない");
+    }
+
+    #[test]
+    fn test_random_candidate_3_generates_valid() {
+        let mut rng = Rng::new(42);
+        let mut found = false;
+        for _ in 0..100 {
+            if let Some(init) = random_candidate_3(&mut rng) {
+                assert!(basic_validity(&init));
+                found = true;
+                break;
+            }
+        }
+        assert!(found, "100回試行しても三手詰め候補が生成されない");
+    }
+
+    #[test]
+    fn test_random_candidate_5_generates_valid() {
+        let mut rng = Rng::new(42);
+        let mut found = false;
+        for _ in 0..100 {
+            if let Some(init) = random_candidate_5(&mut rng) {
+                assert!(basic_validity(&init));
+                found = true;
+                break;
+            }
+        }
+        assert!(found, "100回試行しても五手詰め候補が生成されない");
+    }
+
+    // --- mutate_initial テスト ---
+
+    #[test]
+    fn test_mutate_produces_valid_or_none() {
+        let base = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 7, y: 3, owner: Owner::Attacker, piece_type: PieceType::S },
+        ]);
+        let mut rng = Rng::new(42);
+        for _ in 0..50 {
+            if let Some(mutated) = mutate_initial(&mut rng, &base) {
+                assert!(basic_validity(&mutated), "mutateの結果がbasic_validityを通らない");
+            }
+        }
+    }
+
+    // --- diversify_order テスト ---
+
+    #[test]
+    fn test_diversify_order_respects_max() {
+        let pool: Vec<(InitialData, Vec<Move>, i32)> = (0..10).map(|i| {
+            let init = mk_initial(vec![
+                PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+                PieceData { x: (i % 8 + 1) as i8, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 3, y: 5, owner: Owner::Attacker, piece_type: PieceType::G },
+            ]);
+            let sol = vec![Move { from: Some([3, 5]), to: [3, 4], drop: None, promote: false }];
+            (init, sol, i)
+        }).collect();
+        let result = diversify_order(pool, 5);
+        assert_eq!(result.len(), 5);
+    }
+
+    #[test]
+    fn test_diversify_order_empty() {
+        let result = diversify_order(vec![], 10);
+        assert!(result.is_empty());
+    }
+}
