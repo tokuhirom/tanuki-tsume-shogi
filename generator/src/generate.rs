@@ -354,6 +354,34 @@ fn score_puzzle(initial: &InitialData, solution: &[Move]) -> i32 {
     atk_types.len() as i32 * 2 + drop_count * 5 + promote_count * 3 + unique_targets.len() as i32 * 2 - (piece_count - 8).max(0)
 }
 
+/// Compute a difficulty score for ordering puzzles from easy to hard.
+/// Higher score = harder puzzle.
+fn difficulty_score(initial: &InitialData, solution: &[Move]) -> i32 {
+    let h = &initial.hands.attacker;
+    let hand_piece_count = (h.R + h.B + h.G + h.S + h.P) as i32;
+    let has_rook_in_hand = (h.R > 0) as i32;
+    let has_bishop_in_hand = (h.B > 0) as i32;
+
+    let atk_moves: Vec<_> = solution.iter().step_by(2).collect();
+    let drop_count = atk_moves.iter().filter(|m| m.drop.is_some()).count() as i32;
+    let promote_count = atk_moves.iter().filter(|m| m.promote).count() as i32;
+
+    let defender_count = initial.pieces.iter()
+        .filter(|p| p.owner == Owner::Defender && p.piece_type != PieceType::K)
+        .count() as i32;
+    let attacker_count = initial.pieces.iter()
+        .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
+        .count() as i32;
+
+    hand_piece_count * 10
+        + has_rook_in_hand * 8
+        + has_bishop_in_hand * 6
+        + drop_count * 5
+        + promote_count * 3
+        + defender_count * 2
+        + attacker_count * 1
+}
+
 fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
     let mut cur = initial.clone();
     let mut changed = true;
@@ -537,39 +565,31 @@ fn feature_distance(a: &[i32], b: &[i32]) -> i32 {
     a.iter().zip(b.iter()).map(|(x, y)| (x - y).abs()).sum()
 }
 
-/// Reorder puzzles so consecutive ones are as different as possible (greedy)
-fn diversify_order(
-    mut pool: Vec<(InitialData, Vec<Move>, i32)>,
-    max: usize,
-) -> Vec<(InitialData, Vec<Move>, i32)> {
-    if pool.is_empty() { return vec![]; }
+/// Greedy diversity ordering within a slice of indices into pool.
+/// Returns the indices in diversified order.
+fn diversify_within(
+    indices: &[usize],
+    features: &[Vec<i32>],
+) -> Vec<usize> {
+    if indices.is_empty() { return vec![]; }
+    if indices.len() == 1 { return indices.to_vec(); }
 
-    // Pre-compute features
-    let features: Vec<Vec<i32>> = pool.iter()
-        .map(|(init, sol, _)| puzzle_features(init, sol))
-        .collect();
+    let mut ordered: Vec<usize> = Vec::with_capacity(indices.len());
+    let mut used = HashSet::new();
 
-    let mut ordered: Vec<usize> = Vec::with_capacity(max.min(pool.len()));
-    let mut used = vec![false; pool.len()];
+    // Start with the first element
+    ordered.push(indices[0]);
+    used.insert(indices[0]);
 
-    // Start with the highest-scored puzzle
-    let first = pool.iter().enumerate()
-        .max_by_key(|(_, (_, _, s))| *s)
-        .map(|(i, _)| i)
-        .unwrap_or(0);
-    ordered.push(first);
-    used[first] = true;
-
-    while ordered.len() < max && ordered.len() < pool.len() {
+    while ordered.len() < indices.len() {
         let last_feat = &features[*ordered.last().unwrap()];
 
-        // Find unused puzzle with maximum distance from the last picked
         let mut best_idx = None;
         let mut best_dist = -1i32;
 
-        for (i, feat) in features.iter().enumerate() {
-            if used[i] { continue; }
-            let dist = feature_distance(last_feat, feat);
+        for &i in indices {
+            if used.contains(&i) { continue; }
+            let dist = feature_distance(last_feat, &features[i]);
             if dist > best_dist {
                 best_dist = dist;
                 best_idx = Some(i);
@@ -579,17 +599,49 @@ fn diversify_order(
         match best_idx {
             Some(idx) => {
                 ordered.push(idx);
-                used[idx] = true;
+                used.insert(idx);
             }
             None => break,
         }
     }
+    ordered
+}
 
-    // Extract in order (move out of pool by swapping with dummy)
-    let mut result = Vec::with_capacity(ordered.len());
-    // We can't move out easily, so clone
-    for &idx in &ordered {
-        result.push(pool[idx].clone());
+/// Reorder puzzles by difficulty tiers, then diversify within each tier.
+/// Easier puzzles come first, harder puzzles later.
+fn diversify_order(
+    pool: Vec<(InitialData, Vec<Move>, i32)>,
+    max: usize,
+) -> Vec<(InitialData, Vec<Move>, i32)> {
+    if pool.is_empty() { return vec![]; }
+
+    let count = max.min(pool.len());
+
+    // Pre-compute features and difficulty scores
+    let features: Vec<Vec<i32>> = pool.iter()
+        .map(|(init, sol, _)| puzzle_features(init, sol))
+        .collect();
+    let difficulties: Vec<i32> = pool.iter()
+        .map(|(init, sol, _)| difficulty_score(init, sol))
+        .collect();
+
+    // Sort indices by difficulty
+    let mut indices: Vec<usize> = (0..pool.len()).collect();
+    indices.sort_by_key(|&i| difficulties[i]);
+
+    // Take only the number we need
+    indices.truncate(count);
+
+    // Split into 4 tiers (quartiles)
+    let num_tiers = 4usize;
+    let tier_size = (indices.len() + num_tiers - 1) / num_tiers;
+
+    let mut result = Vec::with_capacity(count);
+    for tier in indices.chunks(tier_size) {
+        let diversified = diversify_within(tier, &features);
+        for &idx in &diversified {
+            result.push(pool[idx].clone());
+        }
     }
     result
 }
