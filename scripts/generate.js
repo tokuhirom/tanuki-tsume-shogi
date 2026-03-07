@@ -61,6 +61,17 @@ function cloneInitial(initial) {
   };
 }
 
+function stripAttackerKing(initial) {
+  return {
+    pieces: initial.pieces.filter((p) => !(p.owner === "attacker" && p.type === "K")).map((p) => ({ ...p })),
+    hands: {
+      attacker: { ...initial.hands.attacker },
+      defender: { ...initial.hands.defender },
+    },
+    sideToMove: initial.sideToMove,
+  };
+}
+
 function uniquePieces(pieces) {
   const seen = new Set();
   for (const p of pieces) {
@@ -76,10 +87,8 @@ function basicValidity(initial) {
   if (!initial.pieces.every((p) => p.x >= 1 && p.x <= 9 && p.y >= 1 && p.y <= 9)) return false;
   if (!uniquePieces(initial.pieces)) return false;
 
-  const ak = initial.pieces.find((p) => p.owner === "attacker" && p.type === "K");
   const dk = initial.pieces.find((p) => p.owner === "defender" && p.type === "K");
-  if (!ak || !dk) return false;
-  if (Math.abs(ak.x - dk.x) <= 1 && Math.abs(dk.y - ak.y) <= 1) return false;
+  if (!dk) return false;
   return true;
 }
 
@@ -119,12 +128,8 @@ function randomCandidate3(rand) {
   const pieces = [];
   // Place defender king near top edge (common tsume-shogi pattern)
   const dk = { x: ri(rand, 2, 8), y: ri(rand, 1, 3), owner: "defender", type: "K" };
-  // Place attacker king far away
-  const ak = { x: ri(rand, 1, 9), y: ri(rand, 7, 9), owner: "attacker", type: "K" };
-  if (Math.abs(dk.x - ak.x) <= 1 && Math.abs(dk.y - ak.y) <= 1) return null;
   put(dk.x, dk.y);
-  put(ak.x, ak.y);
-  pieces.push(ak, dk);
+  pieces.push(dk);
 
   // Choose 2-3 attacker pieces, placed near the defender king
   const atkCount = ri(rand, 2, 3);
@@ -177,11 +182,8 @@ function randomCandidate5(rand) {
 
   const pieces = [];
   const dk = { x: ri(rand, 2, 8), y: ri(rand, 1, 3), owner: "defender", type: "K" };
-  const ak = { x: ri(rand, 1, 9), y: ri(rand, 7, 9), owner: "attacker", type: "K" };
-  if (Math.abs(dk.x - ak.x) <= 1 && Math.abs(dk.y - ak.y) <= 1) return null;
   put(dk.x, dk.y);
-  put(ak.x, ak.y);
-  pieces.push(ak, dk);
+  pieces.push(dk);
 
   // 2-4 attacker pieces
   const atkCount = ri(rand, 2, 4);
@@ -332,11 +334,12 @@ function pruneInitial(initial, mateLength) {
 }
 
 function validateAndPrune(initial, mateLength) {
-  const st = createState(initial);
+  const normalized = stripAttackerKing(initial);
+  const st = createState(normalized);
   const res = validateTsumePuzzle(st, mateLength);
   if (!res.ok) return null;
 
-  const pruned = pruneInitial(initial, mateLength);
+  const pruned = pruneInitial(normalized, mateLength);
   const prunedState = createState(pruned);
   const prunedRes = validateTsumePuzzle(prunedState, mateLength);
   const final = prunedRes && prunedRes.ok ? pruned : initial;

@@ -48,12 +48,9 @@ function randomCandidate(rand, len) {
 
   const pieces = [];
   const dk = { x: ri(rand, 3, 7), y: ri(rand, 1, 2), owner: "defender", type: "K" };
-  const ak = { x: ri(rand, 7, 9), y: ri(rand, 7, 9), owner: "attacker", type: "K" };
-  if (Math.abs(dk.x - ak.x) <= 1 && Math.abs(dk.y - ak.y) <= 1) return null;
 
   put(dk.x, dk.y);
-  put(ak.x, ak.y);
-  pieces.push(ak, dk);
+  pieces.push(dk);
 
   const atkTypes = len >= 9 ? ["R", "B", "G", "S", "P"] : ["R", "G", "S", "P"];
   for (const t of atkTypes) {
