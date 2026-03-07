@@ -5,31 +5,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "P"
         },
         {
-          "x": 3,
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
+          "x": 2,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -37,9 +31,9 @@
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -55,41 +49,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          9,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          7,
           2
         ],
         "to": [
-          3,
+          8,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          8,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 2,
@@ -100,29 +88,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -132,8 +114,8 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
-          "P": 0
+          "S": 1,
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -148,40 +130,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          1,
           2
         ],
         "to": [
           3,
+          2
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          2,
+          1
+        ],
+        "to": [
+          1,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          1,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 3,
@@ -189,39 +168,45 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 8,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -240,40 +225,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          7,
+          5
         ],
         "to": [
-          3,
-          3
+          8,
+          5
         ],
         "promote": false
       },
       {
         "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          8,
           1
         ],
+        "to": [
+          9,
+          2
+        ],
         "promote": false
       },
       {
-        "from": [
-          4,
+        "to": [
+          9,
           3
         ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
+        "drop": "R",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 15
   },
   {
     "id": 4,
@@ -281,32 +263,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "defender",
           "type": "G"
         },
         {
           "x": 3,
           "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -314,8 +302,8 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
-          "G": 0,
+          "B": 1,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -332,40 +320,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          1,
           1
         ],
-        "promote": false
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
+          2,
           3
         ],
         "to": [
-          4,
-          2
+          1,
+          4
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          4
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 5,
@@ -373,32 +358,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -408,8 +387,8 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
-          "P": 0
+          "S": 1,
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -423,23 +402,20 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          8,
+          2
         ],
+        "drop": "S",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
+          7,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
@@ -447,17 +423,17 @@
       {
         "from": [
           4,
-          3
+          2
         ],
         "to": [
-          4,
+          5,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 6,
@@ -465,32 +441,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "defender",
           "type": "G"
         },
         {
           "x": 3,
           "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -499,7 +481,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -516,40 +498,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          1,
           1
         ],
-        "promote": false
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
+          2,
           3
         ],
         "to": [
-          4,
-          2
+          1,
+          4
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          4
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 7,
@@ -557,32 +536,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "P"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "owner": "attacker",
+          "type": "P"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -590,9 +569,9 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
+          "B": 1,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -607,41 +586,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          8,
+          2
         ],
+        "drop": "S",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          8,
           1
         ],
+        "to": [
+          9,
+          2
+        ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
-          2
+          7,
+          4
         ],
-        "promote": true
+        "drop": "B",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 8,
@@ -649,19 +622,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
+          "y": 1,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 4,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 2,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 1,
           "y": 3,
           "owner": "attacker",
           "type": "R"
@@ -670,11 +649,11 @@
           "x": 4,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -700,18 +679,18 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          1,
           3
         ],
-        "promote": false
+        "to": [
+          1,
+          2
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
+          2,
           2
         ],
         "to": [
@@ -722,18 +701,18 @@
       },
       {
         "from": [
-          4,
-          3
+          1,
+          1
         ],
         "to": [
-          4,
-          2
+          2,
+          1
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 9,
@@ -741,32 +720,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 7,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 8,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "P"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "owner": "attacker",
+          "type": "P"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -774,9 +753,9 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
+          "B": 1,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -791,41 +770,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          8,
+          2
         ],
+        "drop": "S",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          8,
           1
         ],
+        "to": [
+          9,
+          2
+        ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
-          2
+          7,
+          4
         ],
-        "promote": true
+        "drop": "B",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 10,
@@ -833,32 +806,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
           "x": 4,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 1,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -867,7 +840,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -885,39 +858,36 @@
       {
         "from": [
           4,
+          2
+        ],
+        "to": [
+          4,
           4
         ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
         "promote": true
+      },
+      {
+        "from": [
+          3,
+          3
+        ],
+        "to": [
+          3,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          2
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 11,
@@ -925,31 +895,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 5,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -960,8 +930,8 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
-          "P": 0
+          "S": 1,
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -977,39 +947,36 @@
       {
         "from": [
           4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
           1
         ],
-        "promote": false
+        "to": [
+          5,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
+          7,
+          1
         ],
         "to": [
-          4,
+          7,
           2
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 12,
@@ -1018,39 +985,33 @@
       "pieces": [
         {
           "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 6,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
-          "B": 0,
+          "R": 1,
+          "B": 1,
           "G": 0,
           "S": 0,
           "P": 0
@@ -1067,41 +1028,38 @@
     },
     "solution": [
       {
+        "to": [
+          2,
+          5
+        ],
+        "drop": "R",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          2,
+          3
+        ],
+        "to": [
+          1,
           4
         ],
-        "to": [
-          3,
-          3
-        ],
         "promote": false
       },
       {
         "from": [
           3,
-          2
+          7
         ],
         "to": [
-          3,
-          1
+          1,
+          7
         ],
         "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 13,
@@ -1109,31 +1067,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
+          "x": 6,
           "y": 3,
           "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
           "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -1160,34 +1118,34 @@
     "solution": [
       {
         "from": [
-          4,
+          6,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
         ],
         "promote": true
       }
@@ -1202,41 +1160,35 @@
       "pieces": [
         {
           "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 6,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -1251,41 +1203,38 @@
     },
     "solution": [
       {
+        "to": [
+          2,
+          5
+        ],
+        "drop": "R",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          2,
+          3
+        ],
+        "to": [
+          1,
           4
         ],
-        "to": [
-          3,
-          3
-        ],
         "promote": false
       },
       {
         "from": [
           3,
-          2
+          7
         ],
         "to": [
-          3,
-          1
+          1,
+          7
         ],
         "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 15,
@@ -1293,31 +1242,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 6,
+          "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
           "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -1344,34 +1293,34 @@
     "solution": [
       {
         "from": [
-          4,
+          6,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
         ],
         "promote": true
       }
@@ -1385,32 +1334,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "G"
         },
         {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -1418,6 +1361,101 @@
       "hands": {
         "attacker": {
           "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "P": 1
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          1,
+          1
+        ],
+        "to": [
+          2,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          3,
+          1
+        ],
+        "to": [
+          4,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 13
+  },
+  {
+    "id": 17,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -1435,74 +1473,65 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          6,
           1
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          8,
+          1
         ],
         "to": [
-          4,
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
+          5
+        ],
+        "to": [
+          6,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
-    "id": 17,
+    "id": 18,
     "mateLength": 3,
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "G"
         },
         {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -1512,6 +1541,190 @@
           "R": 0,
           "B": 0,
           "G": 0,
+          "S": 1,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          1,
+          1
+        ],
+        "to": [
+          2,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          3,
+          1
+        ],
+        "to": [
+          4,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 13
+  },
+  {
+    "id": 19,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 5,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 8,
+          "y": 9,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 1,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          6,
+          1
+        ],
+        "drop": "R",
+        "promote": false
+      },
+      {
+        "from": [
+          8,
+          1
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
+          5
+        ],
+        "to": [
+          6,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 16
+  },
+  {
+    "id": 20,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 6,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 4,
+          "y": 9,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
           "S": 0,
           "P": 1
         },
@@ -1528,316 +1741,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          6,
           1
         ],
-        "promote": false
+        "to": [
+          4,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "to": [
+          3,
+          3
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 18,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 19,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 20,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 21,
@@ -1845,42 +1779,36 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 8,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -1895,41 +1823,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          7,
           2
         ],
         "to": [
-          3,
+          8,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          9,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 22,
@@ -1937,32 +1859,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "defender",
           "type": "G"
         },
         {
           "x": 3,
           "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 1,
+          "y": 5,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -1971,9 +1899,9 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -1988,40 +1916,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          1,
           1
         ],
-        "promote": false
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
+          2,
           3
         ],
         "to": [
-          4,
-          2
+          1,
+          4
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          4
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 23,
@@ -2029,32 +1954,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -2064,7 +1983,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -2079,23 +1998,20 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          8,
+          2
         ],
+        "drop": "S",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
+          7,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
@@ -2103,17 +2019,17 @@
       {
         "from": [
           4,
-          3
+          2
         ],
         "to": [
-          4,
+          5,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 24,
@@ -2122,38 +2038,32 @@
       "pieces": [
         {
           "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 6,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -2171,41 +2081,38 @@
     },
     "solution": [
       {
+        "to": [
+          2,
+          5
+        ],
+        "drop": "R",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          2,
+          3
+        ],
+        "to": [
+          1,
           4
         ],
-        "to": [
-          3,
-          3
-        ],
         "promote": false
       },
       {
         "from": [
           3,
-          2
+          7
         ],
         "to": [
-          3,
-          1
+          1,
+          7
         ],
         "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 25,
@@ -2213,31 +2120,37 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
+          "x": 3,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -2246,9 +2159,9 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
+          "B": 1,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -2264,40 +2177,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          1,
           2
         ],
         "to": [
-          3,
+          2,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          4,
+          1
+        ],
+        "to": [
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 26,
@@ -2305,31 +2215,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "P"
         },
         {
-          "x": 3,
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
+          "x": 2,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -2337,9 +2241,9 @@
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -2355,41 +2259,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          9,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          7,
           2
         ],
         "to": [
-          3,
+          8,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          8,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 27,
@@ -2397,32 +2295,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 1,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 2,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 2,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -2448,18 +2346,18 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          1,
+          1
         ],
         "to": [
-          3,
-          3
+          1,
+          2
         ],
         "promote": false
       },
       {
         "from": [
-          3,
+          2,
           2
         ],
         "to": [
@@ -2470,18 +2368,18 @@
       },
       {
         "from": [
-          4,
+          5,
           3
         ],
         "to": [
-          4,
-          2
+          5,
+          1
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 28,
@@ -2489,42 +2387,36 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 8,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -2539,41 +2431,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          7,
           2
         ],
         "to": [
-          3,
+          8,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          9,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 29,
@@ -2581,32 +2467,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 1,
           "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 1,
+          "y": 4,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -2615,7 +2507,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -2631,41 +2523,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          4,
+          2
         ],
+        "drop": "G",
         "promote": false
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          2,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
+          1,
           3
         ],
         "to": [
-          4,
+          1,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 30,
@@ -2673,32 +2562,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 9,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -2708,8 +2597,8 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
-          "P": 0
+          "S": 1,
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -2723,41 +2612,38 @@
     },
     "solution": [
       {
+        "to": [
+          7,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
         ],
         "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 31,
@@ -2765,10 +2651,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "S"
         },
         {
           "x": 3,
@@ -2777,19 +2663,19 @@
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 2,
           "y": 3,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 1,
+          "y": 5,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -2799,7 +2685,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -2816,40 +2702,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
+          1,
+          5
         ],
         "to": [
           4,
           2
         ],
         "promote": true
+      },
+      {
+        "from": [
+          3,
+          2
+        ],
+        "to": [
+          2,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          2
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 32,
@@ -2857,32 +2740,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 9,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -2892,7 +2775,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -2907,41 +2790,38 @@
     },
     "solution": [
       {
+        "to": [
+          7,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
         ],
         "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 33,
@@ -2949,10 +2829,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "S"
         },
         {
           "x": 3,
@@ -2961,19 +2841,19 @@
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 2,
           "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 1,
+          "y": 5,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
           "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -2983,7 +2863,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -3000,40 +2880,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
+          1,
+          5
         ],
         "to": [
           4,
           2
         ],
         "promote": true
+      },
+      {
+        "from": [
+          3,
+          2
+        ],
+        "to": [
+          2,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          2
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 34,
@@ -3041,32 +2918,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 9,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3076,7 +2953,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -3091,41 +2968,38 @@
     },
     "solution": [
       {
+        "to": [
+          7,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
         ],
         "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 35,
@@ -3133,32 +3007,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "x": 1,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 3,
+          "x": 2,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
+          "x": 4,
+          "y": 5,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
           "x": 9,
-          "y": 8,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -3185,17 +3059,17 @@
       {
         "from": [
           4,
-          4
+          5
         ],
         "to": [
-          3,
+          2,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
+          2,
           2
         ],
         "to": [
@@ -3206,18 +3080,18 @@
       },
       {
         "from": [
-          4,
-          3
+          5,
+          2
         ],
         "to": [
           4,
-          2
+          1
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 36,
@@ -3225,32 +3099,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 9,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3260,7 +3134,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -3275,41 +3149,38 @@
     },
     "solution": [
       {
+        "to": [
+          8,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      },
+      {
         "from": [
-          4,
+          8,
+          1
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          9,
           4
         ],
         "to": [
-          3,
+          9,
           3
         ],
         "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 37,
@@ -3320,29 +3191,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 3,
+          "y": 4,
           "owner": "attacker",
-          "type": "R"
+          "type": "S"
         },
         {
           "x": 4,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "R"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3351,7 +3216,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -3372,36 +3237,33 @@
           4
         ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          4,
           1
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
+          2,
+          1
         ],
         "to": [
-          4,
+          2,
           2
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 38,
@@ -3409,39 +3271,45 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 8,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 4,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -3460,40 +3328,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          7,
+          5
         ],
         "to": [
-          3,
-          3
+          8,
+          5
         ],
         "promote": false
       },
       {
         "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          8,
           1
         ],
+        "to": [
+          9,
+          2
+        ],
         "promote": false
       },
       {
-        "from": [
-          4,
+        "to": [
+          9,
           3
         ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
+        "drop": "R",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 15
   },
   {
     "id": 39,
@@ -3504,29 +3369,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 3,
+          "y": 4,
           "owner": "attacker",
-          "type": "R"
+          "type": "S"
         },
         {
           "x": 4,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "R"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3535,8 +3394,8 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
-          "S": 0,
+          "G": 1,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -3556,36 +3415,33 @@
           4
         ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          4,
           1
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
+          2,
+          1
         ],
         "to": [
-          4,
+          2,
           2
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 40,
@@ -3593,32 +3449,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 8,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 6,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -3644,40 +3500,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          9,
+          6
         ],
         "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
+          8,
           2
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          8,
+          1
         ],
         "to": [
-          4,
-          2
+          6,
+          3
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 41,
@@ -3685,41 +3541,35 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 3,
           "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -3736,40 +3586,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          3,
+          5
         ],
         "to": [
           3,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 42,
@@ -3777,32 +3624,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 3,
+          "x": 8,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
           "x": 9,
-          "y": 8,
+          "y": 4,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3828,40 +3675,40 @@
     "solution": [
       {
         "from": [
-          4,
+          9,
           4
         ],
         "to": [
-          3,
+          8,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
+          8,
           2
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          5,
+          2
         ],
         "to": [
-          4,
-          2
+          6,
+          1
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 43,
@@ -3869,32 +3716,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 1,
           "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -3903,7 +3750,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -3920,40 +3767,37 @@
     "solution": [
       {
         "from": [
-          4,
+          2,
           4
         ],
         "to": [
-          3,
-          3
+          2,
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
-          2
+          3,
+          1
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 44,
@@ -3961,32 +3805,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4012,40 +3856,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          5,
           2
         ],
         "to": [
-          3,
+          6,
           1
         ],
+        "promote": true
+      },
+      {
+        "from": [
+          7,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          6,
+          1
         ],
         "to": [
-          4,
-          2
+          8,
+          3
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 45,
@@ -4053,32 +3897,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 2,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4087,7 +3931,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -4104,40 +3948,37 @@
     "solution": [
       {
         "from": [
-          4,
+          2,
           4
         ],
         "to": [
-          3,
-          3
+          2,
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 46,
@@ -4147,30 +3988,30 @@
         {
           "x": 2,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4196,40 +4037,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          5,
           2
         ],
         "to": [
-          3,
+          6,
           1
         ],
+        "promote": true
+      },
+      {
+        "from": [
+          7,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          6,
+          1
         ],
         "to": [
-          4,
-          2
+          8,
+          3
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 47,
@@ -4237,32 +4078,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 4,
+          "y": 3,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4271,9 +4112,9 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
-          "P": 1
+          "P": 0
         },
         "defender": {
           "R": 0,
@@ -4288,40 +4129,37 @@
     "solution": [
       {
         "from": [
-          4,
+          2,
           4
         ],
         "to": [
-          3,
-          3
+          2,
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 48,
@@ -4329,32 +4167,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4380,40 +4218,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          5,
           2
         ],
         "to": [
-          3,
+          6,
           1
         ],
+        "promote": true
+      },
+      {
+        "from": [
+          7,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          6,
+          1
         ],
         "to": [
-          4,
-          2
+          8,
+          3
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 13
   },
   {
     "id": 49,
@@ -4421,32 +4259,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 3,
           "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4455,7 +4287,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -4472,40 +4304,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          3,
+          5
         ],
         "to": [
           3,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 50,
@@ -4513,32 +4342,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 8,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 7,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -4549,7 +4378,7 @@
           "B": 0,
           "G": 0,
           "S": 0,
-          "P": 1
+          "P": 0
         },
         "defender": {
           "R": 0,
@@ -4564,40 +4393,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          9,
+          7
         ],
         "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
+          8,
           2
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          8,
+          1
         ],
         "to": [
-          4,
-          2
+          6,
+          3
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 51,
@@ -4608,29 +4437,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4640,7 +4463,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -4656,40 +4479,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          1,
           2
         ],
         "to": [
           3,
+          2
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          2,
+          1
+        ],
+        "to": [
+          1,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          1,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 52,
@@ -4697,32 +4517,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 8,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 8,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 7,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -4748,40 +4568,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          9,
+          8
         ],
         "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
+          8,
           2
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          8,
+          1
         ],
         "to": [
-          4,
-          2
+          6,
+          3
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 53,
@@ -4792,29 +4612,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 4,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -4824,7 +4638,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -4840,40 +4654,37 @@
     "solution": [
       {
         "from": [
-          4,
+          3,
           4
         ],
         "to": [
           3,
-          3
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          2,
+          1
         ],
         "to": [
-          3,
+          1,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          1,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 54,
@@ -4881,31 +4692,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 5,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 7,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -4917,7 +4728,7 @@
           "B": 0,
           "G": 0,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -4933,39 +4744,36 @@
       {
         "from": [
           4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
           1
         ],
-        "promote": false
+        "to": [
+          5,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
+          7,
+          1
         ],
         "to": [
-          4,
+          7,
           2
         ],
-        "promote": true
+        "promote": false
+      },
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 55,
@@ -4973,32 +4781,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
           "x": 4,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 1,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -5025,39 +4839,36 @@
       {
         "from": [
           4,
+          2
+        ],
+        "to": [
+          4,
           4
         ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
         "promote": true
+      },
+      {
+        "from": [
+          3,
+          3
+        ],
+        "to": [
+          3,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          2
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 56,
@@ -5065,31 +4876,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
+          "x": 4,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 5,
           "owner": "attacker",
-          "type": "G"
+          "type": "B"
         },
         {
-          "x": 9,
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -5097,10 +4902,10 @@
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -5115,41 +4920,35 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          5,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          4,
           2
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 57,
@@ -5249,31 +5048,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 6,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 6,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -5282,10 +5075,10 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
+          "B": 1,
           "G": 0,
-          "S": 0,
-          "P": 0
+          "S": 1,
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -5300,40 +5093,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          6,
+          5
         ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 59,
@@ -5341,10 +5131,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
           "x": 3,
@@ -5353,20 +5143,20 @@
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 6,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -5375,7 +5165,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -5392,40 +5182,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          6,
           1
         ],
-        "promote": false
+        "to": [
+          4,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "to": [
+          3,
+          3
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 60,
@@ -5433,31 +5220,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 6,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 6,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -5466,9 +5247,9 @@
       "hands": {
         "attacker": {
           "R": 0,
-          "B": 0,
+          "B": 1,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -5484,40 +5265,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          6,
+          5
         ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 61,
@@ -5525,10 +5303,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
           "x": 3,
@@ -5537,20 +5315,20 @@
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 6,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -5559,7 +5337,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -5576,40 +5354,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          8,
           1
         ],
-        "promote": false
+        "to": [
+          4,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "to": [
+          3,
+          3
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 62,
@@ -5617,43 +5392,37 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
+          "x": 8,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -5667,41 +5436,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          6,
+          2
         ],
         "to": [
-          4,
+          5,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 63,
@@ -5709,10 +5475,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
           "x": 3,
@@ -5721,20 +5487,20 @@
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 7,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -5743,7 +5509,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -5760,40 +5526,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          6,
           1
         ],
-        "promote": false
+        "to": [
+          4,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "to": [
+          3,
+          3
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 64,
@@ -5801,39 +5564,45 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
+          "x": 7,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 4,
+          "x": 6,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -5852,40 +5621,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          6,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 65,
@@ -5893,10 +5659,10 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 7,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
           "x": 3,
@@ -5905,20 +5671,20 @@
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 5,
+          "y": 6,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 4,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -5927,7 +5693,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -5944,40 +5710,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          7,
           1
         ],
-        "promote": false
+        "to": [
+          4,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
+          3,
           2
         ],
-        "promote": true
+        "to": [
+          3,
+          3
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          2,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 18
   },
   {
     "id": 66,
@@ -5985,32 +5748,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 6,
+          "y": 3,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -6020,7 +5777,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -6036,40 +5793,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          7,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 67,
@@ -6077,32 +5831,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
+          "y": 1,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -6113,7 +5867,7 @@
           "B": 0,
           "G": 0,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -6128,40 +5882,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          5,
           1
         ],
-        "promote": false
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
           4,
-          3
+          1
         ],
         "to": [
-          4,
+          5,
           2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          7,
+          1
+        ],
+        "to": [
+          5,
+          1
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 68,
@@ -6169,32 +5923,20 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -6203,7 +5945,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -6220,40 +5962,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          5,
+          3
         ],
         "to": [
           3,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 69,
@@ -6261,31 +6000,37 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
+          "x": 3,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -6296,7 +6041,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -6312,40 +6057,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          1,
           2
         ],
         "to": [
-          3,
+          2,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          4,
+          1
+        ],
+        "to": [
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 70,
@@ -6353,32 +6095,20 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 3,
-          "y": 2,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 2,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 1,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -6387,7 +6117,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -6404,40 +6134,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          2,
+          3
         ],
         "to": [
           3,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 71,
@@ -6445,31 +6172,37 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
+          "x": 3,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -6480,6 +6213,83 @@
           "R": 0,
           "B": 0,
           "G": 0,
+          "S": 1,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          1,
+          2
+        ],
+        "to": [
+          2,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          4,
+          1
+        ],
+        "to": [
+          5,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          6,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 16
+  },
+  {
+    "id": 72,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 3,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -6497,54 +6307,315 @@
       {
         "from": [
           4,
-          4
+          3
         ],
         "to": [
           3,
           3
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           3,
-          2
+          1
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
           4,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
-    "id": 72,
+    "id": 73,
     "mateLength": 3,
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 3,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 3,
+          "y": 8,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          1,
+          2
+        ],
+        "to": [
+          2,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          4,
+          1
+        ],
+        "to": [
+          5,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 16
+  },
+  {
+    "id": 74,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 3,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 3,
+          "y": 3,
           "owner": "defender",
           "type": "G"
         },
         {
           "x": 3,
-          "y": 2,
+          "y": 5,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 1,
+          "y": 7,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          3,
+          5
+        ],
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          3,
+          1
+        ],
+        "to": [
+          4,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          4,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 14
+  },
+  {
+    "id": 75,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 4,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 6,
+          "y": 7,
+          "owner": "attacker",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 1
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          5,
+          1
+        ],
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          4,
+          1
+        ],
+        "to": [
+          5,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          6,
+          1
+        ],
+        "to": [
+          5,
+          1
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 16
+  },
+  {
+    "id": 76,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
@@ -6555,13 +6626,96 @@
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
-          "type": "G"
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 1,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          4,
+          3
+        ],
+        "to": [
+          5,
+          3
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          5,
+          1
+        ],
+        "to": [
+          6,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          6,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 14
+  },
+  {
+    "id": 77,
+    "mateLength": 3,
+    "initial": {
+      "pieces": [
+        {
+          "x": 4,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
         },
         {
-          "x": 9,
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 5,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -6588,19 +6742,19 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          6,
           3
         ],
-        "promote": false
+        "to": [
+          4,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          4,
+          1
         ],
         "to": [
           3,
@@ -6614,470 +6768,10 @@
           3
         ],
         "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 73,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
           3,
-          3
+          2
         ],
         "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 74,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 75,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 76,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 77,
-    "mateLength": 3,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
-          "owner": "attacker",
-          "type": "K"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
       }
     ],
     "quality": "validated",
@@ -7089,32 +6783,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
+          "x": 8,
+          "y": 1,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
           "x": 4,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7124,7 +6818,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -7140,40 +6834,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 79,
@@ -7181,31 +6872,19 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 1,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -7215,9 +6894,9 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -7232,40 +6911,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          1,
           3
         ],
-        "promote": false
+        "to": [
+          4,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          4,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 80,
@@ -7276,29 +6952,23 @@
           "x": 2,
           "y": 1,
           "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
-          "y": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 1,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7308,7 +6978,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -7324,40 +6994,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          1,
           2
         ],
         "to": [
           3,
+          2
+        ],
+        "promote": true
+      },
+      {
+        "from": [
+          2,
+          1
+        ],
+        "to": [
+          1,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          1,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 81,
@@ -7365,32 +7032,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 7,
           "y": 1,
           "owner": "defender",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 3,
+          "x": 6,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 8,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 7,
+          "y": 5,
           "owner": "attacker",
-          "type": "G"
+          "type": "R"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7416,40 +7089,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          7,
+          5
         ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          7,
           1
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
+          6,
+          2
+        ],
+        "to": [
+          5,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
           4,
           3
         ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 82,
@@ -7457,32 +7127,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
+          "y": 1,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 4,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 6,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7508,40 +7178,40 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
+          5,
           1
         ],
-        "promote": false
+        "to": [
+          3,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
           4,
-          3
+          1
         ],
         "to": [
-          4,
+          5,
           2
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          7,
+          1
+        ],
+        "to": [
+          5,
+          1
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 83,
@@ -7549,39 +7219,33 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 6,
+          "y": 3,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -7600,40 +7264,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          7,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 84,
@@ -7641,32 +7302,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
           "y": 1,
           "owner": "defender",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 4,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "B"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -7677,7 +7344,7 @@
           "B": 0,
           "G": 0,
           "S": 0,
-          "P": 0
+          "P": 1
         },
         "defender": {
           "R": 0,
@@ -7692,40 +7359,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          5,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
         ],
         "to": [
           3,
           1
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           4,
-          3
+          1
         ],
         "to": [
-          4,
+          5,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          5,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 85,
@@ -7733,32 +7397,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
+          "x": 8,
+          "y": 1,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
           "x": 4,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7768,7 +7432,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -7784,40 +7448,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 86,
@@ -7825,31 +7486,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
-          "y": 1,
+          "x": 3,
+          "y": 2,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
+          "x": 4,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 5,
           "owner": "attacker",
-          "type": "G"
+          "type": "B"
         },
         {
-          "x": 9,
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -7857,7 +7518,7 @@
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -7875,41 +7536,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          5,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
+          4,
           2
         ],
         "to": [
-          3,
+          4,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          5,
+          2
         ],
         "to": [
-          4,
-          2
+          5,
+          1
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 87,
@@ -7917,14 +7575,8 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
@@ -7935,14 +7587,8 @@
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -7951,7 +7597,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -7969,39 +7615,36 @@
       {
         "from": [
           4,
-          4
-        ],
-        "to": [
-          3,
           3
         ],
-        "promote": false
+        "to": [
+          5,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 88,
@@ -8009,32 +7652,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
           "x": 4,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -8044,7 +7687,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -8060,40 +7703,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 89,
@@ -8101,31 +7741,19 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 1,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 1,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -8135,7 +7763,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -8152,40 +7780,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          1,
           3
         ],
-        "promote": false
+        "to": [
+          4,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          4,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          5,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 90,
@@ -8193,31 +7818,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 6,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 9,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 6,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -8228,7 +7853,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -8243,41 +7868,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          6,
           2
         ],
-        "to": [
-          3,
+        "drop": "S",
+        "promote": false
+      },
+      {
+        "from": [
+          6,
           1
+        ],
+        "to": [
+          7,
+          2
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          9,
+          5
         ],
         "to": [
-          4,
+          9,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 91,
@@ -8285,32 +7907,20 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 8,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8319,7 +7929,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -8336,40 +7946,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          8,
           3
         ],
-        "promote": false
+        "to": [
+          5,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 92,
@@ -8377,31 +7984,31 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 4,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "B"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
+          "x": 6,
           "y": 8,
           "owner": "attacker",
           "type": "K"
@@ -8412,7 +8019,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -8427,41 +8034,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
+          6,
           2
         ],
-        "to": [
-          3,
+        "drop": "S",
+        "promote": false
+      },
+      {
+        "from": [
+          6,
           1
+        ],
+        "to": [
+          7,
+          2
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          9,
+          5
         ],
         "to": [
-          4,
+          9,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 93,
@@ -8469,32 +8073,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "G"
         },
         {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
+          "x": 7,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
         },
         {
-          "x": 4,
+          "x": 6,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -8520,40 +8130,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          6,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          1
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 94,
@@ -8561,32 +8168,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 6,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 8,
           "y": 3,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8595,7 +8202,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -8612,40 +8219,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          5,
+          5
         ],
         "to": [
-          3,
+          5,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
         ],
         "promote": true
+      },
+      {
+        "from": [
+          6,
+          2
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 95,
@@ -8653,32 +8257,38 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 3,
           "y": 1,
           "owner": "defender",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 3,
-          "y": 2,
+          "x": 4,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 2,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "B"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8704,40 +8314,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          5,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
         ],
         "to": [
           3,
           1
         ],
-        "promote": false
+        "promote": true
       },
       {
         "from": [
           4,
-          3
+          1
         ],
         "to": [
-          4,
+          5,
+          1
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          5,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 16
   },
   {
     "id": 96,
@@ -8745,13 +8352,13 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 6,
           "y": 2,
           "owner": "defender",
           "type": "K"
@@ -8763,14 +8370,14 @@
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
+          "x": 8,
+          "y": 3,
+          "owner": "defender",
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8779,7 +8386,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -8797,39 +8404,36 @@
       {
         "from": [
           4,
-          4
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
           3
         ],
         "to": [
-          4,
-          2
+          5,
+          3
         ],
         "promote": true
+      },
+      {
+        "from": [
+          6,
+          2
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 97,
@@ -8837,32 +8441,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 3,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
+          "x": 5,
+          "y": 3,
+          "owner": "defender",
           "type": "G"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8872,7 +8470,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "P": 0
         },
         "defender": {
@@ -8888,40 +8486,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
           3,
           3
         ],
-        "promote": false
+        "to": [
+          5,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          5,
+          1
         ],
         "to": [
-          3,
+          6,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          6,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 98,
@@ -8929,32 +8524,32 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 5,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
+          "owner": "attacker",
+          "type": "R"
         },
         {
-          "x": 3,
+          "x": 6,
           "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 5,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 9,
-          "y": 8,
+          "x": 3,
+          "y": 9,
           "owner": "attacker",
           "type": "K"
         }
@@ -8963,7 +8558,7 @@
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "P": 0
         },
@@ -8980,40 +8575,37 @@
     "solution": [
       {
         "from": [
-          4,
-          4
+          5,
+          5
         ],
         "to": [
-          3,
+          5,
           3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          2
         ],
         "promote": true
+      },
+      {
+        "from": [
+          6,
+          2
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      },
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 99,
@@ -9021,39 +8613,33 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
+          "x": 8,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
         },
         {
-          "x": 9,
-          "y": 8,
+          "x": 2,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
       ],
       "hands": {
         "attacker": {
-          "R": 0,
+          "R": 1,
           "B": 0,
           "G": 0,
           "S": 0,
@@ -9071,41 +8657,38 @@
     },
     "solution": [
       {
-        "from": [
-          4,
-          4
-        ],
         "to": [
-          3,
-          3
+          6,
+          2
         ],
+        "drop": "R",
         "promote": false
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          5,
           1
         ],
         "promote": false
       },
       {
         "from": [
-          4,
-          3
+          6,
+          2
         ],
         "to": [
-          4,
+          5,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   },
   {
     "id": 100,
@@ -9113,32 +8696,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 2,
+          "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 3,
-          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
+          "x": 6,
+          "y": 3,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 9,
           "y": 3,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
           "x": 9,
-          "y": 8,
+          "y": 7,
           "owner": "attacker",
           "type": "K"
         }
@@ -9164,39 +8741,36 @@
     "solution": [
       {
         "from": [
-          4,
-          4
-        ],
-        "to": [
-          3,
+          9,
           3
         ],
-        "promote": false
+        "to": [
+          6,
+          3
+        ],
+        "promote": true
       },
       {
         "from": [
-          3,
-          2
+          6,
+          1
         ],
         "to": [
-          3,
+          7,
           1
         ],
         "promote": false
       },
       {
-        "from": [
-          4,
-          3
-        ],
         "to": [
-          4,
+          7,
           2
         ],
-        "promote": true
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 14
   }
 ]

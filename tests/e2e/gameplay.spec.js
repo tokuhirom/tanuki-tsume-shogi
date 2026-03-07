@@ -304,6 +304,37 @@ test('board cells have minimum tap size', async ({ page }) => {
   expect(box.height).toBeGreaterThanOrEqual(40);
 });
 
+test('clear data reset with confirmation', async ({ page }) => {
+  // Set a clear flag directly
+  const key = 'tanuki-tsume:v1:clear:3:1';
+  await page.goto('/');
+  await page.evaluate((k) => localStorage.setItem(k, 'true'), key);
+
+  // Reload title
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'たぬき詰将棋' })).toBeVisible();
+
+  // Click reset button
+  await page.getByRole('button', { name: 'クリアデータ削除' }).click();
+  await expect(page.getByText('すべてのクリアデータを削除しますか？')).toBeVisible();
+
+  // Cancel first
+  await page.getByRole('button', { name: 'キャンセル' }).click();
+  await expect(page.getByText('すべてのクリアデータを削除しますか？')).not.toBeVisible();
+
+  // Data should still exist
+  const before = await page.evaluate((k) => localStorage.getItem(k), key);
+  expect(before).toBe('true');
+
+  // Now actually delete
+  await page.getByRole('button', { name: 'クリアデータ削除' }).click();
+  await page.getByRole('button', { name: '削除する' }).click();
+  await expect(page.getByText(/クリアデータを削除しました/)).toBeVisible();
+
+  const after = await page.evaluate((k) => localStorage.getItem(k), key);
+  expect(after).toBeNull();
+});
+
 test('any legal move is accepted (free play)', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
   const sol = puzzle.solution[0];
@@ -311,16 +342,21 @@ test('any legal move is accepted (free play)', async ({ page }) => {
   await page.goto('/?mate=3&id=1');
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
 
-  // Click the correct piece but select it first
-  const from = sol.from;
-  await page.locator(`button[data-x='${from[0]}'][data-y='${from[1]}']`).click();
-
-  // Should show move targets for this piece
-  const targets = page.locator('.board button.move-target');
-  await expect(targets.first()).toBeVisible();
-
-  // Click a move target — any move should be accepted
-  await targets.first().click();
+  if (sol.drop) {
+    // First move is a drop — click hand piece then target
+    const label = { R: '飛', B: '角', G: '金', S: '銀', P: '歩' }[sol.drop] || sol.drop;
+    await page.getByRole('button', { name: new RegExp(`^${label} ×`) }).click();
+    const targets = page.locator('.board button.move-target');
+    await expect(targets.first()).toBeVisible();
+    await targets.first().click();
+  } else {
+    // First move is a board move — click piece then target
+    const from = sol.from;
+    await page.locator(`button[data-x='${from[0]}'][data-y='${from[1]}']`).click();
+    const targets = page.locator('.board button.move-target');
+    await expect(targets.first()).toBeVisible();
+    await targets.first().click();
+  }
 
   // Handle promotion if prompted
   const prompt = page.getByText('成りますか？');

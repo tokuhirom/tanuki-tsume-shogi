@@ -1,0 +1,1 @@
+/home/tokuhirom/work/tanuki-tsune-shogi/generator/target/release/tsume-gen: /home/tokuhirom/work/tanuki-tsune-shogi/generator/src/generate.rs /home/tokuhirom/work/tanuki-tsune-shogi/generator/src/main.rs /home/tokuhirom/work/tanuki-tsune-shogi/generator/src/shogi.rs

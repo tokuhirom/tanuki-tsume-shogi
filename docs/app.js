@@ -43,6 +43,7 @@ const state = {
   lastMove: null,
   showSolution: false,
   puzzleResult: null,
+  confirmReset: false,
   buildInfo: { branch: "unknown", commit: "unknown", builtAt: "unknown" },
 };
 
@@ -112,6 +113,29 @@ function toggleSound() {
   state.soundEnabled = !state.soundEnabled;
   setSoundEnabled(state.soundEnabled);
   state.message = state.soundEnabled ? "音声をオンにしました。" : "音声をオフにしました。";
+  render();
+}
+
+function clearAllProgress() {
+  state.confirmReset = true;
+  render();
+}
+
+function confirmClearProgress() {
+  const prefix = "tanuki-tsume:v1:clear:";
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(prefix)) keys.push(k);
+  }
+  for (const k of keys) localStorage.removeItem(k);
+  state.confirmReset = false;
+  state.message = `${keys.length}問のクリアデータを削除しました。`;
+  render();
+}
+
+function cancelClearProgress() {
+  state.confirmReset = false;
   render();
 }
 
@@ -321,6 +345,14 @@ function isHiddenAttackerKing(piece) {
 }
 
 function boardViewport() {
+  // If hand pieces exist, drops can go anywhere — show full board width
+  const hands = state.gameState.hands;
+  const hasHandPiece = Object.values(hands.attacker).some((c) => c > 0)
+    || Object.values(hands.defender).some((c) => c > 0);
+  if (hasHandPiece) {
+    return { minX: 1, maxX: 9, minY: 1, maxY: 9 };
+  }
+
   const points = [];
   for (const [k, p] of state.gameState.board.entries()) {
     if (isHiddenAttackerKing(p)) continue;
@@ -464,7 +496,18 @@ function renderTitle() {
     ]),
     h("div", { class: "toolbar" }, [
       soundToggleButton(),
+      h("button", { class: "btn small", onclick: clearAllProgress }, "クリアデータ削除"),
     ]),
+    state.confirmReset
+      ? h("div", { class: "log" }, [
+          h("div", {}, "すべてのクリアデータを削除しますか？"),
+          h("div", { class: "row", style: "margin-top:8px" }, [
+            h("button", { class: "btn primary", onclick: confirmClearProgress }, "削除する"),
+            h("button", { class: "btn", onclick: cancelClearProgress }, "キャンセル"),
+          ]),
+        ])
+      : null,
+    state.message ? h("div", { class: "message" }, state.message) : null,
     h("div", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${bi.builtAt}`),
     h("div", { class: "app-footer" }, [
       h("a", {
