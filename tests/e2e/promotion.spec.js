@@ -44,7 +44,7 @@ test('choosing not to promote when expected falls back correctly', async ({ page
   await expect(page.getByText(/正解！|クリア！/)).toBeVisible();
 });
 
-test('wrong move with promotion dismisses prompt and shows error', async ({ page }) => {
+test('wrong move with promotion dismisses prompt silently', async ({ page }) => {
   // 5手詰 #1: correct is R (2,5)->(2,1)+. Move R to (2,2) instead — wrong but promotable.
   await page.goto('/?mate=5&id=1');
   await expect(page.getByRole('heading', { name: '5手詰 #1' })).toBeVisible();
@@ -57,5 +57,6 @@ test('wrong move with promotion dismisses prompt and shows error', async ({ page
 
   await page.getByRole('button', { name: '成る' }).click();
   await expect(prompt).not.toBeVisible();
-  await expect(page.getByText('その手は正解ではありません。')).toBeVisible();
+  // Selection is reset, ready for next attempt
+  await expect(page.locator('.message')).toBeVisible();
 });

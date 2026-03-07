@@ -348,7 +348,6 @@ function onSquareClick(x, y) {
   if (state.selectedHand) {
     if (!tryUserMove({ drop: state.selectedHand, to: [x, y], promote: false })) {
       state.selectedHand = null;
-      state.message = "そこには打てません。";
       render();
     }
     return;
@@ -392,7 +391,7 @@ function onSquareClick(x, y) {
   if (!canPromote) {
     if (!tryUserMove(moveBase)) {
       state.selectedSquare = null;
-      state.message = "その手は正解ではありません。";
+      state.message = "攻め方の手を選んでください";
       render();
     }
     return;
@@ -400,7 +399,7 @@ function onSquareClick(x, y) {
   if (moving.type === "P" && y === 1) {
     if (!tryUserMove({ ...moveBase, promote: true })) {
       state.selectedSquare = null;
-      state.message = "その手は正解ではありません。";
+      state.message = "攻め方の手を選んでください";
       render();
     }
     return;
