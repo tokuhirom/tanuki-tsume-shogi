@@ -322,7 +322,7 @@ export function applyMove(state, move) {
 
 export function isInCheck(state, owner) {
   const k = kingPos(state, owner);
-  if (!k) return true;
+  if (!k) return owner === "defender";
   const enemy = owner === "attacker" ? "defender" : "attacker";
   for (const [pos, p] of state.board.entries()) {
     if (p.owner !== enemy) continue;
@@ -462,10 +462,9 @@ export function validateTsumePuzzle(state, mateLength) {
   if (state.sideToMove !== "attacker") {
     return { ok: false, reason: "attacker must move first" };
   }
-  const aKing = kingPos(state, "attacker");
   const dKing = kingPos(state, "defender");
-  if (!aKing || !dKing) {
-    return { ok: false, reason: "both kings are required" };
+  if (!dKing) {
+    return { ok: false, reason: "defender king is required" };
   }
 
   const memo = new Map();
