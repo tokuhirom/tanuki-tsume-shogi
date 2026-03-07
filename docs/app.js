@@ -172,7 +172,7 @@ function tryUserMove(candidate) {
   const expected = currentExpectedMove();
   if (!sameMove(candidate, expected)) {
     // Mistakes are ignored quietly to keep puzzle flow smooth.
-    return;
+    return false;
   }
 
   state.history.push({
@@ -203,6 +203,7 @@ function tryUserMove(candidate) {
     state.message = "正解。次の一手へ。";
   }
   render();
+  return true;
 }
 
 function undoOneTurn() {
@@ -313,7 +314,11 @@ function choosePromotion(promote) {
   if (!state.promotionPrompt) return;
   const move = { ...state.promotionPrompt, promote };
   state.promotionPrompt = null;
-  tryUserMove(move);
+  const ok = tryUserMove(move);
+  if (!ok) {
+    // Ensure the tap always updates UI even when the selected promote choice is wrong.
+    render();
+  }
 }
 
 async function copyPuzzleLink() {
