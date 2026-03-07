@@ -10,6 +10,10 @@
     "mine:9": "node scripts/mine-curated.js --mate=9 --tries=16000",
     "add:curated": "node scripts/add-curated.js",
     "build:puzzles": "node scripts/generate.js --count=100 --seed=20260307",
-    "serve": "python3 -m http.server 5173 -d docs"
+    "serve": "python3 -m http.server 5173 -d docs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

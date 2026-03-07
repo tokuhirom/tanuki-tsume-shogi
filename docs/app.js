@@ -130,7 +130,7 @@ function h(tag, attrs = {}, children = []) {
 }
 
 async function loadPuzzles(len) {
-  const res = await fetch(`./puzzles/${len}.json`);
+  const res = await fetch(`./puzzles/${len}.json?v=20260307b`);
   if (!res.ok) throw new Error("問題データの読み込みに失敗しました");
   return res.json();
 }
@@ -411,6 +411,8 @@ function renderBoard() {
       const edgeRight = x === 1 ? " edge-right" : "";
       tr.append(h("td", {}, h("button", {
         class: `${selected ? "sel" : ""}${edgeTop}${edgeBottom}${edgeLeft}${edgeRight}`.trim(),
+        "data-x": String(x),
+        "data-y": String(y),
         onclick: () => onSquareClick(x, y),
       }, pieceNode)));
     }
