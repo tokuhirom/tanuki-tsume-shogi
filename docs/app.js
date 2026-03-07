@@ -412,7 +412,8 @@ function choosePromotion(promote) {
   const alt = { ...base, promote: !promote };
   if (tryUserMove(alt)) return;
 
-  state.promotionPrompt = base;
+  state.selectedSquare = null;
+  state.message = "その手は正解ではありません。";
   render();
 }
 
