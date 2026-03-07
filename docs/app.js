@@ -328,13 +328,18 @@ function onSquareClick(x, y) {
 
 function choosePromotion(promote) {
   if (!state.promotionPrompt) return;
-  const move = { ...state.promotionPrompt, promote };
+  const base = state.promotionPrompt;
+  const move = { ...base, promote };
   state.promotionPrompt = null;
-  const ok = tryUserMove(move);
-  if (!ok) {
-    // Ensure the tap always updates UI even when the selected promote choice is wrong.
-    render();
-  }
+  if (tryUserMove(move)) return;
+
+  // If the opposite promotion flag is the expected move, apply it so tap feels responsive.
+  const alt = { ...base, promote: !promote };
+  if (tryUserMove(alt)) return;
+
+  // If neither worked, reopen prompt to avoid silent dead-end feeling.
+  state.promotionPrompt = base;
+  render();
 }
 
 async function copyPuzzleLink() {
