@@ -86,13 +86,18 @@ function parseRoute() {
   return { screen: "puzzle", mateLength: mate, puzzleId: id };
 }
 
-function setRoute({ mateLength = null, puzzleId = null } = {}) {
+function setRoute({ mateLength = null, puzzleId = null } = {}, { replace = false } = {}) {
   const url = new URL(window.location.href);
   url.searchParams.delete("mate");
   url.searchParams.delete("id");
   if (mateLength) url.searchParams.set("mate", String(mateLength));
   if (puzzleId) url.searchParams.set("id", String(puzzleId));
-  window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+  const path = `${url.pathname}${url.search}`;
+  if (replace) {
+    window.history.replaceState({}, "", path);
+  } else {
+    window.history.pushState({}, "", path);
+  }
 }
 
 let audioCtx = null;
@@ -216,21 +221,21 @@ async function loadBuildInfo() {
   }
 }
 
-function goTitle() {
+function goTitle({ replace = false } = {}) {
   state.screen = "title";
-  setRoute();
+  setRoute({}, { replace });
   render();
 }
 
-async function goList(len) {
+async function goList(len, { replace = false } = {}) {
   state.mateLength = len;
   state.puzzles = await loadPuzzles(len);
   state.screen = "list";
-  setRoute({ mateLength: len });
+  setRoute({ mateLength: len }, { replace });
   render();
 }
 
-function goPuzzle(p) {
+function goPuzzle(p, { replace = false } = {}) {
   state.puzzle = p;
   state.gameState = createState(p.initial);
   state.ply = 0;
@@ -245,7 +250,7 @@ function goPuzzle(p) {
     ? "✅ クリア済み — もう一度解けます"
     : "攻め方の手を選んでください";
   state.screen = "puzzle";
-  setRoute({ mateLength: state.mateLength, puzzleId: p.id });
+  setRoute({ mateLength: state.mateLength, puzzleId: p.id }, { replace });
   render();
 }
 
@@ -716,26 +721,32 @@ function render() {
   if (state.screen === "puzzle") app.append(renderPuzzle());
 }
 
-async function boot() {
-  await loadBuildInfo();
-  const route = parseRoute();
+async function navigateToRoute(route, { replace = false } = {}) {
   if (route.screen === "title") {
-    goTitle();
+    goTitle({ replace });
     return;
   }
   if (route.screen === "list") {
-    await goList(route.mateLength);
+    await goList(route.mateLength, { replace });
     return;
   }
-
-  await goList(route.mateLength);
+  await goList(route.mateLength, { replace });
   const target = state.puzzles.find((p) => p.id === route.puzzleId);
   if (target) {
-    goPuzzle(target);
+    goPuzzle(target, { replace });
   } else {
     state.message = "指定された問題が見つかりませんでした。";
     render();
   }
+}
+
+window.addEventListener("popstate", () => {
+  navigateToRoute(parseRoute(), { replace: true });
+});
+
+async function boot() {
+  await loadBuildInfo();
+  await navigateToRoute(parseRoute(), { replace: true });
 }
 
 boot();
