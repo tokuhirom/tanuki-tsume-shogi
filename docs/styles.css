@@ -317,10 +317,13 @@ h1, h2 { margin: 8px 0 12px; }
 
 /* --- Responsive --- */
 @media (max-width: 400px) {
-  :root { --cell-size: 40px; }
+  :root { --cell-size: min(34px, calc((100vw - 48px) / 9)); }
   .top-hero { grid-template-columns: 1fr; }
   .puzzle-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  main { padding: 8px; }
+  main { padding: 4px; }
+  .panel { padding: 8px; }
+  .board button { font-size: min(15px, calc(var(--cell-size) * 0.44)); }
+  .coord { width: 14px; min-width: 14px; font-size: 10px; }
 }
 
 @media (min-width: 401px) and (max-width: 640px) {
