@@ -1,13 +1,6 @@
 # TODO
 
-## 緊急（バグ）
-
-- [ ] `src/shogi-core.js` を `docs/shogi-core.js` と同期する
-  - src版に桂馬(N)・香車(L)のサポートが欠落している
-  - `findBestDefense()` が src版に存在しない
-  - `validate.js` が src版を使うため、N/L を含むパズルの検証が失敗する
-  - 理想的には shogi-core.js を一箇所に統合し、docs/ からも scripts/ からも参照する構成にする
-- [ ] `forward()` 関数が未使用（src/docs 両方）→ 削除する
+## バグ・改善
 
 ## 機能改善
 
@@ -29,6 +22,7 @@
 
 ## 開発環境
 
+- [ ] validate 処理を Rust に統合する（JSでは遅い）
 - [ ] oxlint / oxfmt を導入（JSのリント・フォーマット）
 - [ ] cargo clippy を CI に追加
 - [ ] キャッシュバスト値 `?v=20260307b` をビルド時に動的生成する
@@ -52,3 +46,6 @@
 - [x] 攻め方の駒構成が同じパズルの連続を抑制（attacker_composition_key + 特徴量重み強化）
 - [x] 持ち駒選択時の盤面表示範囲を合法打ち先に基づいて計算（全盤表示を回避）
 - [x] CI で E2E・Rustテスト・構文チェック・パズル検証を常時実行
+- [x] `src/shogi-core.js` を `docs/shogi-core.js` に統合（二重管理を解消）
+- [x] 未使用の `forward()` 関数を削除
+- [x] 成り選択ダイアログを合法手チェック後に表示するよう修正

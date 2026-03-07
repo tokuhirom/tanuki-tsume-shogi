@@ -479,15 +479,31 @@ function onSquareClick(x, y) {
     }
     return;
   }
-  // 行き場のない駒は強制成り
-  if ((moving.type === "P" || moving.type === "L") && y === 1) {
+
+  // 成り/不成のどちらかが合法か先にチェック
+  const legal = legalMoves(state.gameState);
+  const canMovePromote = legal.some((m) => m.from && m.from[0] === fx && m.from[1] === fy && m.to[0] === x && m.to[1] === y && m.promote);
+  const canMoveNoPromote = legal.some((m) => m.from && m.from[0] === fx && m.from[1] === fy && m.to[0] === x && m.to[1] === y && !m.promote);
+
+  if (!canMovePromote && !canMoveNoPromote) {
+    // そもそもその場所に動けない
+    state.selectedSquare = null;
+    state.message = "攻め方の手を選んでください";
+    render();
+    return;
+  }
+
+  // 片方しか合法でなければダイアログなしで実行
+  if (canMovePromote && !canMoveNoPromote) {
     tryUserMove({ ...moveBase, promote: true });
     return;
   }
-  if (moving.type === "N" && y <= 2) {
-    tryUserMove({ ...moveBase, promote: true });
+  if (!canMovePromote && canMoveNoPromote) {
+    tryUserMove(moveBase);
     return;
   }
+
+  // 両方合法: 成り選択ダイアログを表示
   state.promotionPrompt = moveBase;
   render();
 }

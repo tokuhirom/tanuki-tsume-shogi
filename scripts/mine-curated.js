@@ -6,7 +6,7 @@ import {
   legalMoves,
   toSerializable,
   validateTsumePuzzle,
-} from "../src/shogi-core.js";
+} from "../docs/shogi-core.js";
 
 function parseArgs() {
   const args = process.argv.slice(2);

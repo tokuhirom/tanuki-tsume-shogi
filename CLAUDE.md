@@ -10,11 +10,9 @@ Today's date is 2026-03-08.
 ## ディレクトリ構成
 
 - `docs/` — GitHub Pages で公開されるフロントエンド (静的HTML+JS+CSS)
-  - `docs/shogi-core.js` — 将棋ルールエンジン（ブラウザ用、N/L対応済み）
+  - `docs/shogi-core.js` — 将棋ルールエンジン（唯一の実装。ブラウザ・Node 両方から使用）
   - `docs/app.js` — UIコントローラ
   - `docs/puzzles/` — 生成済みパズルJSON
-- `src/shogi-core.js` — 将棋ルールエンジン（Node用、validate.js等が使用）
-  - **注意**: `docs/shogi-core.js` と同期を保つこと
 - `generator/` — Rust製パズル生成エンジン（rayon並列化）
 - `scripts/` — Node.jsユーティリティ
 - `tests/e2e/` — Playwright E2Eテスト
@@ -29,5 +27,4 @@ Today's date is 2026-03-08.
 
 ## 注意事項
 
-- `src/shogi-core.js` と `docs/shogi-core.js` は同じロジックだが別ファイル。変更時は両方を更新すること
 - パズルJSON は `puzzles/` と `docs/puzzles/` の両方に同一内容を出力する

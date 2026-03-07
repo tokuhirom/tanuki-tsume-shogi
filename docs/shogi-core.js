@@ -145,10 +145,6 @@ function promotionZone(owner, y) {
   return y >= 7;
 }
 
-function forward(owner) {
-  return owner === "attacker" ? -1 : 1;
-}
-
 function transformDir(owner, dx, dy) {
   if (owner === "attacker") return [dx, dy];
   return [-dx, -dy];
