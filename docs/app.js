@@ -19,9 +19,18 @@ const PIECE_LABEL = {
 const app = document.getElementById("app");
 const lengths = [3, 5];
 
-const storeKey = (len, id) => `tanuki-tsume:v1:clear:${len}:${id}`;
-const isCleared = (len, id) => localStorage.getItem(storeKey(len, id)) === "true";
-const markClear = (len, id) => localStorage.setItem(storeKey(len, id), "true");
+function puzzleHash(puzzle) {
+  const src = JSON.stringify(puzzle.initial);
+  let h = 0;
+  for (let i = 0; i < src.length; i++) {
+    h = ((h << 5) - h + src.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(36);
+}
+
+const storeKey = (puzzle) => `tanuki-tsume:v2:clear:${puzzle.mateLength}:${puzzleHash(puzzle)}`;
+const isCleared = (puzzle) => localStorage.getItem(storeKey(puzzle)) === "true";
+const markClear = (puzzle) => localStorage.setItem(storeKey(puzzle), "true");
 const soundEnabledKey = "tanuki-tsume:v1:sound-enabled";
 const isSoundEnabled = () => localStorage.getItem(soundEnabledKey) !== "false";
 const setSoundEnabled = (v) => localStorage.setItem(soundEnabledKey, v ? "true" : "false");
@@ -122,11 +131,11 @@ function clearAllProgress() {
 }
 
 function confirmClearProgress() {
-  const prefix = "tanuki-tsume:v1:clear:";
+  const prefixes = ["tanuki-tsume:v1:clear:", "tanuki-tsume:v2:clear:"];
   const keys = [];
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith(prefix)) keys.push(k);
+    if (k && prefixes.some((p) => k.startsWith(p))) keys.push(k);
   }
   for (const k of keys) localStorage.removeItem(k);
   state.confirmReset = false;
@@ -211,7 +220,7 @@ function goPuzzle(p) {
   state.lastMove = null;
   state.showSolution = false;
   state.puzzleResult = null;
-  state.message = isCleared(state.mateLength, p.id)
+  state.message = isCleared(p)
     ? "✅ クリア済み — もう一度解けます"
     : "攻め方の手を選んでください";
   state.screen = "puzzle";
@@ -292,7 +301,7 @@ function tryUserMove(candidate) {
   const defenderInCheck = isInCheck(state.gameState, "defender");
 
   if (defenderMoves.length === 0 && defenderInCheck) {
-    markClear(state.mateLength, state.puzzle.id);
+    markClear(state.puzzle);
     state.message = "クリア！";
     state.puzzleResult = "clear";
     state.clearFxUntil = Date.now() + 1500;
@@ -522,7 +531,7 @@ function renderTitle() {
 
 function renderList() {
   const hasPuzzles = state.puzzles.length > 0;
-  const cleared = state.puzzles.filter((p) => isCleared(state.mateLength, p.id)).length;
+  const cleared = state.puzzles.filter((p) => isCleared(p)).length;
   return h("section", { class: "panel" }, [
     h("div", { class: "toolbar" }, [
       h("button", { class: "btn small", onclick: goTitle }, "← タイトル"),
@@ -534,7 +543,7 @@ function renderList() {
     hasPuzzles
       ? h("div", { class: "puzzle-grid" }, state.puzzles.map((p) =>
           h("button", {
-            class: `puzzle-num${isCleared(state.mateLength, p.id) ? " clear" : ""}`,
+            class: `puzzle-num${isCleared(p) ? " clear" : ""}`,
             onclick: () => goPuzzle(p),
           }, p.id)
         ))

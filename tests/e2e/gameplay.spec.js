@@ -15,6 +15,19 @@ function loadAllPuzzles(length) {
   return JSON.parse(fs.readFileSync(file, 'utf-8'));
 }
 
+function puzzleHash(puzzle) {
+  const src = JSON.stringify(puzzle.initial);
+  let h = 0;
+  for (let i = 0; i < src.length; i++) {
+    h = ((h << 5) - h + src.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(36);
+}
+
+function clearKey(puzzle) {
+  return `tanuki-tsume:v2:clear:${puzzle.mateLength}:${puzzleHash(puzzle)}`;
+}
+
 async function playMove(page, move) {
   if (move.drop) {
     const label = { R: '飛', B: '角', G: '金', S: '銀', P: '歩' }[move.drop] || move.drop;
@@ -79,7 +92,7 @@ test('can fully solve 3手詰 #1 and mark clear', async ({ page }) => {
   await solveAllMoves(page, puzzle);
 
   await expect(page.getByText('クリア！')).toBeVisible();
-  const key = 'tanuki-tsume:v1:clear:3:1';
+  const key = clearKey(puzzle);
   await expect.poll(async () => page.evaluate((k) => localStorage.getItem(k), key)).toBe('true');
 });
 
@@ -305,8 +318,9 @@ test('board cells have minimum tap size', async ({ page }) => {
 });
 
 test('clear data reset with confirmation', async ({ page }) => {
-  // Set a clear flag directly
-  const key = 'tanuki-tsume:v1:clear:3:1';
+  // Set a clear flag directly using v2 hash key
+  const puzzle = loadPuzzle(3, 1);
+  const key = clearKey(puzzle);
   await page.goto('/');
   await page.evaluate((k) => localStorage.setItem(k, 'true'), key);
 
