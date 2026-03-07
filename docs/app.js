@@ -19,6 +19,27 @@ const PIECE_LABEL = {
 const app = document.getElementById("app");
 const lengths = [1, 3, 5];
 
+function formatBuildTime(isoStr) {
+  if (!isoStr) return "";
+  const d = new Date(isoStr);
+  return d.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function renderFooter() {
+  const bi = state.buildInfo;
+  return h("div", { class: "page-footer" }, [
+    h("div", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${formatBuildTime(bi.builtAt)}`),
+    h("div", { class: "app-footer" }, [
+      h("a", {
+        class: "footer-link",
+        href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
+        target: "_blank",
+        rel: "noopener noreferrer",
+      }, "GitHub"),
+    ]),
+  ]);
+}
+
 function puzzleHash(puzzle) {
   const src = JSON.stringify(puzzle.initial);
   let h = 0;
@@ -517,15 +538,7 @@ function renderTitle() {
         ])
       : null,
     state.message ? h("div", { class: "message" }, state.message) : null,
-    h("div", { class: "build-info" }, `${bi.branch} / ${bi.commit.slice(0, 7)} / ${bi.builtAt}`),
-    h("div", { class: "app-footer" }, [
-      h("a", {
-        class: "footer-link",
-        href: "https://github.com/tokuhirom/tanuki-tsume-shogi",
-        target: "_blank",
-        rel: "noopener noreferrer",
-      }, "GitHub"),
-    ]),
+    renderFooter(),
   ]);
 }
 
@@ -548,6 +561,8 @@ function renderList() {
           }, p.id)
         ))
       : h("p", { class: "log" }, "この手数カテゴリは検証済み問題を準備中です。"),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    renderFooter(),
   ]);
 }
 
@@ -684,6 +699,8 @@ function renderPuzzle() {
       ]),
       renderSolutionToggle(),
     ]),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    renderFooter(),
   ]);
 }
 

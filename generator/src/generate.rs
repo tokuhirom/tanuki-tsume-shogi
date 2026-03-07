@@ -54,6 +54,39 @@ fn empty_hands_data() -> HandsData {
     }
 }
 
+/// 将棋の駒枚数上限を超えていないか検証する
+/// (盤上 + 持ち駒の合計が、各駒種の最大枚数以内であること)
+fn piece_count_valid(initial: &InitialData) -> bool {
+    let h = &initial.hands;
+    let mut counts = HashMap::new();
+    for p in &initial.pieces {
+        let base = p.piece_type.unpromote();
+        if base == PieceType::K { continue; }
+        *counts.entry(base).or_insert(0u8) += 1;
+    }
+    *counts.entry(PieceType::R).or_insert(0) += h.attacker.R + h.defender.R;
+    *counts.entry(PieceType::B).or_insert(0) += h.attacker.B + h.defender.B;
+    *counts.entry(PieceType::G).or_insert(0) += h.attacker.G + h.defender.G;
+    *counts.entry(PieceType::S).or_insert(0) += h.attacker.S + h.defender.S;
+    *counts.entry(PieceType::P).or_insert(0) += h.attacker.P + h.defender.P;
+
+    // 各駒種の最大枚数 (玉を除く)
+    let max = |t: PieceType| -> u8 {
+        match t {
+            PieceType::R => 2,
+            PieceType::B => 2,
+            PieceType::G => 4,
+            PieceType::S => 4,
+            PieceType::P => 18,
+            _ => 0,
+        }
+    };
+    for (&t, &c) in &counts {
+        if c > max(t) { return false; }
+    }
+    true
+}
+
 fn basic_validity(initial: &InitialData) -> bool {
     if initial.pieces.is_empty() { return false; }
     for p in &initial.pieces {
@@ -74,6 +107,8 @@ fn basic_validity(initial: &InitialData) -> bool {
     };
 
     if (ak.x - dk.x).abs() <= 1 && (ak.y - dk.y).abs() <= 1 { return false; }
+
+    if !piece_count_valid(initial) { return false; }
 
     true
 }
@@ -141,9 +176,9 @@ fn random_candidate_1(rng: &mut Rng) -> Option<InitialData> {
         pieces.push(PieceData { x, y, owner: Owner::Attacker, piece_type: t });
     }
 
-    // 玉方の駒: 0〜1枚
+    // 玉方の駒: 0〜1枚 (金銀歩が中心、飛角は低確率)
     let def_count = rng.ri(0, 1) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -207,7 +242,7 @@ fn random_candidate_3(rng: &mut Rng) -> Option<InitialData> {
     }
 
     let def_count = rng.ri(0, 2) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -277,7 +312,7 @@ fn random_candidate_5(rng: &mut Rng) -> Option<InitialData> {
     }
 
     let def_count = rng.ri(1, 3) as usize;
-    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R];
+    let def_types = [PieceType::G, PieceType::S, PieceType::P, PieceType::G, PieceType::S, PieceType::R, PieceType::B];
     for _ in 0..def_count {
         let t = *rng.pick(&def_types);
         let mut x;
@@ -340,21 +375,13 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
                 .collect();
             if movable.is_empty() { return None; }
             let idx = *rng.pick(&movable);
-            let types = if cand.pieces[idx].owner == Owner::Attacker {
-                vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P]
-            } else {
-                vec![PieceType::G, PieceType::S, PieceType::P]
-            };
+            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P];
             cand.pieces[idx].piece_type = *rng.pick(&types);
         }
         "add-piece" => {
             let owners = [Owner::Attacker, Owner::Defender];
             let owner = *rng.pick(&owners);
-            let types = if owner == Owner::Attacker {
-                vec![PieceType::R, PieceType::G, PieceType::S, PieceType::P, PieceType::B]
-            } else {
-                vec![PieceType::G, PieceType::S, PieceType::P]
-            };
+            let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::P];
             let t = *rng.pick(&types);
             if let Some(dk) = cand.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K) {
                 let x = (dk.x + rng.ri(-3, 3)).max(1).min(9);

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="80 30 160 130" role="img" aria-label="たぬきの顔">
+  <!-- 頭 -->
+  <ellipse cx="160" cy="120" rx="62" ry="54" fill="#8b5e3c"/>
+
+  <!-- 耳 -->
+  <polygon points="108,82 94,42 122,72" fill="#8b5e3c"/>
+  <polygon points="212,82 226,42 198,72" fill="#8b5e3c"/>
+  <!-- 耳の内側 -->
+  <polygon points="110,80 100,52 120,74" fill="#d4a574"/>
+  <polygon points="210,80 220,52 200,74" fill="#d4a574"/>
+
+  <!-- 顔のクリーム色部分 -->
+  <ellipse cx="160" cy="130" rx="42" ry="34" fill="#f5e6c8"/>
+
+  <!-- 目の周りの模様 -->
+  <ellipse cx="132" cy="112" rx="22" ry="16" fill="#3d2b1a"/>
+  <ellipse cx="188" cy="112" rx="22" ry="16" fill="#3d2b1a"/>
+
+  <!-- 目 -->
+  <circle cx="132" cy="112" r="10" fill="#fff"/>
+  <circle cx="188" cy="112" r="10" fill="#fff"/>
+  <circle cx="134" cy="114" r="6" fill="#1a1a1a"/>
+  <circle cx="190" cy="114" r="6" fill="#1a1a1a"/>
+  <!-- ハイライト -->
+  <circle cx="136" cy="111" r="2.5" fill="#fff"/>
+  <circle cx="192" cy="111" r="2.5" fill="#fff"/>
+
+  <!-- 鼻 -->
+  <ellipse cx="160" cy="132" rx="8" ry="6" fill="#1a1a1a"/>
+  <ellipse cx="158" cy="130" rx="3" ry="2" fill="#444"/>
+
+  <!-- 口 -->
+  <path d="M152 140 Q160 150 168 140" fill="none" stroke="#3d2b1a" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- ひげ -->
+  <line x1="110" y1="126" x2="96" y2="122" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="110" y1="130" x2="96" y2="128" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="110" y1="134" x2="96" y2="134" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="126" x2="224" y2="122" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="130" x2="224" y2="128" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="210" y1="134" x2="224" y2="134" stroke="#3d2b1a" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- 額の模様 -->
+  <line x1="160" y1="76" x2="160" y2="96" stroke="#3d2b1a" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- 葉っぱ -->
+  <g transform="translate(160 58) rotate(-15)">
+    <ellipse cx="0" cy="-12" rx="14" ry="8" fill="#5a9e2f"/>
+    <line x1="0" y1="-18" x2="0" y2="-4" stroke="#3d7a1a" stroke-width="1.5"/>
+    <line x1="-6" y1="-14" x2="0" y2="-10" stroke="#3d7a1a" stroke-width="1"/>
+    <line x1="6" y1="-14" x2="0" y2="-10" stroke="#3d7a1a" stroke-width="1"/>
+    <line x1="0" y1="-4" x2="2" y2="4" stroke="#3d7a1a" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
