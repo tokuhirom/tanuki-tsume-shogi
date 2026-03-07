@@ -23,7 +23,7 @@ jobs:
         run: npm install
 
       - name: Generate puzzle data (deterministic seed)
-        run: node scripts/generate.js --count=100 --seed=20260307 --strict-attempts=0
+        run: node scripts/generate.js --count=100 --seed=20260307 --attempts=0 --attempts79=0
 
       - name: Syntax check
         run: |

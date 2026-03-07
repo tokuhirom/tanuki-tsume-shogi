@@ -8,7 +8,7 @@ import {
 } from "./shogi-core.js";
 
 const app = document.getElementById("app");
-const lengths = [3, 5, 7, 9];
+const lengths = [3, 5];
 
 const storeKey = (len, id) => `tanuki-tsume:v1:clear:${len}:${id}`;
 const isCleared = (len, id) => localStorage.getItem(storeKey(len, id)) === "true";
@@ -250,7 +250,7 @@ function renderTitle() {
     h("div", { class: "top-hero" }, [
       h("div", {}, [
         h("h1", {}, "たぬき詰将棋"),
-        h("p", {}, "タヌキと一緒に、3手詰・5手詰・7手詰・9手詰をサクサク挑戦。"),
+        h("p", {}, "タヌキと一緒に、3手詰・5手詰をサクサク挑戦。"),
         h("div", { class: "grid4" }, lengths.map((n) =>
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
@@ -302,10 +302,14 @@ function renderBoard() {
     for (let x = view.minX; x <= view.maxX; x += 1) {
       const p = boardPiece(x, y);
       const selected = state.selectedSquare && state.selectedSquare[0] === x && state.selectedSquare[1] === y;
+      const text = p && !isHiddenAttackerKing(p) ? pieceToText(p).replace(/^v/, "") : "";
+      const pieceNode = text
+        ? h("span", { class: `piece${p.owner === "defender" ? " defender" : ""}` }, text)
+        : "";
       tr.append(h("td", {}, h("button", {
         class: selected ? "sel" : "",
         onclick: () => onSquareClick(x, y),
-      }, p && !isHiddenAttackerKing(p) ? pieceToText(p) : "")));
+      }, pieceNode)));
     }
     table.append(tr);
   }

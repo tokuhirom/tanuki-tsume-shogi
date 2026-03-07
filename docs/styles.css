@@ -134,6 +134,14 @@ h1, h2 { margin: 8px 0 12px; }
   cursor: pointer;
 }
 
+.piece {
+  display: inline-block;
+}
+
+.piece.defender {
+  transform: rotate(180deg);
+}
+
 .board button.sel { outline: 3px solid #1f77b4; }
 
 .row {

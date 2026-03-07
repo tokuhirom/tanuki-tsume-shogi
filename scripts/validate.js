@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { createState, validateTsumePuzzle } from "../src/shogi-core.js";
 
-const lengths = [3, 5, 7, 9];
+const lengths = [3, 5];
 let failed = 0;
 
 for (const n of lengths) {
