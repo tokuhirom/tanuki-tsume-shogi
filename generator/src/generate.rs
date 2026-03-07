@@ -201,6 +201,7 @@ fn add_hand_piece(hands: &mut HandsData, t: PieceType) {
 }
 
 /// 守り方玉の周辺にランダムに駒を配置する共通処理
+#[allow(clippy::too_many_arguments)]
 fn place_pieces_near_king(
     rng: &mut Rng,
     pieces: &mut Vec<PieceData>,
@@ -217,8 +218,8 @@ fn place_pieces_near_king(
         let mut y;
         let mut guard = 0;
         loop {
-            x = (dk.x + rng.ri(range.0, range.1)).max(1).min(9);
-            y = (dk.y + rng.ri(range.2, range.3)).max(1).min(9);
+            x = (dk.x + rng.ri(range.0, range.1)).clamp(1, 9);
+            y = (dk.y + rng.ri(range.2, range.3)).clamp(1, 9);
             guard += 1;
             if !used.contains(&(x, y)) || guard >= 40 { break; }
         }
@@ -313,8 +314,8 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
             let types = vec![PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
             let t = *rng.pick(&types);
             if let Some(dk) = cand.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K) {
-                let x = (dk.x + rng.ri(-3, 3)).max(1).min(9);
-                let y = (dk.y + rng.ri(-2, 4)).max(1).min(9);
+                let x = (dk.x + rng.ri(-3, 3)).clamp(1, 9);
+                let y = (dk.y + rng.ri(-2, 4)).clamp(1, 9);
                 cand.pieces.push(PieceData { x, y, owner, piece_type: t });
             }
             if cand.pieces.len() > 10 {
@@ -349,8 +350,8 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
 
     // Clamp coordinates
     for p in &mut cand.pieces {
-        p.x = p.x.max(1).min(9);
-        p.y = p.y.max(1).min(9);
+        p.x = p.x.clamp(1, 9);
+        p.y = p.y.clamp(1, 9);
     }
 
     if basic_validity(&cand) { Some(cand) } else { None }
@@ -395,7 +396,7 @@ fn difficulty_score(initial: &InitialData, solution: &[Move]) -> i32 {
         + drop_count * 5
         + promote_count * 3
         + defender_count * 2
-        + attacker_count * 1
+        + attacker_count
 }
 
 fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
@@ -411,7 +412,7 @@ fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
             let a_def = a.1.owner == Owner::Defender;
             let b_def = b.1.owner == Owner::Defender;
             b_def.cmp(&a_def)
-                .then((b.1.y as i8 - 5).abs().cmp(&(a.1.y as i8 - 5).abs()))
+                .then((b.1.y - 5).abs().cmp(&(a.1.y - 5).abs()))
         });
 
         for (i, _) in order {
@@ -664,7 +665,7 @@ fn diversify_order(
 
     // Split into 4 tiers (quartiles)
     let num_tiers = 4usize;
-    let tier_size = (indices.len() + num_tiers - 1) / num_tiers;
+    let tier_size = indices.len().div_ceil(num_tiers);
 
     let mut result = Vec::with_capacity(count);
     for tier in indices.chunks(tier_size) {
@@ -770,7 +771,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
 
     // Generate candidates in parallel using rayon
     let batch_size = 1000u32;
-    let num_batches = (attempts + batch_size - 1) / batch_size;
+    let num_batches = attempts.div_ceil(batch_size);
 
     for batch in 0..num_batches {
         if results.len() as u32 >= max { break; }

@@ -13,9 +13,11 @@
     "build": "npm run build:puzzles && npm run validate && npm run build:info",
     "serve": "python3 -m http.server 5173 -d docs",
     "test:e2e": "playwright test",
-    "build:info": "node scripts/write-build-info.js"
+    "build:info": "node scripts/write-build-info.js",
+    "lint": "npx oxlint docs/app.js docs/shogi-core.js scripts/*.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2"
+    "@playwright/test": "^1.58.2",
+    "oxlint": "^1.51.0"
   }
 }

@@ -360,9 +360,8 @@ fn pseudo_drops(state: &State, owner: Owner) -> Vec<Move> {
                     }
                     _ => {}
                 }
-                if t == PieceType::P {
-                    if has_pawn_on_file(state, owner, x) { continue; }
-                }
+                if t == PieceType::P
+                    && has_pawn_on_file(state, owner, x) { continue; }
                 out.push(Move { from: None, to: [x, y], drop: Some(t), promote: false });
             }
         }
@@ -592,50 +591,48 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
                 }
             }
 
-            if all_mate && best_move.is_some() {
-                let mut l = vec![best_move.unwrap()];
+            if let Some(bm) = best_move.filter(|_| all_mate) {
+                let mut l = vec![bm];
                 l.extend(best_line);
                 MateResult { mate: true, unique: all_unique, line: l }
             } else {
                 MateResult { mate: false, unique: false, line: vec![] }
             }
         }
+    } else if plies == 0 {
+        MateResult { mate: false, unique: false, line: vec![] }
     } else {
-        if plies == 0 {
+        // Only consider checking moves (tsume-shogi rule)
+        let checks: Vec<_> = moves.iter()
+            .filter(|m| {
+                let n = apply_move(state, m);
+                is_in_check(&n, enemy)
+            })
+            .collect();
+
+        let mut winning: Vec<_> = checks.iter()
+            .map(|m| {
+                let next = apply_move(state, m);
+                let r = forced_mate_within(&next, plies - 1, memo);
+                ((*m).clone(), r)
+            })
+            .filter(|(_, r)| r.mate)
+            .collect();
+
+        if winning.is_empty() {
             MateResult { mate: false, unique: false, line: vec![] }
         } else {
-            // Only consider checking moves (tsume-shogi rule)
-            let checks: Vec<_> = moves.iter()
-                .filter(|m| {
-                    let n = apply_move(state, m);
-                    is_in_check(&n, enemy)
-                })
-                .collect();
-
-            let mut winning: Vec<_> = checks.iter()
-                .map(|m| {
-                    let next = apply_move(state, m);
-                    let r = forced_mate_within(&next, plies - 1, memo);
-                    ((*m).clone(), r)
-                })
-                .filter(|(_, r)| r.mate)
-                .collect();
-
-            if winning.is_empty() {
-                MateResult { mate: false, unique: false, line: vec![] }
-            } else {
-                winning.sort_by(|a, b| a.0.to_string_key().cmp(&b.0.to_string_key()));
-                let unique = winning.len() == 1 && winning[0].1.unique;
-                let best = &winning[0];
-                MateResult {
-                    mate: true,
-                    unique,
-                    line: {
-                        let mut l = vec![best.0.clone()];
-                        l.extend(best.1.line.iter().cloned());
-                        l
-                    },
-                }
+            winning.sort_by(|a, b| a.0.to_string_key().cmp(&b.0.to_string_key()));
+            let unique = winning.len() == 1 && winning[0].1.unique;
+            let best = &winning[0];
+            MateResult {
+                mate: true,
+                unique,
+                line: {
+                    let mut l = vec![best.0.clone()];
+                    l.extend(best.1.line.iter().cloned());
+                    l
+                },
             }
         }
     };
@@ -649,7 +646,7 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
 ///       指定手数で詰み、より短い手数では詰まない、解が唯一
 /// 有効なら解の手順を返す
 pub fn validate_tsume_puzzle(state: &State, mate_length: u32) -> Option<Vec<Move>> {
-    if mate_length % 2 == 0 || mate_length == 0 { return None; }
+    if mate_length.is_multiple_of(2) || mate_length == 0 { return None; }
     if state.side_to_move != Owner::Attacker { return None; }
     if state.king_pos(Owner::Attacker).is_none() || state.king_pos(Owner::Defender).is_none() {
         return None;
@@ -690,6 +687,7 @@ pub struct HandsData {
 
 #[allow(non_snake_case)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default)]
 pub struct HandCount {
     #[serde(default)]
     pub R: u8,
@@ -707,11 +705,6 @@ pub struct HandCount {
     pub P: u8,
 }
 
-impl Default for HandCount {
-    fn default() -> Self {
-        HandCount { R: 0, B: 0, G: 0, S: 0, N: 0, L: 0, P: 0 }
-    }
-}
 
 impl HandCount {
     /// HAND_TYPES の順序 [R, B, G, S, N, L, P] に対応する配列に変換

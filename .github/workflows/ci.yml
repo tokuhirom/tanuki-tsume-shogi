@@ -22,14 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Syntax check
-        run: |
-          node --check docs/app.js
-          node --check docs/shogi-core.js
-          node --check scripts/validate.js
-          node --check scripts/mine-curated.js
-          node --check scripts/add-curated.js
-          node --check scripts/write-build-info.js
+      - name: oxlint
+        run: npx oxlint docs/app.js docs/shogi-core.js scripts/*.js
 
       - name: Validate puzzle data
         run: npm run validate
@@ -66,7 +60,13 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
 
-      - name: Run generator tests
+      - name: cargo clippy
+        working-directory: generator
+        run: cargo clippy -- -D warnings
+
+      - name: cargo test
         working-directory: generator
         run: cargo test

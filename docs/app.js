@@ -6,7 +6,6 @@ import {
   formatMove,
   isInCheck,
   legalMoves,
-  normalizeMove,
   pieceToText,
   sameMove,
 } from "./shogi-core.js";
@@ -539,7 +538,6 @@ async function copyPuzzleLink() {
 }
 
 function renderTitle() {
-  const bi = state.buildInfo;
   return h("section", { class: "panel" }, [
     h("div", { class: "top-hero" }, [
       h("div", {}, [

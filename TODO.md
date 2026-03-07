@@ -23,8 +23,6 @@
 ## 開発環境
 
 - [ ] validate 処理を Rust に統合する（JSでは遅い）
-- [ ] oxlint / oxfmt を導入（JSのリント・フォーマット）
-- [ ] cargo clippy を CI に追加
 - [ ] キャッシュバスト値 `?v=20260307b` をビルド時に動的生成する
 - [ ] E2E テストに N/L 駒の持ち駒ラベル対応を追加
 
@@ -49,3 +47,6 @@
 - [x] `src/shogi-core.js` を `docs/shogi-core.js` に統合（二重管理を解消）
 - [x] 未使用の `forward()` 関数を削除
 - [x] 成り選択ダイアログを合法手チェック後に表示するよう修正
+- [x] oxlint 導入 + CI 追加
+- [x] cargo clippy 導入 + CI 追加（警告ゼロ化）
+- [x] lefthook で pre-commit (oxlint, clippy) / pre-push (test) を設定
