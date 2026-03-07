@@ -398,8 +398,35 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
         (InitialData::from_state(&state), solution)
     };
 
+    // Normalize: mirror to right side if defender king is on the left half
+    let (final_initial, final_solution) = normalize_right(final_initial, final_solution);
+
     let score = score_puzzle(&final_initial, &final_solution);
     Some((final_initial, final_solution, score))
+}
+
+/// Mirror the board so the defender king is on the right side (x >= 5),
+/// which is the standard tsume-shogi convention.
+fn normalize_right(initial: InitialData, solution: Vec<Move>) -> (InitialData, Vec<Move>) {
+    let dk = initial.pieces.iter()
+        .find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K);
+    let needs_mirror = match dk {
+        Some(k) => k.x < 5,
+        None => false,
+    };
+    if !needs_mirror {
+        return (initial, solution);
+    }
+    let mirrored_init = initial.mirror();
+    let mirrored_sol: Vec<Move> = solution.into_iter().map(|m| {
+        Move {
+            from: m.from.map(|f| [10 - f[0], f[1]]),
+            to: [10 - m.to[0], m.to[1]],
+            drop: m.drop,
+            promote: m.promote,
+        }
+    }).collect();
+    (mirrored_init, mirrored_sol)
 }
 
 pub fn load_curated(path: &str) -> HashMap<u32, Vec<InitialData>> {
