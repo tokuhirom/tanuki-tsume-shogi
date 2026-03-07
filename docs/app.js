@@ -31,6 +31,7 @@ const state = {
   clearFxUntil: 0,
   soundEnabled: isSoundEnabled(),
   history: [],
+  promotionPrompt: null,
 };
 
 function parseRoute() {
@@ -155,6 +156,7 @@ function goPuzzle(p) {
   state.history = [];
   state.selectedSquare = null;
   state.selectedHand = null;
+  state.promotionPrompt = null;
   state.message = "攻め方の手を選んでください";
   state.screen = "puzzle";
   setRoute({ mateLength: state.mateLength, puzzleId: p.id });
@@ -210,6 +212,7 @@ function undoOneTurn() {
   state.ply = prev.ply;
   state.selectedSquare = null;
   state.selectedHand = null;
+  state.promotionPrompt = null;
   state.clearFxUntil = 0;
   state.message = "一手戻しました。";
   render();
@@ -260,6 +263,7 @@ function boardViewport() {
 
 function onSquareClick(x, y) {
   if (state.gameState.sideToMove !== "attacker") return;
+  if (state.promotionPrompt) return;
   const target = boardPiece(x, y);
 
   if (state.selectedHand) {
@@ -282,7 +286,49 @@ function onSquareClick(x, y) {
     return;
   }
 
-  tryUserMove({ from: [fx, fy], to: [x, y], promote: false });
+  const moving = boardPiece(fx, fy);
+  if (!moving) return;
+  const moveBase = { from: [fx, fy], to: [x, y], promote: false };
+  const promotable = new Set(["R", "B", "S", "P"]);
+  const inZone = (yy) => yy <= 3;
+  const canPromote =
+    moving.owner === "attacker" &&
+    promotable.has(moving.type) &&
+    !moving.type.startsWith("+") &&
+    (inZone(fy) || inZone(y));
+
+  if (!canPromote) {
+    tryUserMove(moveBase);
+    return;
+  }
+  if (moving.type === "P" && y === 1) {
+    tryUserMove({ ...moveBase, promote: true });
+    return;
+  }
+  state.promotionPrompt = moveBase;
+  render();
+}
+
+function choosePromotion(promote) {
+  if (!state.promotionPrompt) return;
+  const move = { ...state.promotionPrompt, promote };
+  state.promotionPrompt = null;
+  tryUserMove(move);
+}
+
+async function copyPuzzleLink() {
+  if (!state.puzzle || !state.mateLength) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("mate", String(state.mateLength));
+  url.searchParams.set("id", String(state.puzzle.id));
+  const text = url.toString();
+  try {
+    await navigator.clipboard.writeText(text);
+    state.message = "問題リンクをコピーしました。";
+  } catch {
+    state.message = `問題リンク: ${text}`;
+  }
+  render();
 }
 
 function renderTitle() {
@@ -405,6 +451,7 @@ function renderPuzzle() {
       h("div", { class: "row" }, [
       h("button", { class: "btn", onclick: () => goList(state.mateLength) }, "問題一覧へ"),
       h("button", { class: "btn", onclick: undoOneTurn }, "一手戻す"),
+      h("button", { class: "btn", onclick: copyPuzzleLink }, "リンクをコピー"),
       soundToggleButton(),
       h("h2", {}, `${state.mateLength}手詰 #${state.puzzle.id}`),
       ]),
@@ -412,6 +459,15 @@ function renderPuzzle() {
       h("p", {}, state.message),
       renderHands(),
       h("div", { class: "board-wrap" }, renderBoard()),
+      state.promotionPrompt
+        ? h("div", { class: "log" }, [
+            h("div", {}, "成りますか？"),
+            h("div", { class: "row" }, [
+              h("button", { class: "btn primary", onclick: () => choosePromotion(true) }, "成る"),
+              h("button", { class: "btn", onclick: () => choosePromotion(false) }, "成らない"),
+            ]),
+          ])
+        : null,
       renderSolutionPreview(),
     ]),
   ]);
@@ -424,4 +480,25 @@ function render() {
   if (state.screen === "puzzle") app.append(renderPuzzle());
 }
 
-render();
+async function boot() {
+  const route = parseRoute();
+  if (route.screen === "title") {
+    goTitle();
+    return;
+  }
+  if (route.screen === "list") {
+    await goList(route.mateLength);
+    return;
+  }
+
+  await goList(route.mateLength);
+  const target = state.puzzles.find((p) => p.id === route.puzzleId);
+  if (target) {
+    goPuzzle(target);
+  } else {
+    state.message = "指定された問題が見つかりませんでした。";
+    render();
+  }
+}
+
+boot();
