@@ -183,7 +183,9 @@ function goPuzzle(p) {
   state.promotionPrompt = null;
   state.lastMove = null;
   state.showSolution = false;
-  state.message = "攻め方の手を選んでください";
+  state.message = isCleared(state.mateLength, p.id)
+    ? "✅ クリア済み — もう一度解けます"
+    : "攻め方の手を選んでください";
   state.screen = "puzzle";
   setRoute({ mateLength: state.mateLength, puzzleId: p.id });
   render();

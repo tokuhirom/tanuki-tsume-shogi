@@ -183,6 +183,17 @@ test('cleared puzzles shown in green on puzzle list', async ({ page }) => {
   await expect(clearedBtn).toBeVisible();
 });
 
+test('reopening cleared puzzle shows cleared status', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+  await page.goto('/?mate=3&id=1');
+  await solveAllMoves(page, puzzle);
+  await expect(page.getByText('クリア！')).toBeVisible();
+
+  // Reopen the same puzzle
+  await page.goto('/?mate=3&id=1');
+  await expect(page.getByText('✅ クリア済み')).toBeVisible();
+});
+
 test('board cells have minimum tap size', async ({ page }) => {
   await page.goto('/?mate=3&id=1');
   const cell = page.locator('.board button').first();
