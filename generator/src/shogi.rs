@@ -454,7 +454,8 @@ fn can_reach(state: &State, pos: Pos, piece: BoardPiece, target: Pos) -> bool {
 pub fn is_in_check(state: &State, owner: Owner) -> bool {
     let kp = match state.king_pos(owner) {
         Some(p) => p,
-        None => return true,
+        // 玉が盤上に無い場合は王手されていない（攻め方の玉が無いパズルに対応）
+        None => return false,
     };
     is_square_attacked(state, kp, owner.opposite())
 }
@@ -648,9 +649,8 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
 pub fn validate_tsume_puzzle(state: &State, mate_length: u32) -> Option<Vec<Move>> {
     if mate_length.is_multiple_of(2) || mate_length == 0 { return None; }
     if state.side_to_move != Owner::Attacker { return None; }
-    if state.king_pos(Owner::Attacker).is_none() || state.king_pos(Owner::Defender).is_none() {
-        return None;
-    }
+    // 守り方の玉は必須（攻め方の玉は無くても良い）
+    state.king_pos(Owner::Defender)?;
 
     // 初期局面で既に王手がかかっていてはならない
     if is_in_check(state, Owner::Defender) { return None; }

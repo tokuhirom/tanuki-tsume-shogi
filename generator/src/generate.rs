@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::shogi::*;
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Puzzle {
     pub id: u32,
     #[serde(rename = "mateLength")]

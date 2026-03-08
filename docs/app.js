@@ -385,11 +385,13 @@ function boardViewport() {
     points.push({ x, y });
   }
 
-  // 持ち駒がある場合、合法な打ち先もビューポートに含める
-  const moves = legalMoves(state.gameState);
-  for (const m of moves) {
-    if (m.drop) {
+  // 正解手順の移動先・移動元をビューポートに含める
+  if (state.puzzle && state.puzzle.solution) {
+    for (const m of state.puzzle.solution) {
       points.push({ x: m.to[0], y: m.to[1] });
+      if (m.from) {
+        points.push({ x: m.from[0], y: m.from[1] });
+      }
     }
   }
 
