@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use serde::{Deserialize, Serialize};
 
 #[allow(dead_code)]
@@ -725,7 +725,7 @@ fn state_key(state: &State, plies: u32) -> u64 {
 /// plies 手以内の詰みを探索する
 /// 攻め方は王手のみ許可（詰将棋ルール）、守り方は最善応手を選ぶ
 /// メモ化により同一局面の再計算を回避する
-pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut HashMap<u64, MateResult>) -> MateResult {
+pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u64, MateResult>) -> MateResult {
     let key = state_key(state, plies);
     if let Some(cached) = memo.get(&key) {
         return cached.clone();
@@ -829,7 +829,7 @@ pub fn validate_tsume_puzzle(state: &mut State, mate_length: u32) -> Option<Vec<
     // 初期局面で既に王手がかかっていてはならない
     if is_in_check(state, Owner::Defender) { return None; }
 
-    let mut memo = HashMap::new();
+    let mut memo = FxHashMap::default();
     let within = forced_mate_within(state, mate_length, &mut memo);
     if !within.mate { return None; }
 

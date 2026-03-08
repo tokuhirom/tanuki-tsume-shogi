@@ -1,4 +1,5 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
+use rustc_hash::FxHashMap;
 use std::fs;
 use rayon::prelude::*;
 use serde::{Serialize, Deserialize};
@@ -85,7 +86,7 @@ fn max_piece_count(t: PieceType) -> u8 {
 /// 将棋の駒枚数上限を超えていないか検証する
 /// (盤上 + 持ち駒の合計が、各駒種の最大枚数以内であること)
 fn piece_count_valid(initial: &InitialData) -> bool {
-    let mut counts = HashMap::new();
+    let mut counts = FxHashMap::default();
     for p in &initial.pieces {
         let base = p.piece_type.unpromote();
         if base == PieceType::K { continue; }
@@ -541,8 +542,8 @@ fn normalize_right(initial: InitialData, solution: Vec<Move>) -> (InitialData, V
     (mirrored_init, mirrored_sol)
 }
 
-pub fn load_curated(path: &str) -> HashMap<u32, Vec<InitialData>> {
-    let mut result = HashMap::new();
+pub fn load_curated(path: &str) -> FxHashMap<u32, Vec<InitialData>> {
+    let mut result = FxHashMap::default();
     let content = match fs::read_to_string(path) {
         Ok(c) => c,
         Err(_) => return result,
@@ -760,16 +761,16 @@ fn attacker_composition_key(initial: &InitialData) -> String {
 pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
-    let mut comp_count: HashMap<String, u32> = HashMap::new();
-    let mut atk_comp_count: HashMap<String, u32> = HashMap::new();
+    let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
+    let mut atk_comp_count: FxHashMap<String, u32> = FxHashMap::default();
     let max_per_composition: u32 = 3; // 同一駒構成のパズルは最大3問
     let max_per_atk_composition: u32 = 3; // 攻め方の駒構成が同じパズルは最大3問
     let mut results: Vec<(InitialData, Vec<Move>, i32)> = Vec::new();
 
     let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
                       sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>,
-                      comp_count: &mut HashMap<String, u32>,
-                      atk_comp_count: &mut HashMap<String, u32>| -> bool {
+                      comp_count: &mut FxHashMap<String, u32>,
+                      atk_comp_count: &mut FxHashMap<String, u32>| -> bool {
         let sig = serde_json::to_string(&initial).unwrap_or_default();
         let ssig = structural_signature(&initial);
         if sig_set.contains(&sig) || struct_set.contains(&ssig) { return false; }
