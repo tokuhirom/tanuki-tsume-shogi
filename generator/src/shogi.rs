@@ -79,6 +79,79 @@ impl PieceType {
 
 pub const HAND_TYPES: [PieceType; 7] = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
 
+/// Zobrist ハッシュテーブル（局面のハッシュを差分更新するための乱数テーブル）
+struct ZobristTable {
+    /// board[owner][piece_type][square]: 盤上の駒
+    board: [[[u64; 81]; 14]; 2],
+    /// hand[owner][piece_type][count]: 持ち駒（count=0..18）
+    hand: [[[u64; 19]; 7]; 2],
+    /// 手番（攻め方の手番の場合に XOR する値）
+    side: u64,
+}
+
+/// 駒種から ALL_PIECE_TYPES のインデックスを返す
+fn piece_type_index(t: PieceType) -> usize {
+    match t {
+        PieceType::K => 0, PieceType::R => 1, PieceType::B => 2, PieceType::G => 3,
+        PieceType::S => 4, PieceType::N => 5, PieceType::L => 6, PieceType::P => 7,
+        PieceType::PR => 8, PieceType::PB => 9, PieceType::PS => 10, PieceType::PN => 11,
+        PieceType::PL => 12, PieceType::PP => 13,
+    }
+}
+
+fn owner_index(o: Owner) -> usize {
+    match o { Owner::Attacker => 0, Owner::Defender => 1 }
+}
+
+impl ZobristTable {
+    fn new() -> Self {
+        // 固定シードの疑似乱数で初期化（再現性のため）
+        let mut rng: u64 = 0xDEAD_BEEF_CAFE_BABE;
+        let mut next = || -> u64 {
+            rng ^= rng << 13;
+            rng ^= rng >> 7;
+            rng ^= rng << 17;
+            rng
+        };
+
+        let mut board = [[[0u64; 81]; 14]; 2];
+        for owner_arr in &mut board {
+            for pt_arr in owner_arr.iter_mut() {
+                for sq_val in pt_arr.iter_mut() {
+                    *sq_val = next();
+                }
+            }
+        }
+
+        let mut hand = [[[0u64; 19]; 7]; 2];
+        for owner_arr in &mut hand {
+            for ht_arr in owner_arr.iter_mut() {
+                for count_val in ht_arr.iter_mut() {
+                    *count_val = next();
+                }
+            }
+        }
+
+        let side = next();
+
+        ZobristTable { board, hand, side }
+    }
+
+    /// 盤上の駒のハッシュ値
+    fn board_hash(&self, owner: Owner, piece_type: PieceType, sq: usize) -> u64 {
+        self.board[owner_index(owner)][piece_type_index(piece_type)][sq]
+    }
+
+    /// 持ち駒のハッシュ値
+    fn hand_hash(&self, owner: Owner, hand_idx: usize, count: u8) -> u64 {
+        self.hand[owner_index(owner)][hand_idx][count as usize]
+    }
+}
+
+use std::sync::LazyLock;
+
+static ZOBRIST: LazyLock<ZobristTable> = LazyLock::new(ZobristTable::new);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Pos {
     pub x: i8,
@@ -156,6 +229,8 @@ pub struct State {
     /// 玉の位置キャッシュ（O(81)の線形探索を回避）
     attacker_king: Option<Pos>,
     defender_king: Option<Pos>,
+    /// Zobrist ハッシュ値（差分更新で高速にキーを計算）
+    pub zobrist_hash: u64,
 }
 
 impl State {
@@ -166,6 +241,7 @@ impl State {
             side_to_move: Owner::Attacker,
             attacker_king: None,
             defender_king: None,
+            zobrist_hash: ZOBRIST.side, // 攻め方の手番
         }
     }
 
@@ -174,8 +250,10 @@ impl State {
     }
 
     pub fn set(&mut self, pos: Pos, piece: Option<BoardPiece>) {
-        // 既存の駒が玉ならキャッシュをクリア
-        if let Some(old) = self.board[pos.idx()] {
+        let idx = pos.idx();
+        // 既存の駒を Zobrist から除去
+        if let Some(old) = self.board[idx] {
+            self.zobrist_hash ^= ZOBRIST.board_hash(old.owner, old.piece_type, idx);
             if old.piece_type == PieceType::K {
                 match old.owner {
                     Owner::Attacker => self.attacker_king = None,
@@ -183,8 +261,9 @@ impl State {
                 }
             }
         }
-        // 新しい駒が玉ならキャッシュを更新
+        // 新しい駒を Zobrist に追加
         if let Some(bp) = piece {
+            self.zobrist_hash ^= ZOBRIST.board_hash(bp.owner, bp.piece_type, idx);
             if bp.piece_type == PieceType::K {
                 match bp.owner {
                     Owner::Attacker => self.attacker_king = Some(pos),
@@ -192,7 +271,7 @@ impl State {
                 }
             }
         }
-        self.board[pos.idx()] = piece;
+        self.board[idx] = piece;
     }
 
     pub fn king_pos(&self, owner: Owner) -> Option<Pos> {
@@ -200,6 +279,29 @@ impl State {
             Owner::Attacker => self.attacker_king,
             Owner::Defender => self.defender_king,
         }
+    }
+
+    /// Zobrist ハッシュをゼロから計算する（初期化時に使用）
+    fn compute_zobrist(&self) -> u64 {
+        let mut h = 0u64;
+        // 盤上の駒
+        for sq in 0..81 {
+            if let Some(bp) = self.board[sq] {
+                h ^= ZOBRIST.board_hash(bp.owner, bp.piece_type, sq);
+            }
+        }
+        // 持ち駒（count=0 も含めてハッシュに含める）
+        for (hi, &t) in HAND_TYPES.iter().enumerate() {
+            let ac = self.hands.get(Owner::Attacker, t);
+            h ^= ZOBRIST.hand_hash(Owner::Attacker, hi, ac);
+            let dc = self.hands.get(Owner::Defender, t);
+            h ^= ZOBRIST.hand_hash(Owner::Defender, hi, dc);
+        }
+        // 手番
+        if self.side_to_move == Owner::Attacker {
+            h ^= ZOBRIST.side;
+        }
+        h
     }
 }
 
@@ -391,7 +493,9 @@ pub fn apply_move(state: &State, m: &Move) -> State {
     let owner = state.side_to_move;
 
     if let Some(drop_type) = m.drop {
+        let old_count = next.hands.get(owner, drop_type);
         next.hands.sub(owner, drop_type, 1);
+        zobrist_hand_update(&mut next.zobrist_hash, owner, drop_type, old_count, old_count - 1);
         let tp = Pos::new(m.to[0], m.to[1]);
         next.set(tp, Some(BoardPiece { owner, piece_type: drop_type }));
     } else {
@@ -403,7 +507,9 @@ pub fn apply_move(state: &State, m: &Move) -> State {
         if let Some(captured) = state.get(tp) {
             let cap_type = captured.piece_type.unpromote();
             if cap_type != PieceType::K {
+                let old_count = next.hands.get(owner, cap_type);
                 next.hands.add(owner, cap_type, 1);
+                zobrist_hand_update(&mut next.zobrist_hash, owner, cap_type, old_count, old_count + 1);
             }
         }
 
@@ -413,6 +519,7 @@ pub fn apply_move(state: &State, m: &Move) -> State {
     }
 
     next.side_to_move = owner.opposite();
+    next.zobrist_hash ^= ZOBRIST.side;
     next
 }
 
@@ -552,15 +659,26 @@ struct UndoInfo {
     captured: Option<BoardPiece>,   // 取った駒（None=取りなし）
 }
 
+/// 持ち駒の Zobrist ハッシュを更新するヘルパー
+/// add/sub の前に旧値を XOR で除去し、変更後に新値を XOR で追加する
+fn zobrist_hand_update(hash: &mut u64, owner: Owner, t: PieceType, old_count: u8, new_count: u8) {
+    let hi = Hands::hand_idx(t);
+    *hash ^= ZOBRIST.hand_hash(owner, hi, old_count);
+    *hash ^= ZOBRIST.hand_hash(owner, hi, new_count);
+}
+
 /// 指し手を局面に直接適用する（clone 不要、undo_move で復元可能）
 fn make_move(state: &mut State, m: &Move) -> UndoInfo {
     let owner = state.side_to_move;
 
     if let Some(drop_type) = m.drop {
+        let old_count = state.hands.get(owner, drop_type);
         state.hands.sub(owner, drop_type, 1);
+        zobrist_hand_update(&mut state.zobrist_hash, owner, drop_type, old_count, old_count - 1);
         let tp = Pos::new(m.to[0], m.to[1]);
         state.set(tp, Some(BoardPiece { owner, piece_type: drop_type }));
         state.side_to_move = owner.opposite();
+        state.zobrist_hash ^= ZOBRIST.side; // 手番反転
         UndoInfo { captured: None }
     } else {
         let from = m.from.unwrap();
@@ -572,7 +690,9 @@ fn make_move(state: &mut State, m: &Move) -> UndoInfo {
         if let Some(cap) = captured {
             let cap_type = cap.piece_type.unpromote();
             if cap_type != PieceType::K {
+                let old_count = state.hands.get(owner, cap_type);
                 state.hands.add(owner, cap_type, 1);
+                zobrist_hand_update(&mut state.zobrist_hash, owner, cap_type, old_count, old_count + 1);
             }
         }
 
@@ -580,6 +700,7 @@ fn make_move(state: &mut State, m: &Move) -> UndoInfo {
         let moved_type = if m.promote { src.piece_type.promote() } else { src.piece_type };
         state.set(tp, Some(BoardPiece { owner, piece_type: moved_type }));
         state.side_to_move = owner.opposite();
+        state.zobrist_hash ^= ZOBRIST.side; // 手番反転
         UndoInfo { captured }
     }
 }
@@ -588,12 +709,15 @@ fn make_move(state: &mut State, m: &Move) -> UndoInfo {
 fn undo_move(state: &mut State, m: &Move, undo: &UndoInfo) {
     // side_to_move を戻す（make_move で opposite() にしたので再度反転）
     state.side_to_move = state.side_to_move.opposite();
+    state.zobrist_hash ^= ZOBRIST.side; // 手番反転を戻す
     let owner = state.side_to_move;
 
     if let Some(drop_type) = m.drop {
         let tp = Pos::new(m.to[0], m.to[1]);
         state.set(tp, None);
+        let old_count = state.hands.get(owner, drop_type);
         state.hands.add(owner, drop_type, 1);
+        zobrist_hand_update(&mut state.zobrist_hash, owner, drop_type, old_count, old_count + 1);
     } else {
         let from = m.from.unwrap();
         let fp = Pos::new(from[0], from[1]);
@@ -610,7 +734,9 @@ fn undo_move(state: &mut State, m: &Move, undo: &UndoInfo) {
         if let Some(cap) = undo.captured {
             let cap_type = cap.piece_type.unpromote();
             if cap_type != PieceType::K {
+                let old_count = state.hands.get(owner, cap_type);
                 state.hands.sub(owner, cap_type, 1);
+                zobrist_hand_update(&mut state.zobrist_hash, owner, cap_type, old_count, old_count - 1);
             }
         }
     }
@@ -958,12 +1084,8 @@ pub struct MateResult {
 }
 
 fn state_key(state: &State, plies: u32) -> u64 {
-    use std::hash::{Hash, Hasher};
-    use std::collections::hash_map::DefaultHasher;
-    let mut hasher = DefaultHasher::new();
-    state.hash(&mut hasher);
-    plies.hash(&mut hasher);
-    hasher.finish()
+    // Zobrist ハッシュに残り手数を混ぜる（同一局面でも残り手数が違えば別エントリ）
+    state.zobrist_hash.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(plies as u64)
 }
 
 /// plies 手以内の詰みを探索する
@@ -1271,6 +1393,8 @@ impl InitialData {
         // 詰将棋ルール: 守り方の持ち駒 = 全駒数 - 盤上の駒 - 攻め方の持ち駒
         state.hands.defender = self.compute_defender_hand();
         state.side_to_move = self.side_to_move;
+        // Zobrist ハッシュに持ち駒と手番を反映
+        state.zobrist_hash = state.compute_zobrist();
         state
     }
 
@@ -1942,5 +2066,69 @@ mod tests {
         // 守り方の桂は下方向にジャンプ: (4,7),(6,7)
         assert!(targets.contains(&(4, 7)));
         assert!(targets.contains(&(6, 7)));
+    }
+
+    // --- Zobrist ハッシュテスト ---
+
+    #[test]
+    fn test_zobrist_make_undo_consistency() {
+        // make_move → undo_move で Zobrist ハッシュが元に戻ることを検証
+        let mut state = make_state((5, 9), (1, 1), &[
+            (2, 2, Owner::Attacker, PieceType::G),
+            (3, 3, Owner::Attacker, PieceType::R),
+            (2, 1, Owner::Defender, PieceType::S),
+        ]);
+        let original_hash = state.zobrist_hash;
+
+        let moves = legal_moves(&mut state);
+        for m in &moves {
+            let undo = make_move(&mut state, m);
+            undo_move(&mut state, m, &undo);
+            assert_eq!(state.zobrist_hash, original_hash,
+                "make_move → undo_move でハッシュが復元されない: {:?}", m);
+        }
+    }
+
+    #[test]
+    fn test_zobrist_same_position_same_hash() {
+        // 同一局面なら同じ Zobrist ハッシュになることを検証
+        let state1 = make_state((5, 9), (5, 1), &[
+            (3, 3, Owner::Attacker, PieceType::G),
+        ]);
+        let state2 = make_state((5, 9), (5, 1), &[
+            (3, 3, Owner::Attacker, PieceType::G),
+        ]);
+        assert_eq!(state1.zobrist_hash, state2.zobrist_hash);
+    }
+
+    #[test]
+    fn test_zobrist_different_position_different_hash() {
+        // 異なる局面なら異なる Zobrist ハッシュになることを検証
+        let state1 = make_state((5, 9), (5, 1), &[
+            (3, 3, Owner::Attacker, PieceType::G),
+        ]);
+        let state2 = make_state((5, 9), (5, 1), &[
+            (4, 3, Owner::Attacker, PieceType::G),
+        ]);
+        assert_ne!(state1.zobrist_hash, state2.zobrist_hash);
+    }
+
+    #[test]
+    fn test_zobrist_incremental_matches_full() {
+        // 差分更新のハッシュとゼロから計算したハッシュが一致することを検証
+        let mut state = make_state((5, 9), (1, 1), &[
+            (2, 2, Owner::Attacker, PieceType::G),
+            (1, 2, Owner::Defender, PieceType::P),
+        ]);
+
+        let moves = legal_moves(&mut state);
+        for m in &moves {
+            let undo = make_move(&mut state, m);
+            let incremental = state.zobrist_hash;
+            let full = state.compute_zobrist();
+            assert_eq!(incremental, full,
+                "差分更新とフル計算のハッシュが不一致: {:?}", m);
+            undo_move(&mut state, m, &undo);
+        }
     }
 }
