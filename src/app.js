@@ -217,12 +217,14 @@ async function loadPuzzles(len) {
 
 function goTitle({ replace = false } = {}) {
   state.screen = "title";
+  state.message = "";
   setRoute({}, { replace });
   render();
 }
 
 function goRules({ replace = false } = {}) {
   state.screen = "rules";
+  state.message = "";
   setRoute({ page: "rules" }, { replace });
   render();
 }
@@ -231,6 +233,7 @@ async function goList(len, { replace = false } = {}) {
   state.mateLength = len;
   state.puzzles = await loadPuzzles(len);
   state.screen = "list";
+  state.message = "";
   setRoute({ mateLength: len }, { replace });
   render();
 }
