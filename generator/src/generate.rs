@@ -6,6 +6,7 @@ use serde::{Serialize, Deserialize};
 
 use shogi_core::shogi::*;
 use shogi_core::dfpn;
+use shogi_core::rng::Rng;
 use crate::backward;
 use crate::GenerateMethod;
 
@@ -58,36 +59,6 @@ pub fn compute_puzzle_hash(initial: &InitialData) -> String {
     format!("{:08x}", hash as u32)
 }
 
-struct Rng {
-    x: u64,
-}
-
-impl Rng {
-    fn new(seed: u64) -> Self {
-        Rng { x: if seed == 0 { 123456789 } else { seed } }
-    }
-
-    fn next(&mut self) -> u64 {
-        self.x ^= self.x << 13;
-        self.x ^= self.x >> 7;
-        self.x ^= self.x << 17;
-        self.x
-    }
-
-    fn next_f64(&mut self) -> f64 {
-        (self.next() % 1_000_000) as f64 / 1_000_000.0
-    }
-
-    fn ri(&mut self, min: i8, max: i8) -> i8 {
-        let range = (max - min + 1) as u64;
-        (self.next() % range) as i8 + min
-    }
-
-    fn pick<'a, T>(&mut self, arr: &'a [T]) -> &'a T {
-        let idx = self.next() as usize % arr.len();
-        &arr[idx]
-    }
-}
 
 fn empty_hands_data() -> HandsData {
     HandsData {
@@ -564,6 +535,9 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
     // Normalize: mirror to right side if defender king is on the left half
     let (final_initial, final_solution) = normalize_right(final_initial, final_solution);
 
+    // スライド駒を玉に近づける正規化
+    let (final_initial, final_solution) = normalize_slider_distance(final_initial, final_solution, mate_length);
+
     let score = score_puzzle(&final_initial, &final_solution);
     Some((final_initial, final_solution, score))
 }
@@ -622,6 +596,103 @@ fn normalize_right(initial: InitialData, solution: Vec<Move>) -> (InitialData, V
         }
     }).collect();
     (mirrored_init, mirrored_sol)
+}
+
+/// スライド駒（飛・角・香）を玉に近づける正規化
+/// 利き線上で玉から TARGET_DIST マス程度の位置に移動する。
+/// すでに近い場合や、移動すると詰みが変わる場合はそのまま。
+fn normalize_slider_distance(initial: InitialData, solution: Vec<Move>, mate_length: u32) -> (InitialData, Vec<Move>) {
+    const TARGET_DIST: i8 = 4; // 玉からこの距離を目標にする
+
+    // 守り方の玉の位置を取得
+    let dk = match initial.pieces.iter()
+        .find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K)
+    {
+        Some(k) => (k.x, k.y),
+        None => return (initial, solution),
+    };
+
+    // 全スライド駒の移動候補を一括計算
+    let mut cand = initial.clone();
+    let mut any_moved = false;
+
+    // 占有マスを構築（全駒のインデックスと座標）
+    let occupied: Vec<(i8, i8)> = cand.pieces.iter().map(|p| (p.x, p.y)).collect();
+
+    for idx in 0..cand.pieces.len() {
+        let piece = &cand.pieces[idx];
+        if piece.owner != Owner::Attacker {
+            continue;
+        }
+
+        // スライド駒のみ対象（成り駒は除外）
+        let dirs: &[(i8, i8)] = match piece.piece_type {
+            PieceType::R => &[(1, 0), (-1, 0), (0, 1), (0, -1)],
+            PieceType::B => &[(1, 1), (1, -1), (-1, 1), (-1, -1)],
+            PieceType::L => &[(0, -1)], // 香は上方向のみ
+            _ => continue,
+        };
+
+        let px = piece.x;
+        let py = piece.y;
+        let cur_dist = (px - dk.0).abs().max((py - dk.1).abs());
+
+        // すでに目標距離以内なら不要
+        if cur_dist <= TARGET_DIST {
+            continue;
+        }
+
+        // 玉に向かう方向を特定
+        let dx = (dk.0 - px).signum();
+        let dy = (dk.1 - py).signum();
+
+        // この駒のスライド方向と一致するか確認
+        if !dirs.iter().any(|&(ddx, ddy)| ddx == dx && ddy == dy) {
+            continue;
+        }
+
+        // 利き線上で目標位置を計算（間に他の駒がない範囲）
+        let mut best_pos = None;
+        let mut nx = px + dx;
+        let mut ny = py + dy;
+        while (1..=9).contains(&nx) && (1..=9).contains(&ny) {
+            if occupied.iter().enumerate().any(|(i, &pos)| i != idx && pos == (nx, ny)) {
+                break;
+            }
+            let dist = (nx - dk.0).abs().max((ny - dk.1).abs());
+            if dist >= TARGET_DIST {
+                best_pos = Some((nx, ny));
+            }
+            if dist <= TARGET_DIST {
+                break;
+            }
+            nx += dx;
+            ny += dy;
+        }
+
+        if let Some((new_x, new_y)) = best_pos {
+            if new_x != px || new_y != py {
+                cand.pieces[idx].x = new_x;
+                cand.pieces[idx].y = new_y;
+                any_moved = true;
+            }
+        }
+    }
+
+    if !any_moved {
+        return (initial, solution);
+    }
+
+    // 一括で再検証（1回だけ）
+    let mut cand_state = cand.to_state();
+    if let Some(new_sol) = validate_tsume_auto(&mut cand_state, mate_length) {
+        if new_sol.len() == mate_length as usize && !has_leftover_pieces(&cand, &new_sol) {
+            return (cand, new_sol);
+        }
+    }
+
+    // 検証失敗: 元のまま返す
+    (initial, solution)
 }
 
 pub fn load_curated(path: &str) -> FxHashMap<u32, Vec<InitialData>> {
@@ -864,15 +935,22 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             continue;
         }
         let sol = valid.unwrap();
-        let sig = serde_json::to_string(&p.initial).unwrap_or_default();
-        let ssig = structural_signature(&p.initial);
+        // スライド駒の正規化を既存パズルにも適用
+        let (norm_initial, norm_sol) = normalize_slider_distance(p.initial.clone(), sol, mate_length);
+        let sig = serde_json::to_string(&norm_initial).unwrap_or_default();
+        let ssig = structural_signature(&norm_initial);
+        // 正規化で重複になった場合はスキップ
+        if sig_set.contains(&sig) || struct_set.contains(&ssig) {
+            dropped += 1;
+            continue;
+        }
         sig_set.insert(sig);
         struct_set.insert(ssig);
-        let ckey = composition_key(&p.initial);
+        let ckey = composition_key(&norm_initial);
         *comp_count.entry(ckey).or_insert(0) += 1;
-        let akey = attacker_composition_key(&p.initial);
+        let akey = attacker_composition_key(&norm_initial);
         *atk_comp_count.entry(akey).or_insert(0) += 1;
-        results.push((p.initial.clone(), sol, p.score));
+        results.push((norm_initial, norm_sol, p.score));
         kept += 1;
     }
     if !existing.is_empty() {
@@ -1037,7 +1115,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
 
         for i in 0..mutate_attempts {
             if results.len() as u32 >= max { break; }
-            let seed_idx = rng.next() as usize % results.len();
+            let seed_idx = rng.next_u64() as usize % results.len();
             let seed_initial = results[seed_idx].0.clone();
 
             if let Some(cand) = mutate_initial(&mut rng, &seed_initial) {
@@ -1304,7 +1382,7 @@ mod tests {
         let mut rng1 = Rng::new(42);
         let mut rng2 = Rng::new(42);
         for _ in 0..10 {
-            assert_eq!(rng1.next(), rng2.next());
+            assert_eq!(rng1.next_u64(), rng2.next_u64());
         }
     }
 
@@ -1312,7 +1390,7 @@ mod tests {
     fn test_rng_different_seeds() {
         let mut rng1 = Rng::new(1);
         let mut rng2 = Rng::new(2);
-        assert_ne!(rng1.next(), rng2.next());
+        assert_ne!(rng1.next_u64(), rng2.next_u64());
     }
 
     // --- random_candidate テスト ---

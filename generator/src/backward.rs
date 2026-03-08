@@ -6,89 +6,7 @@
 use std::collections::HashSet;
 
 use shogi_core::shogi::*;
-
-/// 簡易乱数生成器（generate.rs と同じ xorshift）
-struct Rng {
-    x: u64,
-}
-
-impl Rng {
-    fn new(seed: u64) -> Self {
-        Rng { x: if seed == 0 { 123456789 } else { seed } }
-    }
-
-    fn next(&mut self) -> u64 {
-        self.x ^= self.x << 13;
-        self.x ^= self.x >> 7;
-        self.x ^= self.x << 17;
-        self.x
-    }
-
-    fn ri(&mut self, min: i8, max: i8) -> i8 {
-        let range = (max - min + 1) as u64;
-        (self.next() % range) as i8 + min
-    }
-
-    fn pick<'a, T>(&mut self, arr: &'a [T]) -> &'a T {
-        let idx = self.next() as usize % arr.len();
-        &arr[idx]
-    }
-
-    fn next_f64(&mut self) -> f64 {
-        (self.next() % 1_000_000) as f64 / 1_000_000.0
-    }
-
-    fn shuffle<T>(&mut self, arr: &mut [T]) {
-        for i in (1..arr.len()).rev() {
-            let j = self.next() as usize % (i + 1);
-            arr.swap(i, j);
-        }
-    }
-}
-
-/// ステップ移動方向（owner変換前）
-fn step_moves_raw(t: PieceType) -> &'static [(i8, i8)] {
-    match t {
-        PieceType::K => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)],
-        PieceType::G | PieceType::PP | PieceType::PS | PieceType::PN | PieceType::PL =>
-            &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(0,1)],
-        PieceType::S => &[(-1,-1),(0,-1),(1,-1),(-1,1),(1,1)],
-        PieceType::N => &[(-1,-2),(1,-2)],
-        PieceType::P => &[(0,-1)],
-        _ => &[],
-    }
-}
-
-fn slide_dirs_raw(t: PieceType) -> &'static [(i8, i8)] {
-    match t {
-        PieceType::R | PieceType::PR => &[(0,-1),(1,0),(0,1),(-1,0)],
-        PieceType::B | PieceType::PB => &[(1,-1),(1,1),(-1,1),(-1,-1)],
-        PieceType::L => &[(0,-1)],
-        _ => &[],
-    }
-}
-
-fn extra_steps_raw(t: PieceType) -> &'static [(i8, i8)] {
-    match t {
-        PieceType::PR => &[(-1,-1),(1,-1),(1,1),(-1,1)],
-        PieceType::PB => &[(0,-1),(1,0),(0,1),(-1,0)],
-        _ => &[],
-    }
-}
-
-fn transform_dir(owner: Owner, dx: i8, dy: i8) -> (i8, i8) {
-    match owner {
-        Owner::Attacker => (dx, dy),
-        Owner::Defender => (-dx, -dy),
-    }
-}
-
-fn promotion_zone(owner: Owner, y: i8) -> bool {
-    match owner {
-        Owner::Attacker => y <= 3,
-        Owner::Defender => y >= 7,
-    }
-}
+use shogi_core::rng::Rng;
 
 /// あるマスが指定 owner の駒から攻撃されているか
 fn is_square_attacked_by(state: &State, target: Pos, attacker: Owner) -> bool {
@@ -99,13 +17,13 @@ fn is_square_attacked_by(state: &State, target: Pos, attacker: Owner) -> bool {
         if let Some(bp) = state.get(p) {
             if bp.owner != attacker { continue; }
             // bp が target に到達できるか
-            for &(sdx, sdy) in step_moves_raw(bp.piece_type) {
+            for &(sdx, sdy) in step_moves(bp.piece_type) {
                 let (tx, ty) = transform_dir(attacker, sdx, sdy);
                 if p.x + tx == target.x && p.y + ty == target.y {
                     return true;
                 }
             }
-            for &(sdx, sdy) in extra_steps_raw(bp.piece_type) {
+            for &(sdx, sdy) in extra_steps(bp.piece_type) {
                 let (tx, ty) = transform_dir(attacker, sdx, sdy);
                 if p.x + tx == target.x && p.y + ty == target.y {
                     return true;
@@ -139,7 +57,7 @@ fn is_square_attacked_by(state: &State, target: Pos, attacker: Owner) -> bool {
             if let Some(bp) = state.get(Pos::new(x, y)) {
                 if bp.owner == attacker {
                     // この駒が target にスライドで到達できるか
-                    for &(sdx, sdy) in slide_dirs_raw(bp.piece_type) {
+                    for &(sdx, sdy) in slide_dirs(bp.piece_type) {
                         let (tx, ty) = transform_dir(attacker, sdx, sdy);
                         if tx == -dx && ty == -dy {
                             return true;
@@ -234,14 +152,14 @@ fn generate_mated_position(rng: &mut Rng) -> Option<State> {
     let mut check_candidates = Vec::new();
 
     // ステップ移動で王手できる位置
-    for &(dx, dy) in step_moves_raw(check_type) {
+    for &(dx, dy) in step_moves(check_type) {
         let (tx, ty) = transform_dir(Owner::Attacker, dx, dy);
         let pos = Pos::new(dk_x - tx, dk_y - ty);
         if pos.is_valid() && !used.contains(&(pos.x, pos.y)) {
             check_candidates.push(pos);
         }
     }
-    for &(dx, dy) in extra_steps_raw(check_type) {
+    for &(dx, dy) in extra_steps(check_type) {
         let (tx, ty) = transform_dir(Owner::Attacker, dx, dy);
         let pos = Pos::new(dk_x - tx, dk_y - ty);
         if pos.is_valid() && !used.contains(&(pos.x, pos.y)) {
@@ -249,7 +167,7 @@ fn generate_mated_position(rng: &mut Rng) -> Option<State> {
         }
     }
     // スライドでの王手位置（近距離を優先）
-    for &(dx, dy) in slide_dirs_raw(check_type) {
+    for &(dx, dy) in slide_dirs(check_type) {
         let (tx, ty) = transform_dir(Owner::Attacker, dx, dy);
         let mut x = dk_x - tx;
         let mut y = dk_y - ty;
@@ -401,14 +319,14 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
         // ステップ移動の逆（to から from を逆算）
         // 駒が from にいて transform_dir(dx,dy) を加えると to に到達
         // → from = to - transform_dir(dx,dy)
-        for &(dx, dy) in step_moves_raw(t) {
+        for &(dx, dy) in step_moves(t) {
             let (tx, ty) = transform_dir(owner, dx, dy);
             let from = Pos::new(ck_pos.x - tx, ck_pos.y - ty);
             if from.is_valid() && from != dk_pos && state.get(from).is_none() {
                 from_candidates.push((from, false)); // (元の位置, 成りフラグ)
             }
         }
-        for &(dx, dy) in extra_steps_raw(t) {
+        for &(dx, dy) in extra_steps(t) {
             let (tx, ty) = transform_dir(owner, dx, dy);
             let from = Pos::new(ck_pos.x - tx, ck_pos.y - ty);
             if from.is_valid() && from != dk_pos && state.get(from).is_none() {
@@ -416,7 +334,7 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
             }
         }
         // スライド移動の逆
-        for &(dx, dy) in slide_dirs_raw(t) {
+        for &(dx, dy) in slide_dirs(t) {
             let (tx, ty) = transform_dir(owner, dx, dy);
             let mut x = ck_pos.x - tx;
             let mut y = ck_pos.y - ty;
@@ -434,7 +352,7 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
         if t.is_promoted() {
             let base = t.unpromote();
             // base の移動方向から ck_pos に到達できる from を探す
-            for &(dx, dy) in step_moves_raw(base) {
+            for &(dx, dy) in step_moves(base) {
                 let (tx, ty) = transform_dir(owner, dx, dy);
                 let from = Pos::new(ck_pos.x - tx, ck_pos.y - ty);
                 if from.is_valid() && from != dk_pos && state.get(from).is_none() {
@@ -444,7 +362,7 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
                     }
                 }
             }
-            for &(dx, dy) in slide_dirs_raw(base) {
+            for &(dx, dy) in slide_dirs(base) {
                 let (tx, ty) = transform_dir(owner, dx, dy);
                 let mut x = ck_pos.x - tx;
                 let mut y = ck_pos.y - ty;
@@ -601,7 +519,7 @@ fn add_checking_piece(rng: &mut Rng, state: &State, king_pos: Pos) -> Option<Sta
 
     for &ct in &check_types {
         // ステップ移動で王手できる位置
-        for &(dx, dy) in step_moves_raw(ct) {
+        for &(dx, dy) in step_moves(ct) {
             let (tx, ty) = transform_dir(Owner::Attacker, dx, dy);
             let from = Pos::new(king_pos.x - tx, king_pos.y - ty);
             if !from.is_valid() { continue; }
@@ -617,7 +535,7 @@ fn add_checking_piece(rng: &mut Rng, state: &State, king_pos: Pos) -> Option<Sta
             }
         }
         // スライド移動で王手できる位置
-        for &(dx, dy) in slide_dirs_raw(ct) {
+        for &(dx, dy) in slide_dirs(ct) {
             let (tx, ty) = transform_dir(Owner::Attacker, dx, dy);
             let mut x = king_pos.x - tx;
             let mut y = king_pos.y - ty;
@@ -678,14 +596,14 @@ fn find_checking_pieces(state: &State, king_pos: Pos) -> Vec<(Pos, BoardPiece)> 
         if let Some(bp) = state.get(p) {
             if bp.owner == attacker {
                 // bp が king_pos を攻撃できるか
-                for &(sdx, sdy) in step_moves_raw(bp.piece_type) {
+                for &(sdx, sdy) in step_moves(bp.piece_type) {
                     let (tx, ty) = transform_dir(attacker, sdx, sdy);
                     if p.x + tx == king_pos.x && p.y + ty == king_pos.y {
                         checkers.push((p, bp));
                         break;
                     }
                 }
-                for &(sdx, sdy) in extra_steps_raw(bp.piece_type) {
+                for &(sdx, sdy) in extra_steps(bp.piece_type) {
                     let (tx, ty) = transform_dir(attacker, sdx, sdy);
                     if p.x + tx == king_pos.x && p.y + ty == king_pos.y {
                         if !checkers.iter().any(|&(cp, _)| cp == p) {
@@ -720,7 +638,7 @@ fn find_checking_pieces(state: &State, king_pos: Pos) -> Vec<(Pos, BoardPiece)> 
         while Pos::new(x, y).is_valid() {
             if let Some(bp) = state.get(Pos::new(x, y)) {
                 if bp.owner == attacker {
-                    for &(sdx, sdy) in slide_dirs_raw(bp.piece_type) {
+                    for &(sdx, sdy) in slide_dirs(bp.piece_type) {
                         let (tx, ty) = transform_dir(attacker, sdx, sdy);
                         if tx == -dx && ty == -dy {
                             checkers.push((Pos::new(x, y), bp));

@@ -340,14 +340,14 @@ pub fn promotion_zone(owner: Owner, y: i8) -> bool {
     }
 }
 
-fn transform_dir(owner: Owner, dx: i8, dy: i8) -> (i8, i8) {
+pub fn transform_dir(owner: Owner, dx: i8, dy: i8) -> (i8, i8) {
     match owner {
         Owner::Attacker => (dx, dy),
         Owner::Defender => (-dx, -dy),
     }
 }
 
-fn step_moves(t: PieceType) -> &'static [(i8, i8)] {
+pub fn step_moves(t: PieceType) -> &'static [(i8, i8)] {
     match t {
         PieceType::K => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)],
         PieceType::G | PieceType::PP | PieceType::PS | PieceType::PN | PieceType::PL => &[(-1,-1),(0,-1),(1,-1),(-1,0),(1,0),(0,1)],
@@ -358,7 +358,7 @@ fn step_moves(t: PieceType) -> &'static [(i8, i8)] {
     }
 }
 
-fn slide_dirs(t: PieceType) -> &'static [(i8, i8)] {
+pub fn slide_dirs(t: PieceType) -> &'static [(i8, i8)] {
     match t {
         PieceType::R | PieceType::PR => &[(0,-1),(1,0),(0,1),(-1,0)],
         PieceType::B | PieceType::PB => &[(1,-1),(1,1),(-1,1),(-1,-1)],
@@ -367,7 +367,7 @@ fn slide_dirs(t: PieceType) -> &'static [(i8, i8)] {
     }
 }
 
-fn extra_steps(t: PieceType) -> &'static [(i8, i8)] {
+pub fn extra_steps(t: PieceType) -> &'static [(i8, i8)] {
     match t {
         PieceType::PR => &[(-1,-1),(1,-1),(1,1),(-1,1)],
         PieceType::PB => &[(0,-1),(1,0),(0,1),(-1,0)],
