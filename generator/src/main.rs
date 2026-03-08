@@ -114,7 +114,7 @@ fn run_generate(args: &[String]) {
 }
 
 /// パズルデータを読み込んで詰将棋として正しいか検証する
-fn cmd_validate() {
+fn cmd_validate(fix: bool) {
     let mut failed = 0u32;
 
     for mate_len in ALL_MATE_LENGTHS {
@@ -129,19 +129,22 @@ fn cmd_validate() {
             failed += 1;
             continue;
         };
-        validate_file(target, mate_len, &mut failed);
+        validate_file(target, mate_len, &mut failed, fix);
     }
 
-    if failed > 0 {
+    if failed > 0 && !fix {
         std::process::exit(1);
     }
 }
 
-fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
+fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
     let data = fs::read_to_string(file).unwrap();
     let puzzles: Vec<generate::Puzzle> = serde_json::from_str(&data).unwrap();
+    let original_count = puzzles.len();
 
     let mut checked = HashSet::new();
+    let mut valid_puzzles: Vec<generate::Puzzle> = Vec::new();
+
     for p in &puzzles {
         let sig = serde_json::to_string(&p.initial).unwrap();
         if checked.contains(&sig) {
@@ -165,11 +168,30 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
                 if final_state.hands.attacker.iter().sum::<u8>() > 0 {
                     eprintln!("[NG] {}手詰 #{}: 駒余りあり (持ち駒: {:?})", mate_len, p.id, final_state.hands.attacker);
                     *failed += 1;
+                } else {
+                    valid_puzzles.push(p.clone());
                 }
             }
         }
     }
-    eprintln!("[OK] {}: {}問 (unique {})", file, puzzles.len(), checked.len());
+
+    if fix && valid_puzzles.len() < original_count {
+        let removed = original_count - valid_puzzles.len();
+        // IDを振り直す
+        for (i, p) in valid_puzzles.iter_mut().enumerate() {
+            p.id = (i + 1) as u32;
+        }
+        let json = serde_json::to_string_pretty(&valid_puzzles).unwrap();
+        fs::write(file, &json).unwrap();
+        // public/puzzles/ にもコピー
+        let public_file = file.replace("puzzles/", "public/puzzles/");
+        if Path::new(&public_file).parent().is_some_and(|d| d.exists()) {
+            fs::write(&public_file, &json).unwrap();
+        }
+        eprintln!("[FIX] {}: {}問削除 → {}問に修正", file, removed, valid_puzzles.len());
+    } else {
+        eprintln!("[OK] {}: {}問 (unique {})", file, puzzles.len(), checked.len());
+    }
 }
 
 fn main() {
@@ -177,7 +199,8 @@ fn main() {
     let subcommand = args.get(1).map(|s| s.as_str()).unwrap_or("generate");
 
     match subcommand {
-        "validate" => cmd_validate(),
+        "validate" => cmd_validate(false),
+        "validate-fix" => cmd_validate(true),
         "generate" => run_generate(&args[2..]),
         // 後方互換: --seed= 等の引数が直接来た場合はgenerate扱い
         _ if subcommand.starts_with("--") => run_generate(&args[1..]),
