@@ -6,50 +6,59 @@ use std::env;
 use std::fs;
 use std::path::Path;
 
-fn parse_generate_args(args: &[String]) -> (u32, u32, u32, u32, u64) {
-    let mut max: u32 = 100;
-    let mut attempts1: u32 = 100_000;
-    let mut attempts3: u32 = 200_000;
-    let mut attempts5: u32 = 100_000;
-    let mut seed: u64 = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis() as u64
-        % 2_147_483_647;
+struct GenerateArgs {
+    max: u32,
+    attempts: [u32; 4],  // 1手, 3手, 5手, 7手
+    seed: u64,
+    only: Option<u32>,   // 特定の手数だけ生成する場合
+}
+
+const ALL_MATE_LENGTHS: [u32; 4] = [1, 3, 5, 7];
+
+fn parse_generate_args(args: &[String]) -> GenerateArgs {
+    let mut ga = GenerateArgs {
+        max: 100,
+        attempts: [100_000, 200_000, 100_000, 200_000],
+        seed: std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
+            % 2_147_483_647,
+        only: None,
+    };
 
     for a in args {
         if let Some(v) = a.strip_prefix("--max=") {
-            max = v.parse().unwrap_or(max);
-        }
-        if let Some(v) = a.strip_prefix("--seed=") {
-            seed = v.parse().unwrap_or(seed);
-        }
-        if let Some(v) = a.strip_prefix("--attempts1=") {
-            attempts1 = v.parse().unwrap_or(attempts1);
-        }
-        if let Some(v) = a.strip_prefix("--attempts3=") {
-            attempts3 = v.parse().unwrap_or(attempts3);
-        }
-        if let Some(v) = a.strip_prefix("--attempts5=") {
-            attempts5 = v.parse().unwrap_or(attempts5);
+            ga.max = v.parse().unwrap_or(ga.max);
+        } else if let Some(v) = a.strip_prefix("--seed=") {
+            ga.seed = v.parse().unwrap_or(ga.seed);
+        } else if let Some(v) = a.strip_prefix("--only=") {
+            ga.only = v.parse().ok();
+        } else if let Some(v) = a.strip_prefix("--attempts1=") {
+            ga.attempts[0] = v.parse().unwrap_or(ga.attempts[0]);
+        } else if let Some(v) = a.strip_prefix("--attempts3=") {
+            ga.attempts[1] = v.parse().unwrap_or(ga.attempts[1]);
+        } else if let Some(v) = a.strip_prefix("--attempts5=") {
+            ga.attempts[2] = v.parse().unwrap_or(ga.attempts[2]);
+        } else if let Some(v) = a.strip_prefix("--attempts7=") {
+            ga.attempts[3] = v.parse().unwrap_or(ga.attempts[3]);
         }
     }
-    (max, attempts1, attempts3, attempts5, seed)
+    ga
 }
 
 fn run_generate(args: &[String]) {
-    let (max, attempts1, attempts3, attempts5, seed) = parse_generate_args(args);
+    let ga = parse_generate_args(args);
 
     let curated = generate::load_curated("data/curated-puzzles.json");
 
-    for mate_len in [1u32, 3, 5] {
-        let attempts = match mate_len {
-            1 => attempts1,
-            3 => attempts3,
-            _ => attempts5,
-        };
+    for (i, &mate_len) in ALL_MATE_LENGTHS.iter().enumerate() {
+        if let Some(only) = ga.only {
+            if mate_len != only { continue; }
+        }
+        let attempts = ga.attempts[i];
         let seeds = curated.get(&mate_len).cloned().unwrap_or_default();
-        let puzzles = generate::generate_puzzles(seed, mate_len, attempts, &seeds, max);
+        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max);
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
@@ -63,14 +72,14 @@ fn run_generate(args: &[String]) {
         eprintln!("{}手詰: {}問 (attempts={})", mate_len, puzzles.len(), attempts);
     }
 
-    eprintln!("seed={}", seed);
+    eprintln!("seed={}", ga.seed);
 }
 
 /// パズルデータを読み込んで詰将棋として正しいか検証する
 fn cmd_validate() {
     let mut failed = 0u32;
 
-    for mate_len in [1u32, 3, 5] {
+    for mate_len in [1u32, 3, 5, 7] {
         let file = format!("puzzles/{}.json", mate_len);
         let alt = format!("docs/puzzles/{}.json", mate_len);
         let target = if Path::new(&file).exists() {

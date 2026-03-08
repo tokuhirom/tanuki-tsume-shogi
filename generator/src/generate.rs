@@ -273,10 +273,15 @@ fn candidate_params(mate_length: u32) -> CandidateParams {
             def_count: (0, 2), def_range: (-2, 2, -1, 2),
             hand_prob: 0.3, major_hand_prob: 0.1,
         },
-        _ => CandidateParams {
+        5 => CandidateParams {
             atk_count: (2, 4), atk_range: (-4, 4, -2, 5),
             def_count: (1, 3), def_range: (-2, 2, -1, 3),
             hand_prob: 0.4, major_hand_prob: 0.15,
+        },
+        _ => CandidateParams {
+            atk_count: (3, 5), atk_range: (-4, 4, -2, 6),
+            def_count: (1, 4), def_range: (-3, 3, -1, 3),
+            hand_prob: 0.45, major_hand_prob: 0.2,
         },
     }
 }
