@@ -404,7 +404,8 @@ function forcedMateWithin(state, plies, memo) {
       return res;
     }
     const unique = children.every((c) => c.result.unique);
-    const best = children[0];
+    // 守り方は最長抵抗の応手を選ぶ（駒余り防止のため最長lineを記録）
+    const best = children.reduce((a, b) => b.result.line.length > a.result.line.length ? b : a);
     const res = { mate: true, unique, line: [best.move, ...best.result.line] };
     memo.set(memoKey, res);
     return res;
@@ -444,12 +445,19 @@ export function findBestDefense(state, remainingPlies) {
   if (moves.length === 0) return null;
 
   const memo = new Map();
+  // 最長抵抗: 詰みまでのlineが最も長い応手を選ぶ
+  let bestMove = moves[0];
+  let bestLen = -1;
   for (const m of moves) {
     const next = applyMove(state, m);
     const result = forcedMateWithin(next, remainingPlies - 1, memo);
     if (!result.mate) return m;
+    if (result.line.length > bestLen) {
+      bestLen = result.line.length;
+      bestMove = m;
+    }
   }
-  return moves[0];
+  return bestMove;
 }
 
 export function validateTsumePuzzle(state, mateLength) {
