@@ -30,8 +30,8 @@ function clearKey(puzzle) {
 
 async function playMove(page, move) {
   if (move.drop) {
-    const label = { R: '飛', B: '角', G: '金', S: '銀', P: '歩' }[move.drop] || move.drop;
-    await page.getByRole('button', { name: new RegExp(`^${label} ×`) }).click();
+    const label = { R: '飛', B: '角', G: '金', S: '銀', N: '桂', L: '香', P: '歩' }[move.drop] || move.drop;
+    await page.locator('.komadai-piece', { hasText: label }).click();
     await page.locator(`button[data-x='${move.to[0]}'][data-y='${move.to[1]}']`).click();
   } else {
     await page.locator(`button[data-x='${move.from[0]}'][data-y='${move.from[1]}']`).click();
@@ -358,8 +358,8 @@ test('any legal move is accepted (free play)', async ({ page }) => {
 
   if (sol.drop) {
     // First move is a drop — click hand piece then target
-    const label = { R: '飛', B: '角', G: '金', S: '銀', P: '歩' }[sol.drop] || sol.drop;
-    await page.getByRole('button', { name: new RegExp(`^${label} ×`) }).click();
+    const label = { R: '飛', B: '角', G: '金', S: '銀', N: '桂', L: '香', P: '歩' }[sol.drop] || sol.drop;
+    await page.locator('.komadai-piece', { hasText: label }).click();
     const targets = page.locator('.board button.move-target');
     await expect(targets.first()).toBeVisible();
     await targets.first().click();
@@ -381,4 +381,42 @@ test('any legal move is accepted (free play)', async ({ page }) => {
   // Move should be accepted — message should change from initial
   const message = page.locator('.message');
   await expect(message).not.toHaveText('攻め方の手を選んでください');
+});
+
+test('lance drop (香打ち) can be played from hand', async ({ page }) => {
+  // 3手詰 #56: 持ち駒に香、初手は香打ち(7,2) → 捨て駒で守り方が取る
+  await page.goto('/?mate=3&id=56');
+  await expect(page.getByRole('heading', { name: '3手詰 #56' })).toBeVisible();
+
+  // 駒台に「香」が表示されている
+  const lancePiece = page.locator('.komadai-piece', { hasText: '香' });
+  await expect(lancePiece).toBeVisible();
+
+  // 香を選択して打つ
+  await lancePiece.click();
+  const target = page.locator("button[data-x='7'][data-y='2']");
+  await expect(target).toHaveClass(/move-target/);
+  await target.click();
+
+  // 正解なので守り方が応手し「次の一手へ」のメッセージが表示される
+  await expect(page.locator('.message')).toHaveText('次の一手へ。');
+});
+
+test('knight drop (桂打ち) can be played from hand', async ({ page }) => {
+  // 3手詰 #58: 持ち駒に桂、初手は桂打ち(8,5)
+  await page.goto('/?mate=3&id=58');
+  await expect(page.getByRole('heading', { name: '3手詰 #58' })).toBeVisible();
+
+  // 駒台に「桂」が表示されている
+  const knightPiece = page.locator('.komadai-piece', { hasText: '桂' });
+  await expect(knightPiece).toBeVisible();
+
+  // 桂を選択して打つ
+  await knightPiece.click();
+  const target = page.locator("button[data-x='8'][data-y='5']");
+  await expect(target).toHaveClass(/move-target/);
+  await target.click();
+
+  // 正解なので守り方が応手し「次の一手へ」のメッセージが表示される
+  await expect(page.locator('.message')).toHaveText('次の一手へ。');
 });
