@@ -17,18 +17,18 @@ pub enum GenerateMethod {
 
 struct GenerateArgs {
     max: u32,
-    attempts: [u32; 4],  // 1手, 3手, 5手, 7手
+    attempts: [u32; 5],  // 1手, 3手, 5手, 7手, 9手
     seed: u64,
     only: Option<u32>,   // 特定の手数だけ生成する場合
     method: GenerateMethod,
 }
 
-const ALL_MATE_LENGTHS: [u32; 4] = [1, 3, 5, 7];
+const ALL_MATE_LENGTHS: [u32; 5] = [1, 3, 5, 7, 9];
 
 fn parse_generate_args(args: &[String]) -> GenerateArgs {
     let mut ga = GenerateArgs {
         max: u32::MAX,  // 上限なし（見つかっただけ収録）
-        attempts: [100_000, 200_000, 100_000, 200_000],
+        attempts: [100_000, 200_000, 100_000, 200_000, 200_000],
         seed: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
@@ -53,6 +53,8 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             ga.attempts[2] = v.parse().unwrap_or(ga.attempts[2]);
         } else if let Some(v) = a.strip_prefix("--attempts7=") {
             ga.attempts[3] = v.parse().unwrap_or(ga.attempts[3]);
+        } else if let Some(v) = a.strip_prefix("--attempts9=") {
+            ga.attempts[4] = v.parse().unwrap_or(ga.attempts[4]);
         } else if let Some(v) = a.strip_prefix("--method=") {
             ga.method = match v {
                 "random" => GenerateMethod::Random,
@@ -112,7 +114,7 @@ fn run_generate(args: &[String]) {
 fn cmd_validate() {
     let mut failed = 0u32;
 
-    for mate_len in [1u32, 3, 5, 7] {
+    for mate_len in ALL_MATE_LENGTHS {
         let file = format!("puzzles/{}.json", mate_len);
         let alt = format!("docs/puzzles/{}.json", mate_len);
         let target = if Path::new(&file).exists() {
