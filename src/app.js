@@ -16,7 +16,7 @@ const PIECE_LABEL = {
 };
 
 const app = document.getElementById("app");
-const lengths = [1, 3, 5];
+const lengths = [1, 3, 5, 7];
 
 function formatBuildTime(isoStr) {
   if (!isoStr) return "";
@@ -78,6 +78,8 @@ const state = {
 
 function parseRoute() {
   const params = new URLSearchParams(window.location.search);
+  const page = params.get("page");
+  if (page === "rules") return { screen: "rules" };
   const mate = Number(params.get("mate"));
   const id = Number(params.get("id"));
   if (!lengths.includes(mate)) return { screen: "title" };
@@ -85,10 +87,12 @@ function parseRoute() {
   return { screen: "puzzle", mateLength: mate, puzzleId: id };
 }
 
-function setRoute({ mateLength = null, puzzleId = null } = {}, { replace = false } = {}) {
+function setRoute({ mateLength = null, puzzleId = null, page = null } = {}, { replace = false } = {}) {
   const url = new URL(window.location.href);
+  url.searchParams.delete("page");
   url.searchParams.delete("mate");
   url.searchParams.delete("id");
+  if (page) url.searchParams.set("page", page);
   if (mateLength) url.searchParams.set("mate", String(mateLength));
   if (puzzleId) url.searchParams.set("id", String(puzzleId));
   const path = `${url.pathname}${url.search}`;
@@ -209,6 +213,12 @@ async function loadPuzzles(len) {
 function goTitle({ replace = false } = {}) {
   state.screen = "title";
   setRoute({}, { replace });
+  render();
+}
+
+function goRules({ replace = false } = {}) {
+  state.screen = "rules";
+  setRoute({ page: "rules" }, { replace });
   render();
 }
 
@@ -559,6 +569,7 @@ function renderTitle() {
     ]),
     h("div", { class: "toolbar" }, [
       soundToggleButton(),
+      h("button", { class: "btn small", onclick: goRules }, "ルール"),
       h("button", { class: "btn small", onclick: clearAllProgress }, "クリアデータ削除"),
     ]),
     state.confirmReset
@@ -594,6 +605,28 @@ function renderList() {
           }, p.id)
         ))
       : h("p", { class: "log" }, "この手数カテゴリは検証済み問題を準備中です。"),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    renderFooter(),
+  ]);
+}
+
+function renderRules() {
+  return h("section", { class: "panel" }, [
+    h("div", { class: "toolbar" }, [
+      h("button", { class: "btn small", onclick: goTitle }, "← タイトル"),
+      h("span", { class: "spacer" }),
+      soundToggleButton(),
+    ]),
+    h("h2", {}, "ルール"),
+    h("ul", { class: "rule-list" }, [
+      h("li", {}, "攻め方（先手）の手番から始まります。"),
+      h("li", {}, "指定手数で、必ず守り方の玉を詰ませてください。"),
+      h("li", {}, "攻め方は毎手王手をかける手のみ指せます。"),
+      h("li", {}, "守り方は、もっとも長く逃げる応手を選びます。"),
+      h("li", {}, "手数内に詰まなければ不正解です。"),
+      h("li", {}, "このアプリの問題は、生成時に唯一解チェック済みです。"),
+    ]),
+    h("p", { class: "rules-note" }, "補足: 作品詰将棋では「駒余りなし」を重視する流儀があります。現状の問題は駒余りが含まれる場合があります。"),
     h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
     renderFooter(),
   ]);
@@ -763,6 +796,7 @@ function renderPromotionModal() {
 function render() {
   app.innerHTML = "";
   if (state.screen === "title") app.append(renderTitle());
+  if (state.screen === "rules") app.append(renderRules());
   if (state.screen === "list") app.append(renderList());
   if (state.screen === "puzzle") app.append(renderPuzzle());
   const modal = renderPromotionModal();
@@ -776,6 +810,10 @@ async function navigateToRoute(route, { replace = false } = {}) {
   }
   if (route.screen === "list") {
     await goList(route.mateLength, { replace });
+    return;
+  }
+  if (route.screen === "rules") {
+    goRules({ replace });
     return;
   }
   await goList(route.mateLength, { replace });

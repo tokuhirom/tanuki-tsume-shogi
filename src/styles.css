@@ -139,6 +139,21 @@ h1, h2 { margin: 8px 0 12px; }
 .build-info {
 }
 
+.rule-list {
+  margin: 0 0 10px;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+
+.rules-note {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fff3d4;
+  border: 1px solid #d8b679;
+  font-size: 14px;
+}
+
 /* --- Puzzle list --- */
 .puzzle-grid {
   margin-top: 10px;
