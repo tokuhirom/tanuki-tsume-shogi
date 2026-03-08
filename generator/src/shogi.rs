@@ -282,7 +282,7 @@ impl State {
     }
 
     /// Zobrist ハッシュをゼロから計算する（初期化時に使用）
-    fn compute_zobrist(&self) -> u64 {
+    pub fn compute_zobrist(&self) -> u64 {
         let mut h = 0u64;
         // 盤上の駒
         for sq in 0..81 {
@@ -327,7 +327,7 @@ impl Move {
     }
 }
 
-fn promotion_zone(owner: Owner, y: i8) -> bool {
+pub fn promotion_zone(owner: Owner, y: i8) -> bool {
     match owner {
         Owner::Attacker => y <= 3,
         Owner::Defender => y >= 7,
@@ -524,12 +524,12 @@ pub fn apply_move(state: &State, m: &Move) -> State {
 }
 
 /// スライド駒かどうか判定する（飛車・龍・角・馬・香車）
-fn is_sliding_piece(t: PieceType) -> bool {
+pub fn is_sliding_piece(t: PieceType) -> bool {
     matches!(t, PieceType::R | PieceType::PR | PieceType::B | PieceType::PB | PieceType::L)
 }
 
 /// 王手をかけている駒の位置と種類を探す
-fn find_checkers(state: &State, king_owner: Owner) -> Vec<(Pos, BoardPiece)> {
+pub fn find_checkers(state: &State, king_owner: Owner) -> Vec<(Pos, BoardPiece)> {
     let kp = match state.king_pos(king_owner) {
         Some(p) => p,
         None => return vec![],
@@ -627,7 +627,7 @@ fn interposition_squares(checker: Pos, king: Pos) -> Vec<Pos> {
 }
 
 /// 2点間（直線・斜め）の中間にあるか判定する（両端を含まない）
-fn is_between(checker: Pos, king: Pos, target: Pos) -> bool {
+pub fn is_between(checker: Pos, king: Pos, target: Pos) -> bool {
     let dx = king.x - checker.x;
     let dy = king.y - checker.y;
     let tx = target.x - checker.x;
@@ -655,8 +655,8 @@ fn is_between(checker: Pos, king: Pos, target: Pos) -> bool {
 
 /// 指し手の適用に必要な復元情報
 #[derive(Debug)]
-struct UndoInfo {
-    captured: Option<BoardPiece>,   // 取った駒（None=取りなし）
+pub struct UndoInfo {
+    pub captured: Option<BoardPiece>,   // 取った駒（None=取りなし）
 }
 
 /// 持ち駒の Zobrist ハッシュを更新するヘルパー
@@ -668,7 +668,7 @@ fn zobrist_hand_update(hash: &mut u64, owner: Owner, t: PieceType, old_count: u8
 }
 
 /// 指し手を局面に直接適用する（clone 不要、undo_move で復元可能）
-fn make_move(state: &mut State, m: &Move) -> UndoInfo {
+pub fn make_move(state: &mut State, m: &Move) -> UndoInfo {
     let owner = state.side_to_move;
 
     if let Some(drop_type) = m.drop {
@@ -706,7 +706,7 @@ fn make_move(state: &mut State, m: &Move) -> UndoInfo {
 }
 
 /// make_move で適用した手を元に戻す
-fn undo_move(state: &mut State, m: &Move, undo: &UndoInfo) {
+pub fn undo_move(state: &mut State, m: &Move, undo: &UndoInfo) {
     // side_to_move を戻す（make_move で opposite() にしたので再度反転）
     state.side_to_move = state.side_to_move.opposite();
     state.zobrist_hash ^= ZOBRIST.side; // 手番反転を戻す
@@ -973,7 +973,7 @@ fn pawn_drop_mate_forbidden(state: &mut State, m: &Move) -> bool {
 }
 
 /// 盤上の駒の合法手のみを生成する（ドロップを含まない）
-fn legal_board_moves(state: &mut State) -> Vec<Move> {
+pub fn legal_board_moves(state: &mut State) -> Vec<Move> {
     let owner = state.side_to_move;
     let mut out = Vec::new();
 
@@ -1004,7 +1004,7 @@ fn legal_board_moves(state: &mut State) -> Vec<Move> {
 }
 
 /// ドロップの合法手のみを生成する（王手時の最適化込み）
-fn legal_drop_moves(state: &mut State) -> Vec<Move> {
+pub fn legal_drop_moves(state: &mut State) -> Vec<Move> {
     let owner = state.side_to_move;
     let mut out = Vec::new();
 

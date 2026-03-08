@@ -1,6 +1,7 @@
 mod shogi;
 mod generate;
 mod backward;
+mod dfpn;
 
 use std::collections::HashSet;
 use std::env;
@@ -17,18 +18,18 @@ pub enum GenerateMethod {
 
 struct GenerateArgs {
     max: u32,
-    attempts: [u32; 5],  // 1手, 3手, 5手, 7手, 9手
+    attempts: [u32; 6],  // 1手, 3手, 5手, 7手, 9手, 11手
     seed: u64,
     only: Option<u32>,   // 特定の手数だけ生成する場合
     method: GenerateMethod,
 }
 
-const ALL_MATE_LENGTHS: [u32; 5] = [1, 3, 5, 7, 9];
+const ALL_MATE_LENGTHS: [u32; 6] = [1, 3, 5, 7, 9, 11];
 
 fn parse_generate_args(args: &[String]) -> GenerateArgs {
     let mut ga = GenerateArgs {
         max: u32::MAX,  // 上限なし（見つかっただけ収録）
-        attempts: [100_000, 200_000, 100_000, 200_000, 200_000],
+        attempts: [100_000, 200_000, 100_000, 200_000, 200_000, 200_000],
         seed: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
@@ -55,6 +56,8 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             ga.attempts[3] = v.parse().unwrap_or(ga.attempts[3]);
         } else if let Some(v) = a.strip_prefix("--attempts9=") {
             ga.attempts[4] = v.parse().unwrap_or(ga.attempts[4]);
+        } else if let Some(v) = a.strip_prefix("--attempts11=") {
+            ga.attempts[5] = v.parse().unwrap_or(ga.attempts[5]);
         } else if let Some(v) = a.strip_prefix("--method=") {
             ga.method = match v {
                 "random" => GenerateMethod::Random,

@@ -6,7 +6,18 @@ use serde::{Serialize, Deserialize};
 
 use crate::shogi::*;
 use crate::backward;
+use crate::dfpn;
 use crate::GenerateMethod;
+
+/// 手数に応じて最適なソルバーを自動選択する
+/// 7手以上は df-pn、それ未満は従来の全幅探索
+fn validate_tsume_auto(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
+    if mate_length >= 7 {
+        dfpn::validate_tsume_dfpn(state, mate_length)
+    } else {
+        validate_tsume_puzzle(state, mate_length)
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Puzzle {
@@ -328,10 +339,17 @@ fn candidate_params(mate_length: u32) -> CandidateParams {
             hand_prob: 0.4, major_hand_prob: 0.15,
             long_mate: true,
         },
-        _ => CandidateParams {
+        7 | 9 => CandidateParams {
             atk_count: (3, 5), atk_range: (-3, 3, -1, 5),
             def_count: (1, 3), def_range: (-2, 2, -1, 2),
             hand_prob: 0.5, major_hand_prob: 0.2,
+            long_mate: true,
+        },
+        _ => CandidateParams {
+            // 11手以上: より多くの駒、広い配置範囲
+            atk_count: (4, 6), atk_range: (-4, 4, -2, 6),
+            def_count: (1, 4), def_range: (-3, 3, -1, 3),
+            hand_prob: 0.5, major_hand_prob: 0.25,
             long_mate: true,
         },
     }
@@ -525,11 +543,11 @@ fn strip_attacker_king(initial: &InitialData) -> InitialData {
 fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(InitialData, Vec<Move>, i32)> {
     let normalized = strip_attacker_king(initial);
     let mut state = normalized.to_state();
-    let solution = validate_tsume_puzzle(&mut state, mate_length)?;
+    let solution = validate_tsume_auto(&mut state, mate_length)?;
 
     let pruned = prune_initial(&normalized, mate_length);
     let mut pruned_state = pruned.to_state();
-    let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_puzzle(&mut pruned_state, mate_length) {
+    let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_auto(&mut pruned_state, mate_length) {
         (InitialData::from_state(&pruned_state), pruned_sol)
     } else {
         (InitialData::from_state(&state), solution)
@@ -578,7 +596,7 @@ fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length:
     initial.hands.attacker = HandCount::from_array(&atk);
     // 再検証: 持ち駒を減らすと解が変わる可能性がある
     let mut new_state = initial.to_state();
-    validate_tsume_puzzle(&mut new_state, mate_length)
+    validate_tsume_auto(&mut new_state, mate_length)
         .map(|new_sol| (initial, new_sol))
 }
 

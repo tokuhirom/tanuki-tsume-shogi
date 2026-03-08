@@ -16,7 +16,7 @@ const PIECE_LABEL = {
 };
 
 const app = document.getElementById("app");
-const lengths = [1, 3, 5, 7, 9];
+const lengths = [1, 3, 5, 7, 9, 11];
 
 function formatBuildTime(isoStr) {
   if (!isoStr) return "";
