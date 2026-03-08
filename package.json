@@ -13,12 +13,14 @@
     "mine:9": "node scripts/mine-curated.js --mate=9 --tries=16000",
     "add:curated": "node scripts/add-curated.js",
     "build:puzzles": "cargo run --release --manifest-path generator/Cargo.toml -- --seed=20260307",
+    "test": "vitest run",
     "test:e2e": "playwright test",
     "lint": "npx oxlint src/app.js src/shogi-core.js scripts/*.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "oxlint": "^1.51.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   }
 }

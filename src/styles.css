@@ -171,6 +171,7 @@ h1, h2 { margin: 8px 0 12px; }
   justify-content: center;
   align-items: flex-start;
   margin-top: 10px;
+  margin-bottom: 12px;
 }
 
 .board {

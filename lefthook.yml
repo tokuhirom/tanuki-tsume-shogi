@@ -13,5 +13,7 @@ pre-push:
   commands:
     test-rust:
       run: cd generator && cargo test
+    test-unit:
+      run: npx vitest run
     test-e2e:
       run: npx vite build && npx playwright test

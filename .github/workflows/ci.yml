@@ -26,7 +26,10 @@ jobs:
         run: npm install
 
       - name: oxlint
-        run: npx oxlint docs/app.js docs/shogi-core.js scripts/*.js
+        run: npx oxlint src/app.js src/shogi-core.js scripts/*.js
+
+      - name: Unit tests
+        run: npx vitest run
 
       - name: Validate puzzle data
         run: npm run validate
