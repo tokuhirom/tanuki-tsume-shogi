@@ -160,6 +160,12 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
                 *failed += 1;
             }
             Some(solution) => {
+                // 手順長チェック
+                if solution.len() != mate_len as usize {
+                    eprintln!("[NG] {}手詰 #{}: 手順長が不正 ({}手)", mate_len, p.id, solution.len());
+                    *failed += 1;
+                    continue;
+                }
                 // 駒余りチェック: 全手順を適用した最終局面で攻め方の持ち駒が残っていないか
                 let mut final_state = p.initial.to_state();
                 for m in &solution {
