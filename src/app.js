@@ -72,6 +72,7 @@ const state = {
   showSolution: false,
   puzzleResult: null,
   confirmReset: false,
+  debugMode: false,
   buildInfo: __BUILD_INFO__,
 };
 
@@ -524,6 +525,21 @@ async function copyPuzzleLink() {
   render();
 }
 
+// タヌキ画像5回タップでデバッグモード切替
+let tanukiTapCount = 0;
+let tanukiTapTimer = null;
+function onTanukiTap() {
+  tanukiTapCount += 1;
+  clearTimeout(tanukiTapTimer);
+  tanukiTapTimer = setTimeout(() => { tanukiTapCount = 0; }, 2000);
+  if (tanukiTapCount >= 5) {
+    tanukiTapCount = 0;
+    state.debugMode = !state.debugMode;
+    state.message = state.debugMode ? "デバッグモード ON" : "デバッグモード OFF";
+    render();
+  }
+}
+
 function renderTitle() {
   return h("section", { class: "panel" }, [
     h("div", { class: "top-hero" }, [
@@ -534,7 +550,7 @@ function renderTitle() {
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
       ]),
-      h("img", { src: "./assets/tanuki.svg", alt: "タヌキ" }),
+      h("img", { src: "./assets/tanuki.svg", alt: "タヌキ", onclick: onTanukiTap }),
     ]),
     h("div", { class: "toolbar" }, [
       soundToggleButton(),
@@ -659,12 +675,15 @@ function renderBoard() {
 }
 
 function renderSolutionToggle() {
-  if (!state.showSolution) {
+  const show = state.showSolution || state.debugMode;
+  if (!show) {
     return h("div", { class: "solution-toggle", onclick: () => { state.showSolution = true; render(); } }, "▶ 手順を表示");
   }
   const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
   return h("div", { class: "log" }, [
-    h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 手順を隠す"),
+    state.debugMode
+      ? h("div", { class: "solution-toggle" }, "手順（デバッグ）")
+      : h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 手順を隠す"),
     h("div", {}, list.join(" / ")),
   ]);
 }
