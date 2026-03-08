@@ -717,7 +717,7 @@ function renderPuzzle() {
   const hasPrev = state.puzzles.findIndex((p) => p.id === state.puzzle.id) > 0;
   const hasNext = state.puzzles.findIndex((p) => p.id === state.puzzle.id) < state.puzzles.length - 1;
 
-  return h("section", { class: "panel" }, [
+  return h("section", {}, [
     h("div", { class: `puzzle-panel${isClearFx ? " victory" : ""}` }, [
       fxNodes,
       h("div", { class: "toolbar" }, [
