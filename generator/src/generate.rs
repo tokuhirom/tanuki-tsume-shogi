@@ -201,12 +201,20 @@ struct CandidateParams {
     hand_prob: f64,
     /// 大駒(飛・角)の持ち駒を追加する確率
     major_hand_prob: f64,
+    /// 長手数モード（接触王手向き駒種を使用）
+    long_mate: bool,
 }
 
 /// 駒種配列: 金・銀を多めに含めて出現確率を調整
 const ATK_PIECE_TYPES: [PieceType; 9] = [
     PieceType::R, PieceType::B, PieceType::G, PieceType::S,
     PieceType::N, PieceType::L, PieceType::P, PieceType::G, PieceType::S,
+];
+/// 長手数用: 接触王手向きの駒種を重視（金銀桂を多く、飛角を減らす）
+const ATK_PIECE_TYPES_LONG: [PieceType; 10] = [
+    PieceType::G, PieceType::S, PieceType::G, PieceType::S,
+    PieceType::N, PieceType::P, PieceType::L,
+    PieceType::G, PieceType::S, PieceType::R,
 ];
 const DEF_PIECE_TYPES: [PieceType; 9] = [
     PieceType::G, PieceType::S, PieceType::P, PieceType::N,
@@ -265,14 +273,22 @@ fn random_candidate(rng: &mut Rng, params: &CandidateParams) -> Option<InitialDa
     let mut pieces = Vec::new();
     let mut used = HashSet::new();
 
-    let dk = PieceData { x: rng.ri(2, 8), y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
+    // 守り方の玉を端寄りに配置（端配置は逃げ道が少なく詰ませやすい）
+    let dk_x = if rng.next_f64() < 0.6 {
+        // 端寄り: 1,2 または 8,9
+        *rng.pick(&[1i8, 2, 8, 9])
+    } else {
+        rng.ri(3, 7)
+    };
+    let dk = PieceData { x: dk_x, y: rng.ri(1, 3), owner: Owner::Defender, piece_type: PieceType::K };
     used.insert((dk.x, dk.y));
     pieces.push(dk.clone());
 
-    // 攻め方の駒を配置
+    // 攻め方の駒を配置（長手数では接触王手向き駒種を使用）
     let atk_count = rng.ri(params.atk_count.0, params.atk_count.1) as usize;
+    let atk_types: &[PieceType] = if params.long_mate { &ATK_PIECE_TYPES_LONG } else { &ATK_PIECE_TYPES };
     place_pieces_near_king(rng, &mut pieces, &mut used, &dk, Owner::Attacker,
-        atk_count, &ATK_PIECE_TYPES, params.atk_range);
+        atk_count, atk_types, params.atk_range);
 
     // 守り方の駒を配置
     let def_count = rng.ri(params.def_count.0, params.def_count.1) as usize;
@@ -298,21 +314,25 @@ fn candidate_params(mate_length: u32) -> CandidateParams {
             atk_count: (1, 2), atk_range: (-2, 2, -1, 3),
             def_count: (0, 1), def_range: (-1, 1, -1, 1),
             hand_prob: 0.2, major_hand_prob: 0.0,
+            long_mate: false,
         },
         3 => CandidateParams {
             atk_count: (2, 3), atk_range: (-3, 3, -2, 4),
             def_count: (0, 2), def_range: (-2, 2, -1, 2),
             hand_prob: 0.3, major_hand_prob: 0.1,
+            long_mate: false,
         },
         5 => CandidateParams {
-            atk_count: (2, 4), atk_range: (-4, 4, -2, 5),
-            def_count: (1, 3), def_range: (-2, 2, -1, 3),
+            atk_count: (2, 4), atk_range: (-3, 3, -1, 4),
+            def_count: (1, 3), def_range: (-2, 2, -1, 2),
             hand_prob: 0.4, major_hand_prob: 0.15,
+            long_mate: true,
         },
         _ => CandidateParams {
-            atk_count: (3, 5), atk_range: (-4, 4, -2, 6),
-            def_count: (1, 4), def_range: (-3, 3, -1, 3),
-            hand_prob: 0.45, major_hand_prob: 0.2,
+            atk_count: (3, 5), atk_range: (-3, 3, -1, 5),
+            def_count: (1, 3), def_range: (-2, 2, -1, 2),
+            hand_prob: 0.5, major_hand_prob: 0.2,
+            long_mate: true,
         },
     }
 }
