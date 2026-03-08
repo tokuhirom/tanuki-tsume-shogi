@@ -384,9 +384,9 @@ test('any legal move is accepted (free play)', async ({ page }) => {
 });
 
 test('lance drop (香打ち) can be played from hand', async ({ page }) => {
-  // 3手詰 #56: 持ち駒に香、初手は香打ち(7,2) → 捨て駒で守り方が取る
-  await page.goto('/?mate=3&id=56');
-  await expect(page.getByRole('heading', { name: '3手詰 #56' })).toBeVisible();
+  // 3手詰 #29: 持ち駒に香、初手は香打ち(8,6)
+  await page.goto('/?mate=3&id=29');
+  await expect(page.getByRole('heading', { name: '3手詰 #29' })).toBeVisible();
 
   // 駒台に「香」が表示されている
   const lancePiece = page.locator('.komadai-piece', { hasText: '香' });
@@ -394,7 +394,7 @@ test('lance drop (香打ち) can be played from hand', async ({ page }) => {
 
   // 香を選択して打つ
   await lancePiece.click();
-  const target = page.locator("button[data-x='7'][data-y='2']");
+  const target = page.locator("button[data-x='8'][data-y='6']");
   await expect(target).toHaveClass(/move-target/);
   await target.click();
 
@@ -403,9 +403,9 @@ test('lance drop (香打ち) can be played from hand', async ({ page }) => {
 });
 
 test('knight drop (桂打ち) can be played from hand', async ({ page }) => {
-  // 3手詰 #58: 持ち駒に桂、初手は桂打ち(8,5)
-  await page.goto('/?mate=3&id=58');
-  await expect(page.getByRole('heading', { name: '3手詰 #58' })).toBeVisible();
+  // 3手詰 #56: 持ち駒に桂、初手は桂打ち(7,3)
+  await page.goto('/?mate=3&id=56');
+  await expect(page.getByRole('heading', { name: '3手詰 #56' })).toBeVisible();
 
   // 駒台に「桂」が表示されている
   const knightPiece = page.locator('.komadai-piece', { hasText: '桂' });
@@ -413,7 +413,7 @@ test('knight drop (桂打ち) can be played from hand', async ({ page }) => {
 
   // 桂を選択して打つ
   await knightPiece.click();
-  const target = page.locator("button[data-x='8'][data-y='5']");
+  const target = page.locator("button[data-x='7'][data-y='3']");
   await expect(target).toHaveClass(/move-target/);
   await target.click();
 

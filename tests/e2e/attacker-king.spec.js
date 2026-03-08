@@ -41,14 +41,14 @@ test('attacker king in source data does not block drops on visible empty squares
   await expect(target).toHaveClass(/last-move/);
 });
 
-test('1手詰 #54 allows dropping Gold on correct square', async ({ page }) => {
-  await page.goto('/?mate=1&id=54');
-  await expect(page.getByRole('heading', { name: '1手詰 #54' })).toBeVisible();
+test('1手詰 #51 allows dropping Gold on correct square', async ({ page }) => {
+  await page.goto('/?mate=1&id=51');
+  await expect(page.getByRole('heading', { name: '1手詰 #51' })).toBeVisible();
 
   // 持ち駒の金を選択（駒台内のボタン）
   await page.locator('.komadai-piece', { hasText: '金' }).click();
-  // 正解手: (5,2)に金打ち
-  const target = page.locator("button[data-x='5'][data-y='2']");
+  // 正解手: (8,2)に金打ち
+  const target = page.locator("button[data-x='8'][data-y='2']");
   await expect(target).toHaveClass(/move-target/);
   await target.click();
   await expect(target).toHaveClass(/last-move/);
