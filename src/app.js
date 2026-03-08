@@ -426,9 +426,14 @@ function onSquareClick(x, y) {
 
   if (!state.selectedSquare) {
     if (target && target.owner === "attacker" && target.type !== "K") {
-      state.selectedSquare = [x, y];
-      state.message = "移動先を選んでください";
-      render();
+      // 合法手がある駒のみ選択可能
+      const legal = legalMoves(state.gameState);
+      const hasMove = legal.some((m) => m.from && m.from[0] === x && m.from[1] === y);
+      if (hasMove) {
+        state.selectedSquare = [x, y];
+        state.message = "移動先を選んでください";
+        render();
+      }
     }
     return;
   }
@@ -608,9 +613,19 @@ function renderKomadai() {
             class: `komadai-piece${state.selectedHand === piece ? " sel" : ""}`,
             onclick: () => {
               if (isPuzzleFinished()) return;
-              state.selectedHand = state.selectedHand === piece ? null : piece;
-              state.selectedSquare = null;
-              state.message = state.selectedHand ? `${PIECE_LABEL[piece]}を打つ場所を選んでください` : "攻め方の手を選んでください";
+              if (state.selectedHand === piece) {
+                state.selectedHand = null;
+                state.message = "攻め方の手を選んでください";
+              } else {
+                // 打てる場所がある場合のみ選択
+                const legal = legalMoves(state.gameState);
+                const canDrop = legal.some((m) => m.drop === piece);
+                if (canDrop) {
+                  state.selectedHand = piece;
+                  state.selectedSquare = null;
+                  state.message = `${PIECE_LABEL[piece]}を打つ場所を選んでください`;
+                }
+              }
               render();
             },
           }, [

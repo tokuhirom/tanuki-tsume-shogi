@@ -67,6 +67,12 @@
     "initial": {
       "pieces": [
         {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
           "x": 6,
           "y": 1,
           "owner": "defender",
@@ -74,15 +80,15 @@
         },
         {
           "x": 7,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
-          "type": "S"
+          "type": "R"
         },
         {
-          "x": 8,
+          "x": 4,
           "y": 4,
           "owner": "attacker",
-          "type": "B"
+          "type": "N"
         }
       ],
       "hands": {
@@ -111,10 +117,10 @@
       {
         "from": [
           7,
-          3
+          2
         ],
         "to": [
-          6,
+          5,
           2
         ],
         "promote": true
@@ -129,28 +135,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 9,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
           "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 6,
+          "x": 7,
           "y": 1,
+          "owner": "defender",
+          "type": "B"
+        },
+        {
+          "x": 9,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 7,
-          "y": 2,
+          "x": 8,
+          "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "S"
         }
       ],
       "hands": {
@@ -178,12 +184,12 @@
     "solution": [
       {
         "from": [
-          6,
-          1
+          9,
+          3
         ],
         "to": [
-          7,
-          1
+          9,
+          2
         ],
         "promote": false
       }
@@ -203,400 +209,22 @@
           "type": "K"
         },
         {
-          "x": 7,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 9,
-          "y": 5,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          7,
-          3
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 5,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "L"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          8,
-          3
-        ],
-        "to": [
-          8,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 6
-  },
-  {
-    "id": 6,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
           "x": 4,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
           "x": 7,
-          "y": 3,
+          "y": 2,
           "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          1
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 7,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
+          "type": "L"
         },
         {
-          "x": 8,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "P"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "L"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          8,
-          3
-        ],
-        "to": [
-          8,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 8,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          3,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 6
-  },
-  {
-    "id": 9,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "L"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          8,
-          3
-        ],
-        "to": [
-          8,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 10,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 2,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "owner": "attacker",
-          "type": "N"
         }
       ],
       "hands": {
@@ -631,17 +259,23 @@
           5,
           2
         ],
-        "promote": false
+        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 6
+    "score": 11
   },
   {
-    "id": 11,
+    "id": 5,
     "mateLength": 1,
     "initial": {
       "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
         {
           "x": 8,
           "y": 1,
@@ -649,16 +283,16 @@
           "type": "K"
         },
         {
-          "x": 6,
+          "x": 8,
           "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         },
         {
           "x": 9,
           "y": 3,
           "owner": "attacker",
-          "type": "S"
+          "type": "G"
         }
       ],
       "hands": {
@@ -686,12 +320,80 @@
     "solution": [
       {
         "from": [
-          6,
+          9,
           3
         ],
         "to": [
-          6,
-          1
+          9,
+          2
+        ],
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 6
+  },
+  {
+    "id": 6,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "L"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
         ],
         "promote": true
       }
@@ -700,18 +402,148 @@
     "score": 9
   },
   {
-    "id": 12,
+    "id": 7,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 7,
           "y": 1,
           "owner": "defender",
-          "type": "G"
+          "type": "R"
         },
         {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          3
+        ],
+        "to": [
+          9,
+          2
+        ],
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 6
+  },
+  {
+    "id": 8,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
           "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "N"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          4
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 9,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
@@ -723,10 +555,10 @@
           "type": "G"
         },
         {
-          "x": 6,
+          "x": 9,
           "y": 4,
           "owner": "attacker",
-          "type": "N"
+          "type": "B"
         }
       ],
       "hands": {
@@ -768,6 +600,204 @@
     "score": 6
   },
   {
+    "id": 10,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "L"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 11,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 5,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 6
+  },
+  {
+    "id": 12,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "R"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "L"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
     "id": 13,
     "mateLength": 1,
     "initial": {
@@ -776,17 +806,23 @@
           "x": 8,
           "y": 1,
           "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "S"
+          "type": "G"
         },
         {
           "x": 6,
-          "y": 3,
+          "y": 4,
           "owner": "attacker",
           "type": "R"
         }
@@ -817,11 +853,11 @@
       {
         "from": [
           6,
-          3
+          4
         ],
         "to": [
           6,
-          1
+          2
         ],
         "promote": true
       }
@@ -838,85 +874,23 @@
           "x": 5,
           "y": 1,
           "owner": "defender",
-          "type": "K"
+          "type": "B"
         },
         {
           "x": 6,
           "y": 1,
           "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          3,
-          3
-        ],
-        "to": [
-          4,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 4
-  },
-  {
-    "id": 15,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 6,
           "y": 3,
           "owner": "attacker",
-          "type": "P"
+          "type": "S"
         },
         {
           "x": 7,
-          "y": 4,
+          "y": 3,
           "owner": "attacker",
           "type": "L"
         }
@@ -960,31 +934,31 @@
     "score": 9
   },
   {
-    "id": 16,
+    "id": 15,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 8,
           "y": 1,
           "owner": "defender",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 6,
-          "y": 2,
+          "x": 7,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 5,
           "y": 2,
           "owner": "attacker",
-          "type": "S"
+          "type": "G"
         },
         {
-          "x": 6,
-          "y": 4,
+          "x": 7,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         }
@@ -1014,39 +988,39 @@
     "solution": [
       {
         "from": [
-          6,
-          4
+          5,
+          2
         ],
         "to": [
           6,
-          3
+          2
         ],
         "promote": false
       }
     ],
     "quality": "validated",
-    "score": 6
+    "score": 4
   },
   {
-    "id": 17,
+    "id": 16,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 8,
+          "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
+          "x": 5,
           "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 6,
-          "y": 4,
+          "x": 8,
+          "y": 3,
           "owner": "attacker",
           "type": "R"
         }
@@ -1076,12 +1050,80 @@
     "solution": [
       {
         "from": [
-          6,
-          4
+          8,
+          3
         ],
         "to": [
-          6,
+          8,
           1
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 17,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "B"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          3
+        ],
+        "to": [
+          9,
+          2
         ],
         "promote": true
       }
@@ -1095,28 +1137,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 5,
+          "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
           "type": "G"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
-          "type": "S"
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "L"
         }
       ],
       "hands": {
@@ -1144,18 +1186,18 @@
     "solution": [
       {
         "from": [
-          7,
+          9,
           2
         ],
         "to": [
-          6,
+          7,
           2
         ],
-        "promote": false
+        "promote": true
       }
     ],
     "quality": "validated",
-    "score": 6
+    "score": 9
   },
   {
     "id": 19,
@@ -1163,22 +1205,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 6,
+          "x": 7,
           "y": 1,
+          "owner": "defender",
+          "type": "R"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 7,
+          "y": 4,
           "owner": "attacker",
           "type": "G"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
         }
       ],
       "hands": {
@@ -1206,18 +1254,18 @@
     "solution": [
       {
         "from": [
-          8,
-          3
+          7,
+          4
         ],
         "to": [
           8,
-          1
+          3
         ],
-        "promote": true
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 6
   },
   {
     "id": 20,
@@ -1225,90 +1273,28 @@
     "initial": {
       "pieces": [
         {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
           "x": 9,
           "y": 1,
           "owner": "defender",
-          "type": "S"
+          "type": "B"
         },
         {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          3
-        ],
-        "to": [
-          7,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 6
-  },
-  {
-    "id": 21,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 3,
+          "x": 9,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
         },
         {
           "x": 7,
-          "y": 3,
+          "y": 4,
           "owner": "attacker",
-          "type": "G"
+          "type": "L"
         }
       ],
       "hands": {
@@ -1336,12 +1322,12 @@
     "solution": [
       {
         "from": [
-          4,
-          3
+          9,
+          2
         ],
         "to": [
-          4,
-          1
+          7,
+          2
         ],
         "promote": true
       }
@@ -1350,33 +1336,33 @@
     "score": 9
   },
   {
-    "id": 22,
+    "id": 21,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 4,
+          "x": 7,
           "y": 1,
           "owner": "defender",
-          "type": "L"
+          "type": "S"
         },
         {
-          "x": 5,
-          "y": 1,
+          "x": 8,
+          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 9,
           "y": 2,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 7,
+          "y": 4,
           "owner": "attacker",
-          "type": "S"
+          "type": "G"
         }
       ],
       "hands": {
@@ -1405,17 +1391,85 @@
       {
         "from": [
           7,
-          2
+          4
         ],
         "to": [
-          6,
-          2
+          8,
+          3
         ],
         "promote": false
       }
     ],
     "quality": "validated",
     "score": 6
+  },
+  {
+    "id": 22,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          4
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
   },
   {
     "id": 23,
@@ -1426,22 +1480,22 @@
           "x": 7,
           "y": 1,
           "owner": "defender",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 6,
-          "y": 3,
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 2,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 4,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
           "type": "G"
@@ -1472,11 +1526,11 @@
     "solution": [
       {
         "from": [
-          4,
-          3
+          5,
+          2
         ],
         "to": [
-          5,
+          6,
           2
         ],
         "promote": false
@@ -1491,162 +1545,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 4,
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
           "y": 1,
           "owner": "defender",
           "type": "N"
         },
         {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
+          "x": 9,
           "y": 2,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          7,
-          2
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 4
-  },
-  {
-    "id": 25,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "L"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 4
-  },
-  {
-    "id": 26,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 4,
           "owner": "attacker",
           "type": "R"
         }
@@ -1676,18 +1594,154 @@
     "solution": [
       {
         "from": [
-          6,
-          4
+          9,
+          2
         ],
         "to": [
-          6,
+          7,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 9
+  },
+  {
+    "id": 25,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "L"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          5,
+          2
+        ],
+        "to": [
+          6,
+          2
+        ],
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 4
+  },
+  {
+    "id": 26,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 4,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          5,
+          3
+        ],
+        "to": [
+          5,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
   },
   {
     "id": 27,
@@ -1695,26 +1749,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 8,
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
+          "x": 6,
           "y": 1,
           "owner": "defender",
-          "type": "N"
+          "type": "S"
         },
         {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "N"
-        },
-        {
-          "x": 9,
-          "y": 4,
+          "x": 7,
+          "y": 3,
           "owner": "attacker",
           "type": "B"
         }
@@ -1745,10 +1799,10 @@
       {
         "from": [
           9,
-          4
+          1
         ],
         "to": [
-          7,
+          8,
           2
         ],
         "promote": true
@@ -1763,94 +1817,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 5,
+          "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
           "type": "G"
         },
         {
-          "x": 6,
-          "y": 4,
+          "x": 7,
+          "y": 2,
           "owner": "attacker",
           "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          4
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 29,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
         },
         {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 7,
-          "y": 3,
+          "x": 4,
+          "y": 4,
           "owner": "attacker",
           "type": "N"
         }
@@ -1884,8 +1870,8 @@
           2
         ],
         "to": [
-          6,
-          1
+          5,
+          2
         ],
         "promote": true
       }
@@ -1894,33 +1880,33 @@
     "score": 9
   },
   {
-    "id": 30,
+    "id": 29,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 4,
+          "x": 6,
           "y": 1,
           "owner": "defender",
-          "type": "L"
+          "type": "N"
         },
         {
-          "x": 5,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 9,
+          "y": 1,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         },
         {
-          "x": 6,
-          "y": 4,
+          "x": 7,
+          "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "B"
         }
       ],
       "hands": {
@@ -1948,11 +1934,79 @@
     "solution": [
       {
         "from": [
-          6,
-          4
+          9,
+          1
         ],
         "to": [
-          6,
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 30,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 4,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          4,
+          2
+        ],
+        "to": [
+          5,
           2
         ],
         "promote": true
@@ -1970,23 +2024,23 @@
           "x": 7,
           "y": 1,
           "owner": "defender",
-          "type": "K"
+          "type": "R"
         },
         {
           "x": 8,
           "y": 2,
           "owner": "defender",
-          "type": "N"
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
         },
         {
           "x": 7,
-          "y": 3,
-          "owner": "attacker",
-          "type": "N"
-        },
-        {
-          "x": 8,
-          "y": 3,
+          "y": 4,
           "owner": "attacker",
           "type": "B"
         }
@@ -2016,12 +2070,12 @@
     "solution": [
       {
         "from": [
-          8,
-          3
+          7,
+          4
         ],
         "to": [
-          6,
-          1
+          8,
+          3
         ],
         "promote": true
       }
@@ -2035,774 +2089,26 @@
     "initial": {
       "pieces": [
         {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 4,
-          "owner": "attacker",
-          "type": "L"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          4
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 33,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 9,
-          "y": 1,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 9,
-          "y": 4,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          9,
-          4
-        ],
-        "to": [
-          9,
-          3
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 7
-  },
-  {
-    "id": 34,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          3
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 35,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "owner": "defender",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          7,
-          2
-        ],
-        "to": [
-          7,
-          1
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 36,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          3
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 37,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 4,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          5,
-          4
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 38,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          6,
-          3
-        ],
-        "to": [
-          6,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 39,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          8,
-          2
-        ],
-        "to": [
-          7,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 40,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          1
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 41,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          3
-        ],
-        "to": [
-          4,
-          1
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 42,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          1
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 43,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
           "x": 3,
           "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "owner": "defender",
+          "type": "R"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 4,
           "owner": "attacker",
           "type": "R"
         }
@@ -2836,111 +2142,43 @@
           2
         ],
         "to": [
-          5,
+          6,
           2
         ],
         "promote": true
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 7
   },
   {
-    "id": 44,
+    "id": 33,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 4,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 6,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 8,
           "y": 1,
           "owner": "defender",
-          "type": "N"
+          "type": "B"
         },
         {
-          "x": 6,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
           "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          1
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 45,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
         },
         {
           "x": 5,
           "y": 4,
           "owner": "attacker",
-          "type": "R"
+          "type": "N"
         }
       ],
       "hands": {
@@ -2972,7 +2210,7 @@
           4
         ],
         "to": [
-          5,
+          6,
           2
         ],
         "promote": true
@@ -2982,7 +2220,7 @@
     "score": 9
   },
   {
-    "id": 46,
+    "id": 34,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -2990,7 +2228,7 @@
           "x": 5,
           "y": 1,
           "owner": "defender",
-          "type": "L"
+          "type": "G"
         },
         {
           "x": 6,
@@ -2999,140 +2237,140 @@
           "type": "K"
         },
         {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 35,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
           "x": 8,
-          "y": 2,
+          "y": 1,
+          "owner": "defender",
+          "type": "L"
+        },
+        {
+          "x": 7,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
           "x": 5,
-          "y": 3,
+          "y": 4,
           "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          5,
-          3
-        ],
-        "to": [
-          6,
-          3
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 47,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "L"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          5,
-          3
-        ],
-        "to": [
-          6,
-          3
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 48,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
           "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          5,
+          4
+        ],
+        "to": [
+          6,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 36,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
         },
         {
           "x": 7,
@@ -3141,10 +2379,10 @@
           "type": "R"
         },
         {
-          "x": 4,
+          "x": 9,
           "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "P"
         }
       ],
       "hands": {
@@ -3176,7 +2414,7 @@
           2
         ],
         "to": [
-          5,
+          9,
           2
         ],
         "promote": true
@@ -3186,7 +2424,211 @@
     "score": 9
   },
   {
-    "id": 49,
+    "id": 37,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "L"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 38,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 9,
+          "y": 3,
+          "owner": "defender",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          7,
+          3
+        ],
+        "to": [
+          7,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 7
+  },
+  {
+    "id": 39,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          3
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 40,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -3203,143 +2645,7 @@
           "type": "P"
         },
         {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
           "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          7,
-          2
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 50,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "R"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 4,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          7,
-          2
-        ],
-        "to": [
-          5,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 51,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
           "y": 2,
           "owner": "attacker",
           "type": "R"
@@ -3348,7 +2654,211 @@
           "x": 5,
           "y": 3,
           "owner": "attacker",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          4,
+          2
+        ],
+        "to": [
+          5,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 41,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
           "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          1
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 42,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          4
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 43,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
         }
       ],
       "hands": {
@@ -3380,7 +2890,551 @@
           2
         ],
         "to": [
-          6,
+          7,
+          3
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 7
+  },
+  {
+    "id": 44,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 45,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "R"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          2
+        ],
+        "to": [
+          7,
+          3
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 7
+  },
+  {
+    "id": 46,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 47,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "L"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          1
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 48,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          3
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 49,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "defender",
+          "type": "R"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          9,
+          2
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 7
+  },
+  {
+    "id": 50,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          3
+        ],
+        "to": [
+          8,
+          2
+        ],
+        "promote": true
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 51,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          8,
+          3
+        ],
+        "to": [
+          8,
           2
         ],
         "promote": true
@@ -3395,16 +3449,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 8,
+          "y": 2,
           "owner": "attacker",
-          "type": "P"
+          "type": "G"
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "owner": "attacker",
+          "type": "B"
         }
       ],
       "hands": {
@@ -3440,131 +3500,10 @@
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 53,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "L"
-        },
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 9,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          9,
-          3
-        ],
-        "to": [
-          9,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 54,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 55,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -3617,16 +3556,10 @@
     "score": 9
   },
   {
-    "id": 56,
+    "id": 54,
     "mateLength": 1,
     "initial": {
       "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "R"
-        },
         {
           "x": 6,
           "y": 1,
@@ -3634,23 +3567,23 @@
           "type": "K"
         },
         {
+          "x": 8,
+          "y": 2,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
           "x": 7,
           "y": 4,
           "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "N"
+          "type": "B"
         }
       ],
       "hands": {
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 0,
+          "G": 1,
           "S": 0,
           "N": 0,
           "L": 0,
@@ -3670,15 +3603,124 @@
     },
     "solution": [
       {
-        "from": [
-          7,
-          4
+        "to": [
+          5,
+          2
         ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 55,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 5,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
         "to": [
           7,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 56,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "G",
+        "promote": false
       }
     ],
     "quality": "validated",
@@ -3690,16 +3732,22 @@
     "initial": {
       "pieces": [
         {
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
           "x": 8,
-          "y": 1,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
-          "y": 3,
+          "x": 7,
+          "y": 5,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         }
       ],
       "hands": {
@@ -3728,14 +3776,14 @@
       {
         "to": [
           8,
-          2
+          4
         ],
         "drop": "G",
         "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 58,
@@ -3743,28 +3791,16 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 6,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
           "x": 7,
-          "y": 4,
+          "y": 3,
           "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 8,
-          "y": 4,
-          "owner": "attacker",
-          "type": "N"
+          "type": "G"
         }
       ],
       "hands": {
@@ -3772,7 +3808,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -3791,15 +3827,12 @@
     },
     "solution": [
       {
-        "from": [
-          7,
-          4
-        ],
         "to": [
           7,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
@@ -3811,8 +3844,8 @@
     "initial": {
       "pieces": [
         {
-          "x": 7,
-          "y": 1,
+          "x": 5,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
@@ -3820,7 +3853,13 @@
           "x": 6,
           "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
+        },
+        {
+          "x": 4,
+          "y": 6,
+          "owner": "attacker",
+          "type": "L"
         }
       ],
       "hands": {
@@ -3848,15 +3887,15 @@
     "solution": [
       {
         "to": [
-          7,
-          2
+          5,
+          4
         ],
         "drop": "G",
         "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 60,
@@ -3864,28 +3903,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 9,
           "y": 1,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 4,
           "owner": "attacker",
           "type": "R"
         },
         {
-          "x": 8,
+          "x": 6,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
           "y": 4,
           "owner": "attacker",
-          "type": "N"
+          "type": "G"
         }
       ],
       "hands": {
@@ -3893,7 +3926,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -3912,19 +3945,16 @@
     },
     "solution": [
       {
-        "from": [
-          7,
-          4
-        ],
         "to": [
-          7,
-          2
+          6,
+          3
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 61,
@@ -3932,16 +3962,16 @@
     "initial": {
       "pieces": [
         {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
           "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
         }
       ],
       "hands": {
@@ -3985,28 +4015,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 8,
           "y": 1,
-          "owner": "defender",
+          "owner": "attacker",
           "type": "R"
         },
         {
           "x": 6,
-          "y": 1,
+          "y": 2,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 8,
+          "x": 6,
           "y": 4,
           "owner": "attacker",
-          "type": "N"
+          "type": "G"
         }
       ],
       "hands": {
@@ -4014,7 +4038,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -4033,19 +4057,16 @@
     },
     "solution": [
       {
-        "from": [
-          9,
-          2
-        ],
         "to": [
-          7,
-          2
+          6,
+          3
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 63,
@@ -4053,16 +4074,16 @@
     "initial": {
       "pieces": [
         {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
           "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
-        },
-        {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
         }
       ],
       "hands": {
@@ -4106,28 +4127,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
           "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
-          "y": 4,
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "S"
         },
         {
           "x": 8,
-          "y": 4,
+          "y": 3,
           "owner": "attacker",
-          "type": "N"
+          "type": "G"
         }
       ],
       "hands": {
@@ -4135,7 +4150,7 @@
           "R": 0,
           "B": 0,
           "G": 0,
-          "S": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -4154,19 +4169,16 @@
     },
     "solution": [
       {
-        "from": [
-          7,
-          4
-        ],
         "to": [
-          7,
+          6,
           2
         ],
-        "promote": true
+        "drop": "S",
+        "promote": false
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
     "id": 65,
@@ -4174,131 +4186,13 @@
     "initial": {
       "pieces": [
         {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          7,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 66,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 4,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 1,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          4,
-          3
-        ],
-        "drop": "N",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 67,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
           "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 9,
           "y": 2,
           "owner": "attacker",
           "type": "R"
@@ -4340,7 +4234,7 @@
     "score": 9
   },
   {
-    "id": 68,
+    "id": 66,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -4351,8 +4245,67 @@
           "type": "K"
         },
         {
-          "x": 7,
+          "x": 4,
+          "y": 4,
+          "owner": "attacker",
+          "type": "B"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          6,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 67,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
           "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 2,
           "owner": "attacker",
           "type": "S"
         }
@@ -4382,7 +4335,60 @@
     "solution": [
       {
         "to": [
-          6,
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 68,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          5,
           2
         ],
         "drop": "G",
@@ -4398,13 +4404,178 @@
     "initial": {
       "pieces": [
         {
+          "x": 5,
+          "y": 1,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
           "x": 8,
+          "y": 4,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          7,
+          3
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 70,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
           "x": 7,
+          "y": 3,
+          "owner": "attacker",
+          "type": "G"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          7,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 71,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 72,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
           "y": 4,
           "owner": "attacker",
           "type": "N"
@@ -4446,165 +4617,6 @@
     "score": 9
   },
   {
-    "id": 70,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 71,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          7,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 72,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
     "id": 73,
     "mateLength": 1,
     "initial": {
@@ -4616,10 +4628,10 @@
           "type": "K"
         },
         {
-          "x": 8,
-          "y": 4,
+          "x": 7,
+          "y": 3,
           "owner": "attacker",
-          "type": "N"
+          "type": "S"
         }
       ],
       "hands": {
@@ -4663,16 +4675,16 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 1,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 6,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
         }
       ],
       "hands": {
@@ -4700,7 +4712,7 @@
     "solution": [
       {
         "to": [
-          6,
+          7,
           2
         ],
         "drop": "G",
@@ -4716,16 +4728,16 @@
     "initial": {
       "pieces": [
         {
-          "x": 6,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 6,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "S"
+          "type": "P"
         }
       ],
       "hands": {
@@ -4753,7 +4765,7 @@
     "solution": [
       {
         "to": [
-          6,
+          7,
           2
         ],
         "drop": "G",
@@ -4769,16 +4781,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "N"
+        },
+        {
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "S"
         }
       ],
       "hands": {
@@ -4806,7 +4824,7 @@
     "solution": [
       {
         "to": [
-          5,
+          8,
           2
         ],
         "drop": "S",
@@ -4822,13 +4840,7 @@
     "initial": {
       "pieces": [
         {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
+          "x": 5,
           "y": 2,
           "owner": "defender",
           "type": "B"
@@ -4836,14 +4848,20 @@
         {
           "x": 6,
           "y": 3,
-          "owner": "attacker",
-          "type": "L"
+          "owner": "defender",
+          "type": "K"
         },
         {
-          "x": 8,
-          "y": 3,
+          "x": 4,
+          "y": 4,
           "owner": "attacker",
-          "type": "S"
+          "type": "R"
+        },
+        {
+          "x": 6,
+          "y": 5,
+          "owner": "attacker",
+          "type": "N"
         }
       ],
       "hands": {
@@ -4871,8 +4889,8 @@
     "solution": [
       {
         "to": [
-          8,
-          2
+          7,
+          3
         ],
         "drop": "G",
         "promote": false
@@ -4887,28 +4905,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 8,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
+          "x": 6,
           "y": 2,
           "owner": "defender",
-          "type": "S"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
           "type": "B"
         },
         {
-          "x": 4,
+          "x": 8,
           "y": 4,
           "owner": "attacker",
-          "type": "R"
+          "type": "L"
         }
       ],
       "hands": {
@@ -4936,7 +4954,7 @@
     "solution": [
       {
         "to": [
-          6,
+          7,
           2
         ],
         "drop": "S",
@@ -4952,22 +4970,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 7,
-          "y": 1,
+          "x": 5,
+          "y": 2,
+          "owner": "defender",
+          "type": "N"
+        },
+        {
+          "x": 6,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 1,
+          "x": 4,
+          "y": 4,
           "owner": "attacker",
-          "type": "S"
+          "type": "R"
         },
         {
-          "x": 9,
-          "y": 2,
+          "x": 6,
+          "y": 5,
           "owner": "attacker",
-          "type": "G"
+          "type": "N"
         }
       ],
       "hands": {
@@ -4995,8 +5019,8 @@
     "solution": [
       {
         "to": [
-          6,
-          2
+          7,
+          3
         ],
         "drop": "G",
         "promote": false
@@ -5011,25 +5035,25 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 2,
-          "owner": "defender",
+          "x": 8,
+          "y": 1,
+          "owner": "attacker",
           "type": "S"
         },
         {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
+          "x": 6,
+          "y": 2,
+          "owner": "defender",
+          "type": "L"
         },
         {
-          "x": 4,
+          "x": 8,
           "y": 4,
           "owner": "attacker",
           "type": "L"
@@ -5060,7 +5084,7 @@
     "solution": [
       {
         "to": [
-          6,
+          7,
           2
         ],
         "drop": "S",
@@ -5076,22 +5100,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 9,
-          "y": 1,
+          "x": 6,
+          "y": 2,
           "owner": "defender",
-          "type": "L"
+          "type": "K"
         },
         {
           "x": 7,
           "y": 2,
-          "owner": "attacker",
-          "type": "S"
+          "owner": "defender",
+          "type": "P"
         },
         {
-          "x": 8,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
+          "x": 4,
+          "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "owner": "attacker",
+          "type": "G"
         }
       ],
       "hands": {
@@ -5119,8 +5149,185 @@
     "solution": [
       {
         "to": [
-          8,
-          3
+          6,
+          1
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 82,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 1,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          7,
+          1
+        ],
+        "drop": "R",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 83,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 4,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 3,
+          "y": 2,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          6,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 84,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 7,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          6,
+          2
         ],
         "drop": "G",
         "promote": false
@@ -5130,7 +5337,7 @@
     "score": 9
   },
   {
-    "id": 82,
+    "id": 85,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -5141,22 +5348,22 @@
           "type": "K"
         },
         {
-          "x": 5,
-          "y": 2,
+          "x": 6,
+          "y": 1,
           "owner": "defender",
-          "type": "S"
+          "type": "G"
         },
         {
-          "x": 5,
-          "y": 3,
+          "x": 3,
+          "y": 2,
           "owner": "attacker",
-          "type": "B"
+          "type": "G"
         },
         {
           "x": 6,
-          "y": 5,
+          "y": 3,
           "owner": "attacker",
-          "type": "L"
+          "type": "S"
         }
       ],
       "hands": {
@@ -5195,7 +5402,7 @@
     "score": 11
   },
   {
-    "id": 83,
+    "id": 86,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -5203,19 +5410,25 @@
           "x": 6,
           "y": 1,
           "owner": "defender",
+          "type": "S"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
           "type": "K"
         },
         {
-          "x": 4,
-          "y": 2,
+          "x": 5,
+          "y": 3,
           "owner": "attacker",
           "type": "G"
         },
         {
-          "x": 8,
-          "y": 3,
+          "x": 9,
+          "y": 4,
           "owner": "attacker",
-          "type": "S"
+          "type": "N"
         }
       ],
       "hands": {
@@ -5243,7 +5456,7 @@
     "solution": [
       {
         "to": [
-          7,
+          8,
           2
         ],
         "drop": "G",
@@ -5254,92 +5467,33 @@
     "score": 11
   },
   {
-    "id": 84,
+    "id": 87,
     "mateLength": 1,
     "initial": {
       "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        },
         {
           "x": 4,
-          "y": 4,
+          "y": 2,
           "owner": "attacker",
-          "type": "L"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
+          "type": "S"
         },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 85,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
         {
           "x": 6,
-          "y": 1,
+          "y": 3,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 8,
-          "y": 2,
-          "owner": "attacker",
+          "x": 6,
+          "y": 4,
+          "owner": "defender",
           "type": "G"
         },
         {
-          "x": 4,
-          "y": 3,
+          "x": 7,
+          "y": 5,
           "owner": "attacker",
-          "type": "S"
+          "type": "L"
         }
       ],
       "hands": {
@@ -5368,130 +5522,6 @@
       {
         "to": [
           5,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 86,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "L"
-        },
-        {
-          "x": 9,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          8,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 87,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
-          "y": 1,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 2,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
           3
         ],
         "drop": "G",
@@ -5507,28 +5537,22 @@
     "initial": {
       "pieces": [
         {
-          "x": 7,
+          "x": 6,
           "y": 1,
           "owner": "defender",
-          "type": "L"
+          "type": "R"
         },
         {
-          "x": 8,
+          "x": 7,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 9,
+          "x": 5,
           "y": 2,
           "owner": "attacker",
-          "type": "L"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
+          "type": "R"
         }
       ],
       "hands": {
@@ -5564,10 +5588,134 @@
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 9
   },
   {
     "id": 89,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        },
+        {
+          "x": 4,
+          "y": 3,
+          "owner": "attacker",
+          "type": "B"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "owner": "attacker",
+          "type": "S"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          6,
+          1
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 90,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 5,
+          "y": 2,
+          "owner": "attacker",
+          "type": "R"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          8,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 91,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -5578,16 +5726,22 @@
           "type": "K"
         },
         {
-          "x": 8,
+          "x": 7,
           "y": 2,
-          "owner": "attacker",
-          "type": "G"
+          "owner": "defender",
+          "type": "S"
         },
         {
-          "x": 4,
+          "x": 6,
           "y": 3,
           "owner": "attacker",
-          "type": "G"
+          "type": "N"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "L"
         }
       ],
       "hands": {
@@ -5623,30 +5777,36 @@
       }
     ],
     "quality": "validated",
-    "score": 9
+    "score": 11
   },
   {
-    "id": 90,
+    "id": 92,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 9,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
           "x": 7,
-          "y": 3,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 7,
-          "y": 5,
+          "x": 8,
+          "y": 1,
           "owner": "attacker",
           "type": "S"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "defender",
+          "type": "L"
+        },
+        {
+          "x": 8,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
         }
       ],
       "hands": {
@@ -5675,7 +5835,7 @@
       {
         "to": [
           7,
-          4
+          2
         ],
         "drop": "S",
         "promote": false
@@ -5685,189 +5845,12 @@
     "score": 11
   },
   {
-    "id": 91,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          4,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 92,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 7,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 8,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          7,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
     "id": 93,
     "mateLength": 1,
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
           "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "R"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          4,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 9
-  },
-  {
-    "id": 94,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
@@ -5876,13 +5859,84 @@
           "x": 7,
           "y": 2,
           "owner": "defender",
-          "type": "P"
+          "type": "G"
+        },
+        {
+          "x": 5,
+          "y": 3,
+          "owner": "attacker",
+          "type": "L"
+        },
+        {
+          "x": 6,
+          "y": 3,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          5,
+          2
+        ],
+        "drop": "G",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 11
+  },
+  {
+    "id": 94,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 2,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 2,
+          "owner": "attacker",
+          "type": "S"
         },
         {
           "x": 9,
           "y": 3,
-          "owner": "attacker",
-          "type": "G"
+          "owner": "defender",
+          "type": "L"
         }
       ],
       "hands": {
@@ -5911,7 +5965,7 @@
       {
         "to": [
           8,
-          2
+          3
         ],
         "drop": "S",
         "promote": false
@@ -5926,22 +5980,28 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 2,
+          "x": 6,
+          "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 6,
-          "y": 2,
+          "x": 8,
+          "y": 1,
           "owner": "attacker",
-          "type": "S"
+          "type": "G"
+        },
+        {
+          "x": 7,
+          "y": 2,
+          "owner": "defender",
+          "type": "B"
         },
         {
           "x": 4,
-          "y": 5,
+          "y": 3,
           "owner": "attacker",
-          "type": "R"
+          "type": "G"
         }
       ],
       "hands": {
@@ -5970,14 +6030,14 @@
       {
         "to": [
           5,
-          3
+          2
         ],
         "drop": "G",
         "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 9
   },
   {
     "id": 96,
@@ -5985,66 +6045,13 @@
     "initial": {
       "pieces": [
         {
-          "x": 8,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
           "x": 6,
           "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 5,
-          "y": 3,
           "owner": "attacker",
           "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
         },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          6,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 97,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
         {
-          "x": 7,
+          "x": 8,
           "y": 1,
           "owner": "defender",
           "type": "K"
@@ -6056,18 +6063,18 @@
           "type": "S"
         },
         {
-          "x": 6,
-          "y": 3,
-          "owner": "attacker",
-          "type": "L"
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "S"
         }
       ],
       "hands": {
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 1,
-          "S": 0,
+          "G": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -6090,15 +6097,139 @@
           8,
           2
         ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 97,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 7,
+          "y": 1,
+          "owner": "defender",
+          "type": "G"
+        },
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 6,
+          "y": 4,
+          "owner": "attacker",
+          "type": "N"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 1,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          5,
+          2
+        ],
         "drop": "G",
         "promote": false
       }
     ],
     "quality": "validated",
-    "score": 11
+    "score": 9
   },
   {
     "id": 98,
+    "mateLength": 1,
+    "initial": {
+      "pieces": [
+        {
+          "x": 6,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 8,
+          "y": 1,
+          "owner": "defender",
+          "type": "K"
+        },
+        {
+          "x": 9,
+          "y": 1,
+          "owner": "attacker",
+          "type": "S"
+        },
+        {
+          "x": 9,
+          "y": 2,
+          "owner": "defender",
+          "type": "P"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 1,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "to": [
+          8,
+          2
+        ],
+        "drop": "S",
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 9
+  },
+  {
+    "id": 99,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -6110,15 +6241,15 @@
         },
         {
           "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "S"
+          "y": 2,
+          "owner": "defender",
+          "type": "N"
         },
         {
-          "x": 6,
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "B"
+          "type": "G"
         }
       ],
       "hands": {
@@ -6154,65 +6285,6 @@
       }
     ],
     "quality": "validated",
-    "score": 11
-  },
-  {
-    "id": 99,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 6,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
-          "x": 5,
-          "y": 3,
-          "owner": "attacker",
-          "type": "B"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          4,
-          2
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
     "score": 9
   },
   {
@@ -6221,30 +6293,30 @@
     "initial": {
       "pieces": [
         {
-          "x": 5,
-          "y": 1,
-          "owner": "defender",
-          "type": "B"
-        },
-        {
           "x": 6,
           "y": 1,
           "owner": "defender",
           "type": "K"
         },
         {
-          "x": 6,
+          "x": 5,
+          "y": 2,
+          "owner": "defender",
+          "type": "L"
+        },
+        {
+          "x": 7,
           "y": 3,
           "owner": "attacker",
-          "type": "B"
+          "type": "G"
         }
       ],
       "hands": {
         "attacker": {
           "R": 0,
           "B": 0,
-          "G": 1,
-          "S": 0,
+          "G": 0,
+          "S": 1,
           "N": 0,
           "L": 0,
           "P": 0
@@ -6264,10 +6336,10 @@
     "solution": [
       {
         "to": [
-          7,
+          6,
           2
         ],
-        "drop": "G",
+        "drop": "S",
         "promote": false
       }
     ],

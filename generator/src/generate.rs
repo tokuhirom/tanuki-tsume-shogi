@@ -357,6 +357,20 @@ fn mutate_initial(rng: &mut Rng, seed: &InitialData) -> Option<InitialData> {
     if basic_validity(&cand) { Some(cand) } else { None }
 }
 
+/// 捨て駒の数を数える（攻め方の着手後、守り方がその駒を取る手を指した場合）
+fn count_sacrifices(solution: &[Move]) -> i32 {
+    let mut count = 0;
+    // 攻め方の手(i)の直後の守り方の手(i+1)が同じマスに着手 → 捨て駒
+    for i in (0..solution.len().saturating_sub(1)).step_by(2) {
+        let atk = &solution[i];
+        let def = &solution[i + 1];
+        if atk.to == def.to {
+            count += 1;
+        }
+    }
+    count
+}
+
 fn score_puzzle(initial: &InitialData, solution: &[Move]) -> i32 {
     let atk_types: HashSet<PieceType> = initial.pieces.iter()
         .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
@@ -367,8 +381,14 @@ fn score_puzzle(initial: &InitialData, solution: &[Move]) -> i32 {
     let drop_count = attacker_moves.iter().filter(|m| m.drop.is_some()).count() as i32;
     let promote_count = attacker_moves.iter().filter(|m| m.promote).count() as i32;
     let unique_targets: HashSet<_> = attacker_moves.iter().map(|m| (m.to[0], m.to[1])).collect();
+    let sacrifice_count = count_sacrifices(solution);
 
-    atk_types.len() as i32 * 2 + drop_count * 5 + promote_count * 3 + unique_targets.len() as i32 * 2 - (piece_count - 8).max(0)
+    atk_types.len() as i32 * 2
+        + drop_count * 5
+        + promote_count * 3
+        + sacrifice_count * 6
+        + unique_targets.len() as i32 * 2
+        - (piece_count - 8).max(0)
 }
 
 /// Compute a difficulty score for ordering puzzles from easy to hard.
@@ -390,11 +410,14 @@ fn difficulty_score(initial: &InitialData, solution: &[Move]) -> i32 {
         .filter(|p| p.owner == Owner::Attacker && p.piece_type != PieceType::K)
         .count() as i32;
 
+    let sacrifice_count = count_sacrifices(solution);
+
     hand_piece_count * 10
         + has_rook_in_hand * 8
         + has_bishop_in_hand * 6
         + drop_count * 5
         + promote_count * 3
+        + sacrifice_count * 4
         + defender_count * 2
         + attacker_count
 }
@@ -573,21 +596,33 @@ fn puzzle_features(init: &InitialData, sol: &[Move]) -> Vec<i32> {
     let atk_moves: Vec<_> = sol.iter().step_by(2).collect();
     let has_drop = atk_moves.iter().any(|m| m.drop.is_some()) as i32;
     let has_promote = atk_moves.iter().any(|m| m.promote) as i32;
+    let has_sacrifice = (count_sacrifices(sol) > 0) as i32;
 
     let piece_count = init.pieces.len() as i32;
     let def_count = init.pieces.iter().filter(|p| p.owner == Owner::Defender && p.piece_type != PieceType::K).count() as i32;
 
-    // King position region (3x3 grid)
+    // 玉の位置を領域(3x3)と座標で特徴化
     let dk_region_x = ((dk.0 - 1) / 3) as i32;
     let dk_region_y = ((dk.1 - 1) / 3) as i32;
+
+    // 攻め方の駒の相対位置（玉からの距離で特徴化）
+    let atk_rel_sum: i32 = atk_pieces.iter()
+        .map(|p| (p.x - dk.0).abs() as i32 + (p.y - dk.1).abs() as i32)
+        .sum();
+
+    // 解の最初の手の移動先（玉からの相対座標）
+    let first_target_dx = sol.first().map(|m| m.to[0] as i32 - dk.0 as i32).unwrap_or(0);
+    let first_target_dy = sol.first().map(|m| m.to[1] as i32 - dk.1 as i32).unwrap_or(0);
 
     vec![
         has_r * 6, has_b * 6, has_g * 6, has_s * 6, has_n * 6, has_l * 6, has_p * 6,
         hand_r * 6, hand_b * 6, hand_g * 6, hand_s * 6, hand_n * 6, hand_l * 6, hand_p * 6,
-        has_drop * 3, has_promote * 3,
+        has_drop * 4, has_promote * 4, has_sacrifice * 4,
         piece_count, def_count,
         dk_region_x * 5, dk_region_y * 5,
         dk.0 as i32, dk.1 as i32,
+        atk_rel_sum,
+        first_target_dx * 3, first_target_dy * 3,
     ]
 }
 
@@ -723,7 +758,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
     let mut comp_count: HashMap<String, u32> = HashMap::new();
     let mut atk_comp_count: HashMap<String, u32> = HashMap::new();
     let max_per_composition: u32 = 3; // 同一駒構成のパズルは最大3問
-    let max_per_atk_composition: u32 = 5; // 攻め方の駒構成が同じパズルは最大5問
+    let max_per_atk_composition: u32 = 3; // 攻め方の駒構成が同じパズルは最大3問
     let mut results: Vec<(InitialData, Vec<Move>, i32)> = Vec::new();
 
     let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
@@ -1195,5 +1230,62 @@ mod tests {
     fn test_diversify_order_empty() {
         let result = diversify_order(vec![], 10);
         assert!(result.is_empty());
+    }
+
+    // --- count_sacrifices テスト ---
+
+    #[test]
+    fn test_count_sacrifices_none() {
+        // 1手詰（守り方の応手なし）→ 捨て駒なし
+        let sol = vec![
+            Move { from: Some([3, 3]), to: [3, 2], drop: None, promote: false },
+        ];
+        assert_eq!(count_sacrifices(&sol), 0);
+    }
+
+    #[test]
+    fn test_count_sacrifices_one() {
+        // 攻め方が(5,3)に打つ → 守り方が(5,3)で取る → 捨て駒1回
+        let sol = vec![
+            Move { from: None, to: [5, 3], drop: Some(PieceType::G), promote: false },
+            Move { from: Some([5, 1]), to: [5, 3], drop: None, promote: false },
+            Move { from: Some([3, 2]), to: [4, 2], drop: None, promote: false },
+        ];
+        assert_eq!(count_sacrifices(&sol), 1);
+    }
+
+    #[test]
+    fn test_count_sacrifices_not_same_square() {
+        // 守り方が別の場所に逃げる → 捨て駒ではない
+        let sol = vec![
+            Move { from: Some([3, 3]), to: [3, 2], drop: None, promote: false },
+            Move { from: Some([5, 1]), to: [4, 1], drop: None, promote: false },
+            Move { from: Some([3, 2]), to: [4, 2], drop: None, promote: true },
+        ];
+        assert_eq!(count_sacrifices(&sol), 0);
+    }
+
+    #[test]
+    fn test_score_puzzle_includes_sacrifice() {
+        let init = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 3, y: 2, owner: Owner::Attacker, piece_type: PieceType::S },
+        ]);
+        // 捨て駒ありの解
+        let sol_with = vec![
+            Move { from: Some([3, 3]), to: [5, 3], drop: None, promote: false },
+            Move { from: Some([5, 1]), to: [5, 3], drop: None, promote: false },
+            Move { from: Some([3, 2]), to: [4, 2], drop: None, promote: false },
+        ];
+        // 捨て駒なしの解
+        let sol_without = vec![
+            Move { from: Some([3, 3]), to: [4, 2], drop: None, promote: false },
+            Move { from: Some([5, 1]), to: [4, 1], drop: None, promote: false },
+            Move { from: Some([3, 2]), to: [4, 1], drop: None, promote: false },
+        ];
+        let score_with = score_puzzle(&init, &sol_with);
+        let score_without = score_puzzle(&init, &sol_without);
+        assert!(score_with > score_without, "捨て駒ありの方がスコアが高いはず");
     }
 }
