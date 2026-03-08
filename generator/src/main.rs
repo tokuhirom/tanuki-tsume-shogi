@@ -113,10 +113,24 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
 
         let mut state = p.initial.to_state();
         let result = shogi::validate_tsume_puzzle(&mut state, mate_len);
-        if result.is_none() {
-            eprintln!("[NG] {}手詰 #{}: 詰将棋として不正", mate_len, p.id);
-            *failed += 1;
-            return;
+        match result {
+            None => {
+                eprintln!("[NG] {}手詰 #{}: 詰将棋として不正", mate_len, p.id);
+                *failed += 1;
+                return;
+            }
+            Some(solution) => {
+                // 駒余りチェック: 全手順を適用した最終局面で攻め方の持ち駒が残っていないか
+                let mut final_state = p.initial.to_state();
+                for m in &solution {
+                    final_state = shogi::apply_move(&final_state, m);
+                }
+                if final_state.hands.attacker.iter().sum::<u8>() > 0 {
+                    eprintln!("[NG] {}手詰 #{}: 駒余りあり (持ち駒: {:?})", mate_len, p.id, final_state.hands.attacker);
+                    *failed += 1;
+                    return;
+                }
+            }
         }
     }
     eprintln!("[OK] {}: {}問 (unique {})", file, puzzles.len(), checked.len());

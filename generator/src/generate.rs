@@ -488,11 +488,25 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
     // Remove unused attacker hand pieces; reject if stripping fails
     let (final_initial, final_solution) = strip_unused_hand(final_initial, final_solution, mate_length)?;
 
+    // 駒余りなし: 最終局面で攻め方の持ち駒が残っていたらリジェクト
+    if has_leftover_pieces(&final_initial, &final_solution) {
+        return None;
+    }
+
     // Normalize: mirror to right side if defender king is on the left half
     let (final_initial, final_solution) = normalize_right(final_initial, final_solution);
 
     let score = score_puzzle(&final_initial, &final_solution);
     Some((final_initial, final_solution, score))
+}
+
+/// 最終局面で攻め方の持ち駒が残っているか判定する（駒余りチェック）
+fn has_leftover_pieces(initial: &InitialData, solution: &[Move]) -> bool {
+    let mut state = initial.to_state();
+    for m in solution {
+        state = apply_move(&state, m);
+    }
+    state.hands.attacker.iter().sum::<u8>() > 0
 }
 
 /// 解の手順を再生して使われなかった攻め方の持ち駒を除去し、再検証する。

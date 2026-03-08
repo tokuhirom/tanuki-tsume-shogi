@@ -756,7 +756,8 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
                     break; // Early cutoff!
                 }
                 if !r.unique { all_unique = false; }
-                if best_move.is_none() {
+                // 守り方は最長抵抗の応手を選ぶ（駒余り防止のため最長lineを記録）
+                if r.line.len() >= best_line.len() {
                     best_move = Some(m.clone());
                     best_line = r.line;
                 }
