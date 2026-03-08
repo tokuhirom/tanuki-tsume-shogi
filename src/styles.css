@@ -235,12 +235,24 @@ h1, h2 { margin: 8px 0 12px; }
   color: transparent;
 }
 
+/* --- 駒の五角形スタイル --- */
 .piece {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--cell-size) * 0.82);
+  height: calc(var(--cell-size) * 0.88);
+  clip-path: polygon(50% 0%, 97% 18%, 84% 100%, 16% 100%, 3% 18%);
+  background: linear-gradient(175deg, #f7e8cc 0%, #dcc09a 60%, #c8a878 100%);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
+  font-weight: 700;
+  line-height: 1;
+  padding-top: calc(var(--cell-size) * 0.06);
 }
 
 .piece.defender {
   transform: rotate(180deg);
+  background: linear-gradient(175deg, #e8ddd0 0%, #c8b8a0 60%, #b0a088 100%);
 }
 
 .piece.promoted {
@@ -305,10 +317,19 @@ h1, h2 { margin: 8px 0 12px; }
 }
 
 .komadai-char {
-  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 34px;
+  clip-path: polygon(50% 0%, 97% 18%, 84% 100%, 16% 100%, 3% 18%);
+  background: linear-gradient(175deg, #f7e8cc 0%, #dcc09a 60%, #c8a878 100%);
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25));
+  font-size: 16px;
   font-weight: 700;
   color: var(--ink);
   line-height: 1;
+  padding-top: 2px;
 }
 
 .komadai-count {
@@ -428,7 +449,7 @@ h1, h2 { margin: 8px 0 12px; }
   .coord { width: 14px; min-width: 14px; font-size: 10px; }
   .komadai { min-width: 32px; padding: 4px 2px; margin-left: 4px; }
   .komadai-piece { width: 30px; height: 34px; }
-  .komadai-char { font-size: 15px; }
+  .komadai-char { font-size: 13px; width: 26px; height: 30px; }
   .komadai-count { font-size: 10px; }
 }
 
