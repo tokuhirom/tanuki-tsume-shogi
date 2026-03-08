@@ -129,7 +129,6 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
             None => {
                 eprintln!("[NG] {}手詰 #{}: 詰将棋として不正", mate_len, p.id);
                 *failed += 1;
-                return;
             }
             Some(solution) => {
                 // 駒余りチェック: 全手順を適用した最終局面で攻め方の持ち駒が残っていないか
@@ -140,7 +139,6 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
                 if final_state.hands.attacker.iter().sum::<u8>() > 0 {
                     eprintln!("[NG] {}手詰 #{}: 駒余りあり (持ち駒: {:?})", mate_len, p.id, final_state.hands.attacker);
                     *failed += 1;
-                    return;
                 }
             }
         }

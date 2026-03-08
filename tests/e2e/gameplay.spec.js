@@ -241,19 +241,54 @@ test('puzzle list shows clear count', async ({ page }) => {
   await expect(page.getByText(/クリア: \d+ \/ \d+/)).toBeVisible();
 });
 
-test('solution toggle hides/shows solution', async ({ page }) => {
-  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
-  await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
+test('solution toggle appears after wrong answer and shows/hides solution', async ({ page }) => {
+  const puzzle = loadPuzzle(3, 1);
+  const wrongPiece = findWrongPiece(puzzle);
+  if (!wrongPiece) test.skip();
 
-  await expect(page.getByText('▶ 手順を表示')).toBeVisible();
-  const solutionContent = page.locator('.log', { hasText: '手順を隠す' });
-  await expect(solutionContent).not.toBeVisible();
+  await page.goto(`/?mate=3&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('3手詰');
 
-  await page.getByText('▶ 手順を表示').click();
-  await expect(page.getByText('▼ 手順を隠す')).toBeVisible();
+  // 正解時は「答えを見る」ボタンが表示されない
+  await expect(page.getByText('▶ 答えを見る')).not.toBeVisible();
 
-  await page.getByText('▼ 手順を隠す').click();
-  await expect(page.getByText('▶ 手順を表示')).toBeVisible();
+  // 不正解にする
+  await page.locator(`button[data-x='${wrongPiece.x}'][data-y='${wrongPiece.y}']`).click();
+  const targets = page.locator('.board button.move-target');
+  await expect(targets.first()).toBeVisible();
+  await targets.first().click();
+  const prompt = page.getByText('成りますか？');
+  if (await prompt.isVisible().catch(() => false)) {
+    await page.getByRole('button', { name: '成る' }).click();
+  }
+  // ゲームが続く場合はもう一手
+  if (!await page.locator('.wrong-badge').isVisible().catch(() => false)) {
+    const cells = page.locator('.board button .piece:not(.defender)');
+    if (await cells.count() > 0) {
+      await cells.first().click();
+      const t2 = page.locator('.board button.move-target');
+      if (await t2.count() > 0) {
+        await t2.first().click();
+        if (await page.getByText('成りますか？').isVisible().catch(() => false)) {
+          await page.getByRole('button', { name: '成る' }).click();
+        }
+      }
+    }
+  }
+  await expect(page.locator('.wrong-badge, .clear-badge')).toBeVisible({ timeout: 5000 });
+
+  // 不正解の場合のみ答えを見るボタンが表示される
+  if (await page.locator('.wrong-badge').isVisible()) {
+    await expect(page.getByText('▶ 答えを見る')).toBeVisible();
+
+    // confirm ダイアログを自動承認
+    page.on('dialog', (dialog) => dialog.accept());
+    await page.getByText('▶ 答えを見る').click();
+    await expect(page.getByText('▼ 答えを隠す')).toBeVisible();
+
+    await page.getByText('▼ 答えを隠す').click();
+    await expect(page.getByText('▶ 答えを見る')).toBeVisible();
+  }
 });
 
 test('sound toggle persists state', async ({ page }) => {

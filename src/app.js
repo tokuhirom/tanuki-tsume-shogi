@@ -728,15 +728,29 @@ function renderBoard() {
 }
 
 function renderSolutionToggle() {
-  const show = state.showSolution || state.debugMode;
-  if (!show) {
-    return h("div", { class: "solution-toggle", onclick: () => { state.showSolution = true; render(); } }, "▶ 手順を表示");
+  const wrong = state.puzzleResult === "wrong";
+  // デバッグモード: 常に表示
+  if (state.debugMode) {
+    const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
+    return h("div", { class: "log" }, [
+      h("div", { class: "solution-toggle" }, "手順（デバッグ）"),
+      h("div", {}, list.join(" / ")),
+    ]);
+  }
+  // 不正解時のみ「答えを見る」ボタンを表示
+  if (!wrong) return null;
+  if (!state.showSolution) {
+    const confirmAndShow = () => {
+      if (confirm("正解手順を表示しますか？")) {
+        state.showSolution = true;
+        render();
+      }
+    };
+    return h("div", { class: "solution-toggle", onclick: confirmAndShow }, "▶ 答えを見る");
   }
   const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
   return h("div", { class: "log" }, [
-    state.debugMode
-      ? h("div", { class: "solution-toggle" }, "手順（デバッグ）")
-      : h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 手順を隠す"),
+    h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 答えを隠す"),
     h("div", {}, list.join(" / ")),
   ]);
 }

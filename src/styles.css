@@ -89,6 +89,7 @@ h1, h2 { margin: 8px 0 12px; }
   gap: 8px;
   flex-wrap: wrap;
   align-items: center;
+  margin-top: 12px;
   margin-bottom: 12px;
 }
 

@@ -111,9 +111,22 @@ export function createState({ pieces, hands, sideToMove }) {
     if (p.owner === "attacker" && p.type === "K") continue;
     board.set(key(p.x, p.y), { owner: p.owner, type: p.type });
   }
+  const h = hands ? cloneHands(hands) : emptyHands();
+  // 詰将棋ルール: 守り方の持ち駒 = 全駒数 - 盤上 - 攻め方持ち駒
+  const maxCounts = { R: 2, B: 2, G: 4, S: 4, N: 4, L: 4, P: 18 };
+  const used = {};
+  for (const t of HAND_TYPES) used[t] = h.attacker[t] || 0;
+  for (const p of pieces) {
+    if (p.type === "K") continue;
+    const base = unpromote(p.type);
+    if (base in used) used[base]++;
+  }
+  for (const t of HAND_TYPES) {
+    h.defender[t] = Math.max(0, maxCounts[t] - used[t]);
+  }
   return {
     board,
-    hands: hands ? cloneHands(hands) : emptyHands(),
+    hands: h,
     sideToMove: sideToMove || "attacker",
   };
 }

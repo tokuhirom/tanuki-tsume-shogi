@@ -914,9 +914,41 @@ impl InitialData {
             state.set(pos, Some(BoardPiece { owner: p.owner, piece_type: p.piece_type }));
         }
         state.hands.attacker = self.hands.attacker.to_array();
-        state.hands.defender = self.hands.defender.to_array();
+        // 詰将棋ルール: 守り方の持ち駒 = 全駒数 - 盤上の駒 - 攻め方の持ち駒
+        state.hands.defender = self.compute_defender_hand();
         state.side_to_move = self.side_to_move;
         state
+    }
+
+    /// 詰将棋ルールに基づき、守り方の持ち駒を自動計算する
+    /// 全駒数から盤上の駒と攻め方の持ち駒を差し引いた残りが守り方の持ち駒
+    fn compute_defender_hand(&self) -> [u8; 7] {
+        // 全駒数（玉を除く）: 飛2, 角2, 金4, 銀4, 桂4, 香4, 歩18
+        let max_counts: [u8; 7] = [2, 2, 4, 4, 4, 4, 18];
+        let mut used = [0u8; 7]; // HAND_TYPES順: R, B, G, S, N, L, P
+
+        // 盤上の駒をカウント（成り駒は元の駒種でカウント）
+        for p in &self.pieces {
+            if p.piece_type == PieceType::K { continue; }
+            let base = p.piece_type.unpromote();
+            let idx = HAND_TYPES.iter().position(|&t| t == base);
+            if let Some(i) = idx {
+                used[i] += 1;
+            }
+        }
+
+        // 攻め方の持ち駒を加算
+        let atk = self.hands.attacker.to_array();
+        for i in 0..7 {
+            used[i] += atk[i];
+        }
+
+        // 残りが守り方の持ち駒
+        let mut defender = [0u8; 7];
+        for i in 0..7 {
+            defender[i] = max_counts[i].saturating_sub(used[i]);
+        }
+        defender
     }
 
     pub fn from_state(state: &State) -> Self {
