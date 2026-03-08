@@ -153,6 +153,9 @@ pub struct State {
     pub board: [Option<BoardPiece>; 81],
     pub hands: Hands,
     pub side_to_move: Owner,
+    /// 玉の位置キャッシュ（O(81)の線形探索を回避）
+    attacker_king: Option<Pos>,
+    defender_king: Option<Pos>,
 }
 
 impl State {
@@ -161,6 +164,8 @@ impl State {
             board: [None; 81],
             hands: Hands::empty(),
             side_to_move: Owner::Attacker,
+            attacker_king: None,
+            defender_king: None,
         }
     }
 
@@ -169,21 +174,32 @@ impl State {
     }
 
     pub fn set(&mut self, pos: Pos, piece: Option<BoardPiece>) {
+        // 既存の駒が玉ならキャッシュをクリア
+        if let Some(old) = self.board[pos.idx()] {
+            if old.piece_type == PieceType::K {
+                match old.owner {
+                    Owner::Attacker => self.attacker_king = None,
+                    Owner::Defender => self.defender_king = None,
+                }
+            }
+        }
+        // 新しい駒が玉ならキャッシュを更新
+        if let Some(bp) = piece {
+            if bp.piece_type == PieceType::K {
+                match bp.owner {
+                    Owner::Attacker => self.attacker_king = Some(pos),
+                    Owner::Defender => self.defender_king = Some(pos),
+                }
+            }
+        }
         self.board[pos.idx()] = piece;
     }
 
     pub fn king_pos(&self, owner: Owner) -> Option<Pos> {
-        for y in 1..=9i8 {
-            for x in 1..=9i8 {
-                let p = Pos::new(x, y);
-                if let Some(bp) = self.get(p) {
-                    if bp.owner == owner && bp.piece_type == PieceType::K {
-                        return Some(p);
-                    }
-                }
-            }
+        match owner {
+            Owner::Attacker => self.attacker_king,
+            Owner::Defender => self.defender_king,
         }
-        None
     }
 }
 
@@ -400,53 +416,173 @@ pub fn apply_move(state: &State, m: &Move) -> State {
     next
 }
 
-/// Check if a specific square is attacked by any piece of the given attacker
-fn is_square_attacked(state: &State, target: Pos, attacker: Owner) -> bool {
-    for y in 1..=9i8 {
-        for x in 1..=9i8 {
-            let p = Pos::new(x, y);
-            if let Some(bp) = state.get(p) {
-                if bp.owner != attacker { continue; }
-                if can_reach(state, p, bp, target) {
-                    return true;
-                }
+/// 指し手の適用に必要な復元情報
+#[derive(Debug)]
+struct UndoInfo {
+    captured: Option<BoardPiece>,   // 取った駒（None=取りなし）
+}
+
+/// 指し手を局面に直接適用する（clone 不要、undo_move で復元可能）
+fn make_move(state: &mut State, m: &Move) -> UndoInfo {
+    let owner = state.side_to_move;
+
+    if let Some(drop_type) = m.drop {
+        state.hands.sub(owner, drop_type, 1);
+        let tp = Pos::new(m.to[0], m.to[1]);
+        state.set(tp, Some(BoardPiece { owner, piece_type: drop_type }));
+        state.side_to_move = owner.opposite();
+        UndoInfo { captured: None }
+    } else {
+        let from = m.from.unwrap();
+        let fp = Pos::new(from[0], from[1]);
+        let src = state.get(fp).unwrap();
+        let tp = Pos::new(m.to[0], m.to[1]);
+        let captured = state.get(tp);
+
+        if let Some(cap) = captured {
+            let cap_type = cap.piece_type.unpromote();
+            if cap_type != PieceType::K {
+                state.hands.add(owner, cap_type, 1);
+            }
+        }
+
+        state.set(fp, None);
+        let moved_type = if m.promote { src.piece_type.promote() } else { src.piece_type };
+        state.set(tp, Some(BoardPiece { owner, piece_type: moved_type }));
+        state.side_to_move = owner.opposite();
+        UndoInfo { captured }
+    }
+}
+
+/// make_move で適用した手を元に戻す
+fn undo_move(state: &mut State, m: &Move, undo: &UndoInfo) {
+    // side_to_move を戻す（make_move で opposite() にしたので再度反転）
+    state.side_to_move = state.side_to_move.opposite();
+    let owner = state.side_to_move;
+
+    if let Some(drop_type) = m.drop {
+        let tp = Pos::new(m.to[0], m.to[1]);
+        state.set(tp, None);
+        state.hands.add(owner, drop_type, 1);
+    } else {
+        let from = m.from.unwrap();
+        let fp = Pos::new(from[0], from[1]);
+        let tp = Pos::new(m.to[0], m.to[1]);
+        let moved = state.get(tp).unwrap();
+        // 成りを戻す
+        let orig_type = if m.promote { moved.piece_type.unpromote() } else { moved.piece_type };
+        // tp を先に復元してから fp を復元する
+        // （玉移動の場合、fp を先に set すると tp の set で玉キャッシュがクリアされるため）
+        state.set(tp, undo.captured);
+        state.set(fp, Some(BoardPiece { owner, piece_type: orig_type }));
+
+        // 持ち駒を戻す
+        if let Some(cap) = undo.captured {
+            let cap_type = cap.piece_type.unpromote();
+            if cap_type != PieceType::K {
+                state.hands.sub(owner, cap_type, 1);
             }
         }
     }
+}
+
+/// target マスに attacker 側の駒の利きがあるか判定する（逆方向探索）
+/// 全81マス走査の代わりに、target から各方向に駒を探して利きを確認する
+fn is_square_attacked(state: &State, target: Pos, attacker: Owner) -> bool {
+    // ステップ駒の逆方向チェック: target から見て各方向1マスに attacker の駒があり、
+    // その駒がそのステップで target に到達できるか
+
+    // 玉のステップ方向（全8方向）— 玉・金系・銀のチェックに使う
+    for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
+        let p = Pos::new(target.x + dx, target.y + dy);
+        if !p.is_valid() { continue; }
+        if let Some(bp) = state.get(p) {
+            if bp.owner == attacker && can_step_to(bp.piece_type, attacker, p, target) {
+                return true;
+            }
+        }
+    }
+
+    // 桂馬の逆方向チェック: 桂馬は(-1,-2),(1,-2)のステップなので、
+    // target から見て(+1,+2),(-1,+2)の位置に桂馬があるか（攻め方の場合）
+    let knight_offsets: [(i8, i8); 2] = match attacker {
+        Owner::Attacker => [(1, 2), (-1, 2)],
+        Owner::Defender => [(1, -2), (-1, -2)],
+    };
+    for &(dx, dy) in &knight_offsets {
+        let p = Pos::new(target.x + dx, target.y + dy);
+        if !p.is_valid() { continue; }
+        if let Some(bp) = state.get(p) {
+            if bp.owner == attacker && (bp.piece_type == PieceType::N) {
+                return true;
+            }
+        }
+    }
+
+    // 走り駒（飛車・龍の十字方向、角・馬の斜め方向、香車の前方向）
+    // 十字方向: 飛車・龍
+    for &(dx, dy) in &[(0i8,-1),(1,0),(0,1),(-1,0)] {
+        let mut nx = target.x + dx;
+        let mut ny = target.y + dy;
+        while Pos::new(nx, ny).is_valid() {
+            if let Some(bp) = state.get(Pos::new(nx, ny)) {
+                if bp.owner == attacker {
+                    match bp.piece_type {
+                        PieceType::R | PieceType::PR => return true,
+                        // 香車: 前方向のみ（攻め方は dy=-1 なので target から見て dy=+1 方向に香車がある）
+                        PieceType::L => {
+                            let forward_dy = match attacker {
+                                Owner::Attacker => 1,  // target から見て下方向に攻め方の香車
+                                Owner::Defender => -1,
+                            };
+                            if dy == forward_dy { return true; }
+                        }
+                        _ => {}
+                    }
+                }
+                break; // 駒にぶつかったらその方向は終了
+            }
+            nx += dx;
+            ny += dy;
+        }
+    }
+
+    // 斜め方向: 角・馬
+    for &(dx, dy) in &[(1i8,-1),(1,1),(-1,1),(-1,-1)] {
+        let mut nx = target.x + dx;
+        let mut ny = target.y + dy;
+        while Pos::new(nx, ny).is_valid() {
+            if let Some(bp) = state.get(Pos::new(nx, ny)) {
+                if bp.owner == attacker {
+                    match bp.piece_type {
+                        PieceType::B | PieceType::PB => return true,
+                        _ => {}
+                    }
+                }
+                break;
+            }
+            nx += dx;
+            ny += dy;
+        }
+    }
+
     false
 }
 
-/// Fast check: can this piece reach the target square? (without generating all moves)
-fn can_reach(state: &State, pos: Pos, piece: BoardPiece, target: Pos) -> bool {
-    let owner = piece.owner;
-    let t = piece.piece_type;
+/// ステップ駒が from から target に1手で移動できるか判定する
+#[inline]
+fn can_step_to(piece_type: PieceType, owner: Owner, from: Pos, target: Pos) -> bool {
+    let dx = target.x - from.x;
+    let dy = target.y - from.y;
+    // owner の方向変換を逆適用して、定義上の方向と比較
+    let (ndx, ndy) = transform_dir(owner, dx, dy);
 
-    for &(dx, dy) in step_moves(t) {
-        let (tx, ty) = transform_dir(owner, dx, dy);
-        if pos.x + tx == target.x && pos.y + ty == target.y {
-            return true;
-        }
+    for &(sx, sy) in step_moves(piece_type) {
+        if sx == ndx && sy == ndy { return true; }
     }
-
-    for &(dx, dy) in slide_dirs(t) {
-        let (tx, ty) = transform_dir(owner, dx, dy);
-        let mut nx = pos.x + tx;
-        let mut ny = pos.y + ty;
-        while Pos::new(nx, ny).is_valid() {
-            if nx == target.x && ny == target.y { return true; }
-            if state.get(Pos::new(nx, ny)).is_some() { break; }
-            nx += tx;
-            ny += ty;
-        }
+    for &(sx, sy) in extra_steps(piece_type) {
+        if sx == ndx && sy == ndy { return true; }
     }
-
-    for &(dx, dy) in extra_steps(t) {
-        let (tx, ty) = transform_dir(owner, dx, dy);
-        if pos.x + tx == target.x && pos.y + ty == target.y {
-            return true;
-        }
-    }
-
     false
 }
 
@@ -461,34 +597,50 @@ pub fn is_in_check(state: &State, owner: Owner) -> bool {
 }
 
 /// 手番側に合法手が1つでもあるか判定する（全手生成より高速）
-fn has_any_legal_move(state: &State) -> bool {
+fn has_any_legal_move(state: &mut State) -> bool {
     let owner = state.side_to_move;
 
+    // 盤上の駒の位置を先に収集（state を後で &mut で使うため）
+    let mut piece_positions = Vec::new();
     for y in 1..=9i8 {
         for x in 1..=9i8 {
             let p = Pos::new(x, y);
             if let Some(bp) = state.get(p) {
-                if bp.owner != owner { continue; }
-                for m in pseudo_moves_from(state, p, bp) {
-                    let next = apply_move(state, &m);
-                    if !is_in_check(&next, owner) {
-                        return true;
-                    }
+                if bp.owner == owner {
+                    piece_positions.push((p, bp));
                 }
             }
         }
     }
 
-    for m in pseudo_drops(state, owner) {
-        let next = apply_move(state, &m);
-        if is_in_check(&next, owner) { continue; }
+    for (p, bp) in &piece_positions {
+        for m in pseudo_moves_from(state, *p, *bp) {
+            let undo = make_move(state, &m);
+            let in_check = is_in_check(state, owner);
+            undo_move(state, &m, &undo);
+            if !in_check {
+                return true;
+            }
+        }
+    }
+
+    let drops = pseudo_drops(state, owner);
+    for m in drops {
+        let undo = make_move(state, &m);
+        let in_check = is_in_check(state, owner);
+        if in_check {
+            undo_move(state, &m, &undo);
+            continue;
+        }
         // 打ち歩詰めチェック
         if m.drop == Some(PieceType::P) {
             let enemy = owner.opposite();
-            if is_in_check(&next, enemy) && !has_any_legal_move(&next) {
+            if is_in_check(state, enemy) && !has_any_legal_move(state) {
+                undo_move(state, &m, &undo);
                 continue;
             }
         }
+        undo_move(state, &m, &undo);
         return true;
     }
 
@@ -496,40 +648,57 @@ fn has_any_legal_move(state: &State) -> bool {
 }
 
 /// 打ち歩詰めの禁手チェック: 歩を打って王手かつ相手の合法手がない場合は禁止
-fn pawn_drop_mate_forbidden(state: &State, m: &Move) -> bool {
+fn pawn_drop_mate_forbidden(state: &mut State, m: &Move) -> bool {
     if m.drop != Some(PieceType::P) { return false; }
     let owner = state.side_to_move;
-    let next = apply_move(state, m);
     let enemy = owner.opposite();
-    if !is_in_check(&next, enemy) { return false; }
-    !has_any_legal_move(&next)
+    let undo = make_move(state, m);
+    let result = if !is_in_check(state, enemy) {
+        false
+    } else {
+        !has_any_legal_move(state)
+    };
+    undo_move(state, m, &undo);
+    result
 }
 
 /// 現在の手番側の合法手をすべて生成する
 /// 自玉を王手に晒す手と打ち歩詰めは除外される
-pub fn legal_moves(state: &State) -> Vec<Move> {
+pub fn legal_moves(state: &mut State) -> Vec<Move> {
     let owner = state.side_to_move;
     let mut out = Vec::new();
 
+    // 盤上の駒の位置を先に収集
+    let mut piece_positions = Vec::new();
     for y in 1..=9i8 {
         for x in 1..=9i8 {
             let p = Pos::new(x, y);
             if let Some(bp) = state.get(p) {
-                if bp.owner != owner { continue; }
-                for m in pseudo_moves_from(state, p, bp) {
-                    let next = apply_move(state, &m);
-                    if !is_in_check(&next, owner) {
-                        out.push(m);
-                    }
+                if bp.owner == owner {
+                    piece_positions.push((p, bp));
                 }
             }
         }
     }
 
-    for m in pseudo_drops(state, owner) {
+    for (p, bp) in &piece_positions {
+        for m in pseudo_moves_from(state, *p, *bp) {
+            let undo = make_move(state, &m);
+            let in_check = is_in_check(state, owner);
+            undo_move(state, &m, &undo);
+            if !in_check {
+                out.push(m);
+            }
+        }
+    }
+
+    let drops = pseudo_drops(state, owner);
+    for m in drops {
         if pawn_drop_mate_forbidden(state, &m) { continue; }
-        let next = apply_move(state, &m);
-        if !is_in_check(&next, owner) {
+        let undo = make_move(state, &m);
+        let in_check = is_in_check(state, owner);
+        undo_move(state, &m, &undo);
+        if !in_check {
             out.push(m);
         }
     }
@@ -556,7 +725,7 @@ fn state_key(state: &State, plies: u32) -> u64 {
 /// plies 手以内の詰みを探索する
 /// 攻め方は王手のみ許可（詰将棋ルール）、守り方は最善応手を選ぶ
 /// メモ化により同一局面の再計算を回避する
-pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, MateResult>) -> MateResult {
+pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut HashMap<u64, MateResult>) -> MateResult {
     let key = state_key(state, plies);
     if let Some(cached) = memo.get(&key) {
         return cached.clone();
@@ -579,8 +748,9 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
             let mut best_line: Vec<Move> = vec![];
 
             for m in &moves {
-                let next = apply_move(state, m);
-                let r = forced_mate_within(&next, plies - 1, memo);
+                let undo = make_move(state, m);
+                let r = forced_mate_within(state, plies - 1, memo);
+                undo_move(state, m, &undo);
                 if !r.mate {
                     all_mate = false;
                     break; // Early cutoff!
@@ -604,21 +774,25 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
         MateResult { mate: false, unique: false, line: vec![] }
     } else {
         // Only consider checking moves (tsume-shogi rule)
-        let checks: Vec<_> = moves.iter()
+        // legal_moves の結果から王手になる手を抽出
+        let checks: Vec<Move> = moves.into_iter()
             .filter(|m| {
-                let n = apply_move(state, m);
-                is_in_check(&n, enemy)
+                let undo = make_move(state, m);
+                let check = is_in_check(state, enemy);
+                undo_move(state, m, &undo);
+                check
             })
             .collect();
 
-        let mut winning: Vec<_> = checks.iter()
-            .map(|m| {
-                let next = apply_move(state, m);
-                let r = forced_mate_within(&next, plies - 1, memo);
-                ((*m).clone(), r)
-            })
-            .filter(|(_, r)| r.mate)
-            .collect();
+        let mut winning: Vec<(Move, MateResult)> = Vec::new();
+        for m in &checks {
+            let undo = make_move(state, m);
+            let r = forced_mate_within(state, plies - 1, memo);
+            undo_move(state, m, &undo);
+            if r.mate {
+                winning.push((m.clone(), r));
+            }
+        }
 
         if winning.is_empty() {
             MateResult { mate: false, unique: false, line: vec![] }
@@ -646,7 +820,7 @@ pub fn forced_mate_within(state: &State, plies: u32, memo: &mut HashMap<u64, Mat
 /// 条件: 奇数手、攻め方手番、両玉あり、初期王手なし、
 ///       指定手数で詰み、より短い手数では詰まない、解が唯一
 /// 有効なら解の手順を返す
-pub fn validate_tsume_puzzle(state: &State, mate_length: u32) -> Option<Vec<Move>> {
+pub fn validate_tsume_puzzle(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
     if mate_length.is_multiple_of(2) || mate_length == 0 { return None; }
     if state.side_to_move != Owner::Attacker { return None; }
     // 守り方の玉は必須（攻め方の玉は無くても良い）
@@ -1070,8 +1244,8 @@ mod tests {
     #[test]
     fn test_legal_moves_no_self_check() {
         // 合法手は自玉を王手に晒さない手のみ
-        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::G)]);
-        let moves = legal_moves(&state);
+        let mut state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::G)]);
+        let moves = legal_moves(&mut state);
         for m in &moves {
             let next = apply_move(&state, m);
             assert!(!is_in_check(&next, Owner::Attacker));
@@ -1159,7 +1333,7 @@ mod tests {
         // ただし実際に打ち歩詰めの局面を作るのは複雑なので、関数の存在確認のみ
         let mut hands = empty_hands_data();
         hands.attacker.P = 1;
-        let state = make_state_with_hands(
+        let mut state = make_state_with_hands(
             (5, 9), (5, 1),
             &[
                 (4, 1, Owner::Attacker, PieceType::G),
@@ -1169,7 +1343,7 @@ mod tests {
             ],
             hands,
         );
-        let legal = legal_moves(&state);
+        let legal = legal_moves(&mut state);
         // 歩を5,2に打つと打ち歩詰め → その手は合法手に含まれないはず
         let pawn_drop_52 = legal.iter().find(|m| m.drop == Some(PieceType::P) && m.to == [5, 2]);
         assert!(pawn_drop_52.is_none(), "打ち歩詰めが許可されてしまう");
@@ -1217,28 +1391,28 @@ mod tests {
         // 銀(2,1)が(1,2)を守るので玉は金を取れない
         let mut hands = empty_hands_data();
         hands.attacker.G = 1;
-        let state = make_state_with_hands((5, 9), (1, 1), &[
+        let mut state = make_state_with_hands((5, 9), (1, 1), &[
             (2, 1, Owner::Attacker, PieceType::S),
         ], hands);
         assert!(!is_in_check(&state, Owner::Defender), "初期局面で王手がかかっている");
-        let result = validate_tsume_puzzle(&state, 1);
+        let result = validate_tsume_puzzle(&mut state, 1);
         assert!(result.is_some(), "一手詰めが検出されない");
     }
 
     #[test]
     fn test_validate_rejects_already_in_check() {
         // 初期状態で既に王手 → 無効
-        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
+        let mut state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
         assert!(is_in_check(&state, Owner::Defender));
-        let result = validate_tsume_puzzle(&state, 1);
+        let result = validate_tsume_puzzle(&mut state, 1);
         assert!(result.is_none(), "初期局面で王手の問題が通ってしまう");
     }
 
     #[test]
     fn test_validate_rejects_even_mate_length() {
-        let state = make_state((5, 9), (5, 1), &[]);
-        assert!(validate_tsume_puzzle(&state, 2).is_none());
-        assert!(validate_tsume_puzzle(&state, 0).is_none());
+        let mut state = make_state((5, 9), (5, 1), &[]);
+        assert!(validate_tsume_puzzle(&mut state, 2).is_none());
+        assert!(validate_tsume_puzzle(&mut state, 0).is_none());
     }
 
     // --- InitialData 変換テスト ---

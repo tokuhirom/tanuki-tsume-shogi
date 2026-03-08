@@ -102,8 +102,8 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32) {
         }
         checked.insert(sig);
 
-        let state = p.initial.to_state();
-        let result = shogi::validate_tsume_puzzle(&state, mate_len);
+        let mut state = p.initial.to_state();
+        let result = shogi::validate_tsume_puzzle(&mut state, mate_len);
         if result.is_none() {
             eprintln!("[NG] {}手詰 #{}: 詰将棋として不正", mate_len, p.id);
             *failed += 1;

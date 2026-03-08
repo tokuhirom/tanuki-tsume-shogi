@@ -442,8 +442,8 @@ fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
             let mut cand = cur.clone();
             cand.pieces.remove(i);
             if !basic_validity(&cand) { continue; }
-            let state = cand.to_state();
-            if validate_tsume_puzzle(&state, mate_length).is_some() {
+            let mut state = cand.to_state();
+            if validate_tsume_puzzle(&mut state, mate_length).is_some() {
                 cur = cand;
                 changed = true;
                 break;
@@ -468,12 +468,12 @@ fn strip_attacker_king(initial: &InitialData) -> InitialData {
 
 fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(InitialData, Vec<Move>, i32)> {
     let normalized = strip_attacker_king(initial);
-    let state = normalized.to_state();
-    let solution = validate_tsume_puzzle(&state, mate_length)?;
+    let mut state = normalized.to_state();
+    let solution = validate_tsume_puzzle(&mut state, mate_length)?;
 
     let pruned = prune_initial(&normalized, mate_length);
-    let pruned_state = pruned.to_state();
-    let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_puzzle(&pruned_state, mate_length) {
+    let mut pruned_state = pruned.to_state();
+    let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_puzzle(&mut pruned_state, mate_length) {
         (InitialData::from_state(&pruned_state), pruned_sol)
     } else {
         (InitialData::from_state(&state), solution)
@@ -507,8 +507,8 @@ fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length:
     }
     initial.hands.attacker = HandCount::from_array(&atk);
     // 再検証: 持ち駒を減らすと解が変わる可能性がある
-    let new_state = initial.to_state();
-    validate_tsume_puzzle(&new_state, mate_length)
+    let mut new_state = initial.to_state();
+    validate_tsume_puzzle(&mut new_state, mate_length)
         .map(|new_sol| (initial, new_sol))
 }
 
