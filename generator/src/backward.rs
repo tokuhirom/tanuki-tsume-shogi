@@ -498,13 +498,65 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
 ///
 /// 現在の局面は「攻め方が王手をかけた直後」の状態。
 /// 守り方の巻き戻しでは:
-/// 1. 玉を隣接マスに移動（逃げる前の位置に戻す）
-/// 2. 新しい玉位置に王手をかける攻め方の駒を配置
+/// パターンA: 玉を空きマスに移動（逃げる前の位置に戻す）
+/// パターンB: 玉が攻め方の駒を取って逃げた（捕獲の逆算: 元の位置に駒を復元）
+/// いずれも新しい玉位置に王手がかかっている状態を作る
 ///    → 結果: 「攻め方が別の王手をかけた直後」の状態になる
 fn unwind_defender_move(rng: &mut Rng, state: &State) -> Option<State> {
     let dk_pos = state.king_pos(Owner::Defender)?;
 
-    // 玉の移動先候補（逃げる前の位置）
+    // パターンB: 玉が攻め方の駒を取って逃げた場合の逆算（30%の確率で先に試行）
+    if rng.next_f64() < 0.3 {
+        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) {
+            return Some(s);
+        }
+    }
+
+    // パターンA: 玉を空きマスに移動（逃げる前の位置）
+    let mut from_candidates = Vec::new();
+    for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
+        let old_pos = Pos::new(dk_pos.x + dx, dk_pos.y + dy);
+        if !old_pos.is_valid() { continue; }
+        if state.get(old_pos).is_some() { continue; }
+        from_candidates.push(old_pos);
+    }
+
+    if !from_candidates.is_empty() {
+        rng.shuffle(&mut from_candidates);
+
+        for &old_king_pos in &from_candidates {
+            let mut new_state = state.clone();
+            new_state.set(dk_pos, None);
+            new_state.set(old_king_pos, Some(BoardPiece { owner: Owner::Defender, piece_type: PieceType::K }));
+            new_state.side_to_move = Owner::Defender;
+
+            // まず既存の駒で王手がかかっているか確認
+            if is_in_check(&new_state, Owner::Defender) {
+                return Some(new_state);
+            }
+
+            // 王手がかかっていない場合、攻め方の駒を追加して王手をかける
+            if let Some(checked_state) = add_checking_piece(rng, &new_state, old_king_pos) {
+                return Some(checked_state);
+            }
+        }
+    }
+
+    // パターンB をまだ試していなければ試す
+    unwind_defender_capture(rng, state, dk_pos)
+}
+
+/// 守り方の玉が攻め方の駒を取って逃げた場合の逆算
+/// 現在の玉位置に攻め方の駒を復元し、元の位置（隣接マス）に玉を戻す
+fn unwind_defender_capture(rng: &mut Rng, state: &State, dk_pos: Pos) -> Option<State> {
+    // 現在の玉位置に攻め方の駒があった（玉が取った）
+    let capture_types = [
+        PieceType::G, PieceType::S, PieceType::P, PieceType::N, PieceType::L,
+        PieceType::R, PieceType::B,
+    ];
+    let captured_type = *rng.pick(&capture_types);
+
+    // 元の玉位置（逃げる前）の候補
     let mut from_candidates = Vec::new();
     for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
         let old_pos = Pos::new(dk_pos.x + dx, dk_pos.y + dy);
@@ -516,19 +568,20 @@ fn unwind_defender_move(rng: &mut Rng, state: &State) -> Option<State> {
     if from_candidates.is_empty() { return None; }
     rng.shuffle(&mut from_candidates);
 
-    // 各候補位置を試す
     for &old_king_pos in &from_candidates {
         let mut new_state = state.clone();
-        new_state.set(dk_pos, None);
+        // 現在の玉位置に攻め方の駒を復元（玉が取った駒）
+        new_state.set(dk_pos, Some(BoardPiece { owner: Owner::Attacker, piece_type: captured_type }));
+        // 元の位置に玉を配置
         new_state.set(old_king_pos, Some(BoardPiece { owner: Owner::Defender, piece_type: PieceType::K }));
         new_state.side_to_move = Owner::Defender;
 
-        // まず既存の駒で王手がかかっているか確認
+        // 王手がかかっているか確認
         if is_in_check(&new_state, Owner::Defender) {
             return Some(new_state);
         }
 
-        // 王手がかかっていない場合、攻め方の駒を追加して王手をかける
+        // 王手をかける駒を追加
         if let Some(checked_state) = add_checking_piece(rng, &new_state, old_king_pos) {
             return Some(checked_state);
         }
