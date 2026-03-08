@@ -14,6 +14,7 @@ const commit = safe("git rev-parse --short HEAD");
 const builtAt = new Date().toISOString();
 
 export default defineConfig({
+  base: "/tanuki-tsume-shogi/",
   define: {
     __BUILD_INFO__: JSON.stringify({ branch, commit, builtAt }),
   },
