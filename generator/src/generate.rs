@@ -5,6 +5,8 @@ use rayon::prelude::*;
 use serde::{Serialize, Deserialize};
 
 use crate::shogi::*;
+use crate::backward;
+use crate::GenerateMethod;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Puzzle {
@@ -794,7 +796,7 @@ fn attacker_composition_key(initial: &InitialData) -> String {
         h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
-pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle]) -> Vec<Puzzle> {
+pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
     let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
@@ -880,17 +882,68 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         }
     }
 
-    eprintln!("  {}手詰: Starting parallel generation with {} attempts...", mate_length, attempts);
+    // --- 逆算法フェーズ ---
+    if method == GenerateMethod::Backward || method == GenerateMethod::Both {
+        let backward_attempts = match method {
+            GenerateMethod::Backward => attempts,
+            GenerateMethod::Both => attempts / 2, // 半分を逆算法に割り当て
+            _ => 0,
+        };
+        if backward_attempts > 0 {
+            eprintln!("  {}手詰: Starting backward generation with {} attempts...", mate_length, backward_attempts);
+
+            let bw_batch_size = 1000u32;
+            let bw_batches = backward_attempts.div_ceil(bw_batch_size);
+
+            for batch in 0..bw_batches {
+                if results.len() as u32 >= max { break; }
+
+                let batch_start = batch * bw_batch_size;
+                let batch_end = (batch_start + bw_batch_size).min(backward_attempts);
+                let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+
+                let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
+                    .filter_map(|&i| {
+                        let rng_seed = seed.wrapping_add(i as u64).wrapping_mul(6364136223846793005);
+                        let cand = backward::backward_candidate(rng_seed, mate_length)?;
+                        validate_and_prune(&cand, mate_length)
+                    })
+                    .collect();
+
+                for (fin, sol, score) in found {
+                    if results.len() as u32 >= max { break; }
+                    if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
+                        results.push((fin, sol, score));
+                    }
+                }
+
+                if batch % 10 == 0 && batch > 0 {
+                    eprintln!("  {}手詰 [backward]: {}/{} attempts, {} found", mate_length, batch_end, backward_attempts, results.len());
+                }
+            }
+            eprintln!("  {}手詰: backward phase done, {} found so far", mate_length, results.len());
+        }
+    }
+
+    // --- ランダム法フェーズ ---
+    let random_attempts = match method {
+        GenerateMethod::Random => attempts,
+        GenerateMethod::Both => attempts, // ランダム法も全量実行
+        GenerateMethod::Backward => 0,
+    };
+
+    if random_attempts > 0 {
+    eprintln!("  {}手詰: Starting parallel generation with {} attempts...", mate_length, random_attempts);
 
     // Generate candidates in parallel using rayon
     let batch_size = 1000u32;
-    let num_batches = attempts.div_ceil(batch_size);
+    let num_batches = random_attempts.div_ceil(batch_size);
 
     for batch in 0..num_batches {
         if results.len() as u32 >= max { break; }
 
         let batch_start = batch * batch_size;
-        let batch_end = (batch_start + batch_size).min(attempts);
+        let batch_end = (batch_start + batch_size).min(random_attempts);
         let batch_range: Vec<u32> = (batch_start..batch_end).collect();
 
         // Generate and validate candidates in parallel
@@ -935,13 +988,13 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         }
 
         if batch % 10 == 0 && batch > 0 {
-            eprintln!("  {}手詰: {}/{} attempts, {} found", mate_length, batch_end, attempts, results.len());
+            eprintln!("  {}手詰: {}/{} attempts, {} found", mate_length, batch_end, random_attempts, results.len());
         }
     }
 
     // Phase 2: mutate from found results
     if !results.is_empty() {
-        let mutate_attempts = attempts / 2;
+        let mutate_attempts = random_attempts / 2;
         let mut rng = Rng::new(seed.wrapping_add(77777));
 
         for i in 0..mutate_attempts {
@@ -962,6 +1015,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             }
         }
     }
+    } // if random_attempts > 0
 
     // Diversify ordering: greedy "pick the most different puzzle next"
     let final_results = diversify_order(results);

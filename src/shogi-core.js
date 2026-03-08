@@ -369,6 +369,45 @@ export function legalMoves(state) {
     }
   }
 
+  // 王手されている場合、ドロップ候補を最適化
+  const inCheck = isInCheck(state, owner);
+  if (inCheck) {
+    const checkers = findCheckers(state, owner);
+    if (checkers.length >= 2) {
+      // 両王手: ドロップでは逃げられない（玉移動のみ）
+      return out;
+    }
+    if (checkers.length === 1) {
+      const ck = checkers[0];
+      if (!isSlidingPiece(ck.piece.type)) {
+        // 接触王手: 合駒では防げない
+        return out;
+      }
+      // スライド王手: 遮断マスへのドロップのみ生成
+      const kp = kingPos(state, owner);
+      const interp = interpositionSquares({ x: ck.x, y: ck.y }, kp);
+      for (const target of interp) {
+        if (squareOccupied(state, target.x, target.y)) continue;
+        for (const type of HAND_TYPES) {
+          const count = state.hands[owner][type] || 0;
+          if (count <= 0) continue;
+          // 行き場のない場所への打ち駒禁止
+          if ((type === "P" || type === "L") && ((owner === "attacker" && target.y === 1) || (owner === "defender" && target.y === 9))) continue;
+          if (type === "N" && ((owner === "attacker" && target.y <= 2) || (owner === "defender" && target.y >= 8))) continue;
+          if (type === "P" && hasPawnOnFile(state, owner, target.x)) continue;
+          const m = { drop: type, to: [target.x, target.y], promote: false };
+          if (pawnDropMateForbidden(state, m)) continue;
+          const next = applyMove(state, m);
+          if (!isInCheck(next, owner)) {
+            out.push(m);
+          }
+        }
+      }
+      return out;
+    }
+  }
+
+  // 王手されていない場合: 通常のドロップ生成
   const drops = pseudoDrops(state, owner);
   for (const m of drops) {
     if (pawnDropMateForbidden(state, m)) continue;
@@ -379,6 +418,65 @@ export function legalMoves(state) {
   }
 
   return out;
+}
+
+/// スライド駒かどうか判定する
+function isSlidingPiece(type) {
+  return type === "R" || type === "+R" || type === "B" || type === "+B" || type === "L";
+}
+
+/// 王手をかけている駒の位置を探す
+function findCheckers(state, kingOwner) {
+  const k = kingPos(state, kingOwner);
+  if (!k) return [];
+  const enemy = kingOwner === "attacker" ? "defender" : "attacker";
+  const checkers = [];
+  for (const [pos, p] of state.board.entries()) {
+    if (p.owner !== enemy) continue;
+    const [x, y] = pos.split(",").map(Number);
+    const moves = pseudoMovesFrom(state, x, y, p);
+    if (moves.some((m) => m.to[0] === k.x && m.to[1] === k.y)) {
+      checkers.push({ x, y, piece: p });
+    }
+  }
+  return checkers;
+}
+
+/// スライド駒と玉の間の遮断可能マスを列挙する（両端を含まない）
+function interpositionSquares(checker, king) {
+  const dx = Math.sign(king.x - checker.x);
+  const dy = Math.sign(king.y - checker.y);
+  const squares = [];
+  let x = checker.x + dx;
+  let y = checker.y + dy;
+  while (x !== king.x || y !== king.y) {
+    squares.push({ x, y });
+    x += dx;
+    y += dy;
+  }
+  return squares;
+}
+
+/// 2点間（直線・斜め）の中間にあるか判定する（両端を含まない）
+function isBetween(checker, king, target) {
+  const dx = king.x - checker.x;
+  const dy = king.y - checker.y;
+  const tx = target.x - checker.x;
+  const ty = target.y - checker.y;
+  if (dx === 0 && dy === 0) return false;
+
+  if (dx === 0) {
+    return tx === 0 && Math.sign(ty) === Math.sign(dy) && Math.abs(ty) > 0 && Math.abs(ty) < Math.abs(dy);
+  } else if (dy === 0) {
+    return ty === 0 && Math.sign(tx) === Math.sign(dx) && Math.abs(tx) > 0 && Math.abs(tx) < Math.abs(dx);
+  } else if (Math.abs(dx) === Math.abs(dy)) {
+    return Math.abs(tx) === Math.abs(ty)
+      && Math.sign(tx) === Math.sign(dx)
+      && Math.sign(ty) === Math.sign(dy)
+      && Math.abs(tx) > 0
+      && Math.abs(tx) < Math.abs(dx);
+  }
+  return false;
 }
 
 function moveToString(move) {
@@ -396,30 +494,111 @@ function forcedMateWithin(state, plies, memo) {
 
   const side = state.sideToMove;
   const enemy = side === "attacker" ? "defender" : "attacker";
-  const moves = legalMoves(state);
 
   if (side === "defender") {
-    if (moves.length === 0) {
-      const res = { mate: isInCheck(state, side), unique: true, line: [] };
-      memo.set(memoKey, res);
-      return res;
-    }
+    // 守り方: 遅延ドロップ生成 — 盤上の手で逃れが見つかればドロップ生成をスキップ
+    const boardMoves = legalMoves(state).filter((m) => !m.drop);
+
     if (plies <= 0) {
+      if (boardMoves.length > 0) {
+        const res = { mate: false, unique: false, line: [] };
+        memo.set(memoKey, res);
+        return res;
+      }
+      // 盤上の手なし: ドロップも確認
+      const dropMoves = legalMoves(state).filter((m) => m.drop);
+      if (boardMoves.length === 0 && dropMoves.length === 0) {
+        const res = { mate: isInCheck(state, side), unique: true, line: [] };
+        memo.set(memoKey, res);
+        return res;
+      }
       const res = { mate: false, unique: false, line: [] };
       memo.set(memoKey, res);
       return res;
     }
-    const children = moves.map((m) => ({ move: m, result: forcedMateWithin(applyMove(state, m), plies - 1, memo) }));
-    const allMate = children.every((c) => c.result.mate);
+
+    // 無駄合い判定用
+    const checkers = findCheckers(state, "defender");
+    const slidingChecker = (checkers.length === 1 && isSlidingPiece(checkers[0].piece.type))
+      ? checkers[0] : null;
+    const defKingPos = kingPos(state, "defender");
+
+    let allMate = true;
+    let allUnique = true;
+    let bestMove = null;
+    let bestLine = [];
+
+    // Phase 1: 盤上の手を先に処理
+    for (const m of boardMoves) {
+      const result = forcedMateWithin(applyMove(state, m), plies - 1, memo);
+      if (!result.mate) {
+        allMate = false;
+        break; // 盤上の手で逃れ → ドロップ生成をスキップ
+      }
+      if (!result.unique) allUnique = false;
+      if (result.line.length >= bestLine.length) {
+        bestMove = m;
+        bestLine = result.line;
+      }
+    }
+
+    // Phase 2: 盤上の手で全て詰む場合のみ、ドロップを生成して処理
+    if (allMate) {
+      const dropMoves = legalMoves(state).filter((m) => m.drop);
+
+      if (boardMoves.length === 0 && dropMoves.length === 0) {
+        const res = { mate: isInCheck(state, side), unique: true, line: [] };
+        memo.set(memoKey, res);
+        return res;
+      }
+
+      for (const m of dropMoves) {
+        // 無駄合い判定
+        if (plies >= 2 && slidingChecker && defKingPos) {
+          const dropPos = { x: m.to[0], y: m.to[1] };
+          const ckPos = { x: slidingChecker.x, y: slidingChecker.y };
+          if (isBetween(ckPos, defKingPos, dropPos)) {
+            const ckType = slidingChecker.piece.type;
+            const canPromote = PROMOTABLE.has(ckType)
+              && (promotionZone("attacker", slidingChecker.y) || promotionZone("attacker", dropPos.y));
+            const recapture = {
+              from: [slidingChecker.x, slidingChecker.y],
+              to: [dropPos.x, dropPos.y],
+              promote: canPromote,
+            };
+            const afterDrop = applyMove(state, m);
+            const afterRecapture = applyMove(afterDrop, recapture);
+            const r = forcedMateWithin(afterRecapture, plies - 2, memo);
+            if (r.mate) {
+              continue; // 無駄合い
+            }
+          }
+        }
+
+        const result = forcedMateWithin(applyMove(state, m), plies - 1, memo);
+        if (!result.mate) {
+          allMate = false;
+          break;
+        }
+        if (!result.unique) allUnique = false;
+        if (result.line.length >= bestLine.length) {
+          bestMove = m;
+          bestLine = result.line;
+        }
+      }
+    }
+
     if (!allMate) {
       const res = { mate: false, unique: false, line: [] };
       memo.set(memoKey, res);
       return res;
     }
-    const unique = children.every((c) => c.result.unique);
-    // 守り方は最長抵抗の応手を選ぶ（駒余り防止のため最長lineを記録）
-    const best = children.reduce((a, b) => b.result.line.length >= a.result.line.length ? b : a);
-    const res = { mate: true, unique, line: [best.move, ...best.result.line] };
+    if (bestMove) {
+      const res = { mate: true, unique: allUnique, line: [bestMove, ...bestLine] };
+      memo.set(memoKey, res);
+      return res;
+    }
+    const res = { mate: true, unique: true, line: [] };
     memo.set(memoKey, res);
     return res;
   }
@@ -430,6 +609,8 @@ function forcedMateWithin(state, plies, memo) {
     return res;
   }
 
+  // 攻め方: 王手になる手を抽出してソート
+  const moves = legalMoves(state);
   const checks = moves.filter((m) => {
     const n = applyMove(state, m);
     return isInCheck(n, enemy);
@@ -458,10 +639,37 @@ export function findBestDefense(state, remainingPlies) {
   if (moves.length === 0) return null;
 
   const memo = new Map();
+
+  // 無駄合い判定用
+  const checkers = findCheckers(state, "defender");
+  const slidingChecker = (checkers.length === 1 && isSlidingPiece(checkers[0].piece.type))
+    ? checkers[0] : null;
+  const defKingPos = kingPos(state, "defender");
+
   // 最長抵抗: 詰みまでのlineが最も長い応手を選ぶ
   let bestMove = moves[0];
   let bestLen = -1;
   for (const m of moves) {
+    // 無駄合い判定
+    if (m.drop && remainingPlies >= 2 && slidingChecker && defKingPos) {
+      const dropPos = { x: m.to[0], y: m.to[1] };
+      const ckPos = { x: slidingChecker.x, y: slidingChecker.y };
+      if (isBetween(ckPos, defKingPos, dropPos)) {
+        const ckType = slidingChecker.piece.type;
+        const canPromote = PROMOTABLE.has(ckType)
+          && (promotionZone("attacker", slidingChecker.y) || promotionZone("attacker", dropPos.y));
+        const recapture = {
+          from: [slidingChecker.x, slidingChecker.y],
+          to: [dropPos.x, dropPos.y],
+          promote: canPromote,
+        };
+        const afterDrop = applyMove(state, m);
+        const afterRecapture = applyMove(afterDrop, recapture);
+        const r = forcedMateWithin(afterRecapture, remainingPlies - 2, memo);
+        if (r.mate) continue; // 無駄合い → スキップ
+      }
+    }
+
     const next = applyMove(state, m);
     const result = forcedMateWithin(next, remainingPlies - 1, memo);
     if (!result.mate) return m;

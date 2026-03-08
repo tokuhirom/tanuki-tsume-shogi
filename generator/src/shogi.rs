@@ -416,6 +416,136 @@ pub fn apply_move(state: &State, m: &Move) -> State {
     next
 }
 
+/// スライド駒かどうか判定する（飛車・龍・角・馬・香車）
+fn is_sliding_piece(t: PieceType) -> bool {
+    matches!(t, PieceType::R | PieceType::PR | PieceType::B | PieceType::PB | PieceType::L)
+}
+
+/// 王手をかけている駒の位置と種類を探す
+fn find_checkers(state: &State, king_owner: Owner) -> Vec<(Pos, BoardPiece)> {
+    let kp = match state.king_pos(king_owner) {
+        Some(p) => p,
+        None => return vec![],
+    };
+    let attacker = king_owner.opposite();
+    let mut checkers = Vec::new();
+
+    // ステップ駒（全8方向）
+    for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
+        let p = Pos::new(kp.x + dx, kp.y + dy);
+        if !p.is_valid() { continue; }
+        if let Some(bp) = state.get(p) {
+            if bp.owner == attacker && can_step_to(bp.piece_type, attacker, p, kp) {
+                checkers.push((p, bp));
+            }
+        }
+    }
+
+    // 桂馬
+    let knight_offsets: [(i8, i8); 2] = match attacker {
+        Owner::Attacker => [(1, 2), (-1, 2)],
+        Owner::Defender => [(1, -2), (-1, -2)],
+    };
+    for &(dx, dy) in &knight_offsets {
+        let p = Pos::new(kp.x + dx, kp.y + dy);
+        if !p.is_valid() { continue; }
+        if let Some(bp) = state.get(p) {
+            if bp.owner == attacker && bp.piece_type == PieceType::N {
+                checkers.push((p, bp));
+            }
+        }
+    }
+
+    // 飛車・龍（十字方向）
+    for &(dx, dy) in &[(0i8,-1),(1,0),(0,1),(-1,0)] {
+        let mut nx = kp.x + dx;
+        let mut ny = kp.y + dy;
+        while Pos::new(nx, ny).is_valid() {
+            if let Some(bp) = state.get(Pos::new(nx, ny)) {
+                if bp.owner == attacker {
+                    match bp.piece_type {
+                        PieceType::R | PieceType::PR => checkers.push((Pos::new(nx, ny), bp)),
+                        PieceType::L => {
+                            let forward_dy = match attacker {
+                                Owner::Attacker => 1,
+                                Owner::Defender => -1,
+                            };
+                            if dy == forward_dy { checkers.push((Pos::new(nx, ny), bp)); }
+                        }
+                        _ => {}
+                    }
+                }
+                break;
+            }
+            nx += dx;
+            ny += dy;
+        }
+    }
+
+    // 角・馬（斜め方向）
+    for &(dx, dy) in &[(1i8,-1),(1,1),(-1,1),(-1,-1)] {
+        let mut nx = kp.x + dx;
+        let mut ny = kp.y + dy;
+        while Pos::new(nx, ny).is_valid() {
+            if let Some(bp) = state.get(Pos::new(nx, ny)) {
+                if bp.owner == attacker {
+                    match bp.piece_type {
+                        PieceType::B | PieceType::PB => checkers.push((Pos::new(nx, ny), bp)),
+                        _ => {}
+                    }
+                }
+                break;
+            }
+            nx += dx;
+            ny += dy;
+        }
+    }
+
+    checkers
+}
+
+/// スライド駒と玉の間の遮断可能マスを列挙する（両端を含まない）
+fn interposition_squares(checker: Pos, king: Pos) -> Vec<Pos> {
+    let dx = (king.x - checker.x).signum();
+    let dy = (king.y - checker.y).signum();
+    let mut squares = Vec::new();
+    let mut x = checker.x + dx;
+    let mut y = checker.y + dy;
+    while (x, y) != (king.x, king.y) {
+        squares.push(Pos::new(x, y));
+        x += dx;
+        y += dy;
+    }
+    squares
+}
+
+/// 2点間（直線・斜め）の中間にあるか判定する（両端を含まない）
+fn is_between(checker: Pos, king: Pos, target: Pos) -> bool {
+    let dx = king.x - checker.x;
+    let dy = king.y - checker.y;
+    let tx = target.x - checker.x;
+    let ty = target.y - checker.y;
+
+    if dx == 0 && dy == 0 { return false; }
+
+    if dx == 0 {
+        // 縦ライン
+        tx == 0 && ty.signum() == dy.signum() && ty.abs() > 0 && ty.abs() < dy.abs()
+    } else if dy == 0 {
+        // 横ライン
+        ty == 0 && tx.signum() == dx.signum() && tx.abs() > 0 && tx.abs() < dx.abs()
+    } else if dx.abs() == dy.abs() {
+        // 斜めライン
+        tx.abs() == ty.abs()
+            && tx.signum() == dx.signum()
+            && ty.signum() == dy.signum()
+            && tx.abs() > 0
+            && tx.abs() < dx.abs()
+    } else {
+        false
+    }
+}
+
 /// 指し手の適用に必要な復元情報
 #[derive(Debug)]
 struct UndoInfo {
@@ -624,6 +754,60 @@ fn has_any_legal_move(state: &mut State) -> bool {
         }
     }
 
+    // 王手されている場合、ドロップ候補を最適化
+    let in_check = is_in_check(state, owner);
+    if in_check {
+        let checkers = find_checkers(state, owner);
+        if checkers.len() >= 2 {
+            return false; // 両王手: ドロップでは逃げられない
+        }
+        if checkers.len() == 1 {
+            let (ck_pos, ck_bp) = checkers[0];
+            if !is_sliding_piece(ck_bp.piece_type) {
+                return false; // 接触王手: 合駒では防げない
+            }
+            // スライド王手: 遮断マスへのドロップのみチェック
+            let kp = state.king_pos(owner).unwrap();
+            let interp = interposition_squares(ck_pos, kp);
+            for target in &interp {
+                if state.get(*target).is_some() { continue; }
+                for &t in &HAND_TYPES {
+                    if state.hands.get(owner, t) == 0 { continue; }
+                    match t {
+                        PieceType::P | PieceType::L => {
+                            if owner == Owner::Attacker && target.y == 1 { continue; }
+                            if owner == Owner::Defender && target.y == 9 { continue; }
+                        }
+                        PieceType::N => {
+                            if owner == Owner::Attacker && target.y <= 2 { continue; }
+                            if owner == Owner::Defender && target.y >= 8 { continue; }
+                        }
+                        _ => {}
+                    }
+                    if t == PieceType::P && has_pawn_on_file(state, owner, target.x) { continue; }
+                    let m = Move { from: None, to: [target.x, target.y], drop: Some(t), promote: false };
+                    let undo = make_move(state, &m);
+                    let still_check = is_in_check(state, owner);
+                    if still_check {
+                        undo_move(state, &m, &undo);
+                        continue;
+                    }
+                    if m.drop == Some(PieceType::P) {
+                        let enemy = owner.opposite();
+                        if is_in_check(state, enemy) && !has_any_legal_move(state) {
+                            undo_move(state, &m, &undo);
+                            continue;
+                        }
+                    }
+                    undo_move(state, &m, &undo);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // 王手されていない場合: 通常のドロップ生成
     let drops = pseudo_drops(state, owner);
     for m in drops {
         let undo = make_move(state, &m);
@@ -662,13 +846,11 @@ fn pawn_drop_mate_forbidden(state: &mut State, m: &Move) -> bool {
     result
 }
 
-/// 現在の手番側の合法手をすべて生成する
-/// 自玉を王手に晒す手と打ち歩詰めは除外される
-pub fn legal_moves(state: &mut State) -> Vec<Move> {
+/// 盤上の駒の合法手のみを生成する（ドロップを含まない）
+fn legal_board_moves(state: &mut State) -> Vec<Move> {
     let owner = state.side_to_move;
     let mut out = Vec::new();
 
-    // 盤上の駒の位置を先に収集
     let mut piece_positions = Vec::new();
     for y in 1..=9i8 {
         for x in 1..=9i8 {
@@ -692,6 +874,60 @@ pub fn legal_moves(state: &mut State) -> Vec<Move> {
         }
     }
 
+    out
+}
+
+/// ドロップの合法手のみを生成する（王手時の最適化込み）
+fn legal_drop_moves(state: &mut State) -> Vec<Move> {
+    let owner = state.side_to_move;
+    let mut out = Vec::new();
+
+    // 王手されている場合、ドロップ候補を最適化
+    let in_check = is_in_check(state, owner);
+    if in_check {
+        let checkers = find_checkers(state, owner);
+        if checkers.len() >= 2 {
+            return out; // 両王手: ドロップでは逃げられない
+        }
+        if checkers.len() == 1 {
+            let (ck_pos, ck_bp) = checkers[0];
+            if !is_sliding_piece(ck_bp.piece_type) {
+                return out; // 接触王手: 合駒では防げない
+            }
+            // スライド王手: 遮断マスへのドロップのみ生成
+            let kp = state.king_pos(owner).unwrap();
+            let interp = interposition_squares(ck_pos, kp);
+            for target in &interp {
+                if state.get(*target).is_some() { continue; }
+                for &t in &HAND_TYPES {
+                    if state.hands.get(owner, t) == 0 { continue; }
+                    match t {
+                        PieceType::P | PieceType::L => {
+                            if owner == Owner::Attacker && target.y == 1 { continue; }
+                            if owner == Owner::Defender && target.y == 9 { continue; }
+                        }
+                        PieceType::N => {
+                            if owner == Owner::Attacker && target.y <= 2 { continue; }
+                            if owner == Owner::Defender && target.y >= 8 { continue; }
+                        }
+                        _ => {}
+                    }
+                    if t == PieceType::P && has_pawn_on_file(state, owner, target.x) { continue; }
+                    let m = Move { from: None, to: [target.x, target.y], drop: Some(t), promote: false };
+                    if pawn_drop_mate_forbidden(state, &m) { continue; }
+                    let undo = make_move(state, &m);
+                    let still_check = is_in_check(state, owner);
+                    undo_move(state, &m, &undo);
+                    if !still_check {
+                        out.push(m);
+                    }
+                }
+            }
+            return out;
+        }
+    }
+
+    // 王手されていない場合: 通常のドロップ生成
     let drops = pseudo_drops(state, owner);
     for m in drops {
         if pawn_drop_mate_forbidden(state, &m) { continue; }
@@ -703,6 +939,14 @@ pub fn legal_moves(state: &mut State) -> Vec<Move> {
         }
     }
 
+    out
+}
+
+/// 現在の手番側の合法手をすべて生成する（盤上の手 + ドロップ）
+/// 自玉を王手に晒す手と打ち歩詰めは除外される
+pub fn legal_moves(state: &mut State) -> Vec<Move> {
+    let mut out = legal_board_moves(state);
+    out.extend(legal_drop_moves(state));
     out
 }
 
@@ -733,40 +977,123 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
 
     let side = state.side_to_move;
     let enemy = side.opposite();
-    let moves = legal_moves(state);
 
     let result = if side == Owner::Defender {
-        if moves.is_empty() {
-            MateResult { mate: is_in_check(state, side), unique: true, line: vec![] }
+        // 守り方: 遅延ドロップ生成 — 盤上の手で逃れが見つかればドロップ生成をスキップ
+        let board_moves = legal_board_moves(state);
+
+        if board_moves.is_empty() && plies == 0 {
+            // 盤上の手なし & plies=0: ドロップも確認する
+            let drop_moves = legal_drop_moves(state);
+            if drop_moves.is_empty() {
+                MateResult { mate: is_in_check(state, side), unique: true, line: vec![] }
+            } else {
+                MateResult { mate: false, unique: false, line: vec![] }
+            }
         } else if plies == 0 {
-            MateResult { mate: false, unique: false, line: vec![] }
+            if board_moves.is_empty() {
+                // 盤上の手なし: ドロップも確認
+                let drop_moves = legal_drop_moves(state);
+                if drop_moves.is_empty() {
+                    MateResult { mate: is_in_check(state, side), unique: true, line: vec![] }
+                } else {
+                    MateResult { mate: false, unique: false, line: vec![] }
+                }
+            } else {
+                MateResult { mate: false, unique: false, line: vec![] }
+            }
         } else {
-            // Early cutoff: if ANY defender move escapes mate, return false immediately
+            // 無駄合い判定用: スライド駒による単独王手か調べる
+            let def_king_pos = state.king_pos(Owner::Defender);
+            let checkers = if def_king_pos.is_some() { find_checkers(state, Owner::Defender) } else { vec![] };
+            let sliding_checker = if checkers.len() == 1 {
+                let (pos, bp) = checkers[0];
+                if is_sliding_piece(bp.piece_type) { Some((pos, bp)) } else { None }
+            } else {
+                None
+            };
+
             let mut all_mate = true;
             let mut all_unique = true;
             let mut best_move: Option<Move> = None;
             let mut best_line: Vec<Move> = vec![];
 
-            for m in &moves {
+            // Phase 1: 盤上の駒の手を先に処理（早期打ち切り可能）
+            for m in &board_moves {
                 let undo = make_move(state, m);
                 let r = forced_mate_within(state, plies - 1, memo);
                 undo_move(state, m, &undo);
                 if !r.mate {
                     all_mate = false;
-                    break; // Early cutoff!
+                    break; // 盤上の手で逃れ → ドロップ生成をスキップ
                 }
                 if !r.unique { all_unique = false; }
-                // 守り方は最長抵抗の応手を選ぶ（駒余り防止のため最長lineを記録）
                 if r.line.len() >= best_line.len() {
                     best_move = Some(m.clone());
                     best_line = r.line;
                 }
             }
 
-            if let Some(bm) = best_move.filter(|_| all_mate) {
-                let mut l = vec![bm];
-                l.extend(best_line);
-                MateResult { mate: true, unique: all_unique, line: l }
+            // Phase 2: 盤上の手で全て詰む場合のみ、ドロップを遅延生成して処理
+            if all_mate {
+                let drop_moves = legal_drop_moves(state);
+
+                if board_moves.is_empty() && drop_moves.is_empty() {
+                    // 合法手なし → 詰み判定
+                    let mated = is_in_check(state, side);
+                    return { let r = MateResult { mate: mated, unique: true, line: vec![] }; memo.insert(key, r.clone()); r };
+                }
+
+                for m in &drop_moves {
+                    // 無駄合い判定
+                    if plies >= 2 {
+                        if let (Some((ck_pos, ck_bp)), Some(kp)) = (sliding_checker, def_king_pos) {
+                            let drop_pos = Pos::new(m.to[0], m.to[1]);
+                            if is_between(ck_pos, kp, drop_pos) {
+                                let can_promote = ck_bp.piece_type.is_promotable()
+                                    && (promotion_zone(ck_bp.owner, ck_pos.y) || promotion_zone(ck_bp.owner, drop_pos.y));
+                                let recapture = Move {
+                                    from: Some([ck_pos.x, ck_pos.y]),
+                                    to: [drop_pos.x, drop_pos.y],
+                                    drop: None,
+                                    promote: can_promote,
+                                };
+                                let undo1 = make_move(state, m);
+                                let undo2 = make_move(state, &recapture);
+                                let r = forced_mate_within(state, plies - 2, memo);
+                                undo_move(state, &recapture, &undo2);
+                                undo_move(state, m, &undo1);
+                                if r.mate {
+                                    continue; // 無駄合い
+                                }
+                            }
+                        }
+                    }
+
+                    let undo = make_move(state, m);
+                    let r = forced_mate_within(state, plies - 1, memo);
+                    undo_move(state, m, &undo);
+                    if !r.mate {
+                        all_mate = false;
+                        break;
+                    }
+                    if !r.unique { all_unique = false; }
+                    if r.line.len() >= best_line.len() {
+                        best_move = Some(m.clone());
+                        best_line = r.line;
+                    }
+                }
+            }
+
+            if all_mate {
+                if let Some(bm) = best_move {
+                    let mut l = vec![bm];
+                    l.extend(best_line);
+                    MateResult { mate: true, unique: all_unique, line: l }
+                } else {
+                    // 全ての手が無駄合いだった or 合法手なし → 詰み
+                    MateResult { mate: true, unique: true, line: vec![] }
+                }
             } else {
                 MateResult { mate: false, unique: false, line: vec![] }
             }
@@ -774,9 +1101,11 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
     } else if plies == 0 {
         MateResult { mate: false, unique: false, line: vec![] }
     } else {
+        // 攻め方: 全合法手を生成して王手になる手を抽出
+        let moves = legal_moves(state);
         // Only consider checking moves (tsume-shogi rule)
-        // legal_moves の結果から王手になる手を抽出
-        let checks: Vec<Move> = moves.into_iter()
+        // legal_moves の結果から王手になる手を抽出し、ヒューリスティックでソート
+        let mut checks: Vec<Move> = moves.into_iter()
             .filter(|m| {
                 let undo = make_move(state, m);
                 let check = is_in_check(state, enemy);
@@ -784,6 +1113,20 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
                 check
             })
             .collect();
+        // 攻め方の手の並び替え: 捕獲 > 成り > 盤上移動 > 打ち
+        // 良い手を先に探索することで枝刈りの効率を上げる
+        checks.sort_by_key(|m| {
+            if m.from.is_some() {
+                let to = Pos::new(m.to[0], m.to[1]);
+                let is_capture = state.get(to).is_some();
+                if is_capture && m.promote { 0 }  // 捕獲+成り（最優先）
+                else if is_capture { 1 }           // 捕獲
+                else if m.promote { 2 }            // 成り
+                else { 3 }                         // 通常移動
+            } else {
+                4 // 打ち（合駒で防がれやすい）
+            }
+        });
 
         let mut winning: Vec<(Move, MateResult)> = Vec::new();
         for m in &checks {
@@ -831,13 +1174,24 @@ pub fn validate_tsume_puzzle(state: &mut State, mate_length: u32) -> Option<Vec<
     if is_in_check(state, Owner::Defender) { return None; }
 
     let mut memo = FxHashMap::default();
+
+    // 反復深化: 浅い深さで不詰と判明すれば早期棄却（候補の高速フィルタリング）
+    // 1手→3手→…→mate_length の順に探索し、詰まなければ即座に棄却
+    // メモ化テーブルは深さ間で共有して再利用する
+    let mut d = 1;
+    while d < mate_length {
+        let r = forced_mate_within(state, d, &mut memo);
+        if r.mate {
+            // より短い手数で詰む → N手詰としては不適格
+            return None;
+        }
+        d += 2;
+    }
+
     let within = forced_mate_within(state, mate_length, &mut memo);
     if !within.mate { return None; }
 
-    if mate_length >= 3 {
-        let shorter = forced_mate_within(state, mate_length - 2, &mut memo);
-        if shorter.mate { return None; }
-    }
+    // 最短性チェック: 上の反復深化で mate_length-2 以下の詰みは既に棄却済みなので不要
 
     if !within.unique { return None; }
 
@@ -1501,6 +1855,68 @@ mod tests {
         assert_eq!(pt, PieceType::PN);
         let pt: PieceType = serde_json::from_str("\"L\"").unwrap();
         assert_eq!(pt, PieceType::L);
+    }
+
+    // --- 無駄合い判定テスト ---
+
+    #[test]
+    fn test_is_between() {
+        // 縦ライン: (5,5)と(5,1)の間に(5,3)がある
+        assert!(is_between(Pos::new(5, 5), Pos::new(5, 1), Pos::new(5, 3)));
+        assert!(is_between(Pos::new(5, 5), Pos::new(5, 1), Pos::new(5, 2)));
+        assert!(!is_between(Pos::new(5, 5), Pos::new(5, 1), Pos::new(5, 5))); // 端点
+        assert!(!is_between(Pos::new(5, 5), Pos::new(5, 1), Pos::new(5, 1))); // 端点
+        assert!(!is_between(Pos::new(5, 5), Pos::new(5, 1), Pos::new(4, 3))); // ライン外
+
+        // 横ライン
+        assert!(is_between(Pos::new(1, 5), Pos::new(5, 5), Pos::new(3, 5)));
+        assert!(!is_between(Pos::new(1, 5), Pos::new(5, 5), Pos::new(3, 4)));
+
+        // 斜めライン
+        assert!(is_between(Pos::new(1, 1), Pos::new(5, 5), Pos::new(3, 3)));
+        assert!(!is_between(Pos::new(1, 1), Pos::new(5, 5), Pos::new(3, 4)));
+    }
+
+    #[test]
+    fn test_find_checkers() {
+        // 飛車で王手
+        let state = make_state((5, 9), (5, 1), &[(5, 5, Owner::Attacker, PieceType::R)]);
+        let checkers = find_checkers(&state, Owner::Defender);
+        assert_eq!(checkers.len(), 1);
+        assert_eq!(checkers[0].0, Pos::new(5, 5));
+        assert_eq!(checkers[0].1.piece_type, PieceType::R);
+    }
+
+    #[test]
+    fn test_futile_drop_skipped() {
+        // 飛車による王手で合駒が無駄合いとなるケースをテスト
+        // 守り方手番で、飛車が1筋を通して王手中
+        // 守り方玉(1,1)は逃げ場なし（自駒で塞がれている）
+        // 合駒は同飛で取られてもまだ詰み → 無駄合い判定でスキップされるべき
+        //
+        // 局面:
+        //   守り方玉(1,1), 守り方歩(2,1)(2,2) — 逃げ道を自駒で塞ぐ
+        //   攻め方飛(1,4) — 1筋を通して王手
+        //   攻め方桂(2,4) — (1,2)を利かせて玉の捕獲を防ぐ
+        let pieces = vec![
+            PieceData { x: 1, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 2, y: 1, owner: Owner::Defender, piece_type: PieceType::P },
+            PieceData { x: 2, y: 2, owner: Owner::Defender, piece_type: PieceType::P },
+            PieceData { x: 1, y: 4, owner: Owner::Attacker, piece_type: PieceType::R },
+            PieceData { x: 2, y: 4, owner: Owner::Attacker, piece_type: PieceType::N },
+        ];
+        let init = InitialData { pieces, hands: empty_hands_data(), side_to_move: Owner::Defender };
+        let mut state = init.to_state();
+
+        // 守り方手番で王手されている状態を確認
+        assert!(is_in_check(&state, Owner::Defender));
+
+        // 合駒可能だが全て無駄合い → 十分な plies で詰みと判定される
+        let mut memo = FxHashMap::default();
+        let result = forced_mate_within(&mut state, 4, &mut memo);
+        assert!(result.mate, "無駄合いスキップにより詰みと判定されるべき");
+        // 無駄合いがスキップされるので、手順は空（有効な防御手なし）
+        assert!(result.line.is_empty(), "無駄合いのみの場合、手順は空であるべき");
     }
 
     // --- 守り方(Defender)の駒の動き テスト ---

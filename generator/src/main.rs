@@ -1,16 +1,26 @@
 mod shogi;
 mod generate;
+mod backward;
 
 use std::collections::HashSet;
 use std::env;
 use std::fs;
 use std::path::Path;
 
+/// 生成方式
+#[derive(Clone, Copy, PartialEq)]
+pub enum GenerateMethod {
+    Random,   // ランダム法（既存方式）
+    Backward, // 逆算法（バックワード方式）
+    Both,     // 両方を併用
+}
+
 struct GenerateArgs {
     max: u32,
     attempts: [u32; 4],  // 1手, 3手, 5手, 7手
     seed: u64,
     only: Option<u32>,   // 特定の手数だけ生成する場合
+    method: GenerateMethod,
 }
 
 const ALL_MATE_LENGTHS: [u32; 4] = [1, 3, 5, 7];
@@ -25,6 +35,7 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             .as_millis() as u64
             % 2_147_483_647,
         only: None,
+        method: GenerateMethod::Both,
     };
 
     for a in args {
@@ -42,6 +53,16 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             ga.attempts[2] = v.parse().unwrap_or(ga.attempts[2]);
         } else if let Some(v) = a.strip_prefix("--attempts7=") {
             ga.attempts[3] = v.parse().unwrap_or(ga.attempts[3]);
+        } else if let Some(v) = a.strip_prefix("--method=") {
+            ga.method = match v {
+                "random" => GenerateMethod::Random,
+                "backward" => GenerateMethod::Backward,
+                "both" => GenerateMethod::Both,
+                _ => {
+                    eprintln!("不明な生成方式: {} (random/backward/both)", v);
+                    ga.method
+                }
+            };
         }
     }
     ga
@@ -70,7 +91,7 @@ fn run_generate(args: &[String]) {
             }
         };
 
-        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing);
+        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method);
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
