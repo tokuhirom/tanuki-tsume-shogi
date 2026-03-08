@@ -53,7 +53,7 @@ fn run_generate(args: &[String]) {
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
-        for dir in &["puzzles", "docs/puzzles"] {
+        for dir in &["puzzles", "public/puzzles"] {
             let dir_path = Path::new(dir);
             fs::create_dir_all(dir_path).ok();
             let file = dir_path.join(format!("{}.json", mate_len));

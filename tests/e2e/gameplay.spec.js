@@ -3,7 +3,7 @@ import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
 function loadPuzzle(length, id) {
-  const file = path.resolve(process.cwd(), `docs/puzzles/${length}.json`);
+  const file = path.resolve(process.cwd(), `public/puzzles/${length}.json`);
   const list = JSON.parse(fs.readFileSync(file, 'utf-8'));
   const p = list.find((x) => x.id === id);
   if (!p) throw new Error(`puzzle not found: ${length} #${id}`);
@@ -11,7 +11,7 @@ function loadPuzzle(length, id) {
 }
 
 function loadAllPuzzles(length) {
-  const file = path.resolve(process.cwd(), `docs/puzzles/${length}.json`);
+  const file = path.resolve(process.cwd(), `public/puzzles/${length}.json`);
   return JSON.parse(fs.readFileSync(file, 'utf-8'));
 }
 

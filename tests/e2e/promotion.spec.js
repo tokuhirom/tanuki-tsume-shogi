@@ -3,7 +3,7 @@ import path from 'node:path';
 import { expect, test } from '@playwright/test';
 
 function loadPuzzle(length, id) {
-  const file = path.resolve(process.cwd(), `docs/puzzles/${length}.json`);
+  const file = path.resolve(process.cwd(), `public/puzzles/${length}.json`);
   const list = JSON.parse(fs.readFileSync(file, 'utf-8'));
   return list.find((x) => x.id === id);
 }

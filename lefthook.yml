@@ -3,7 +3,7 @@ pre-commit:
   commands:
     oxlint:
       glob: "*.js"
-      run: npx oxlint docs/app.js docs/shogi-core.js scripts/*.js
+      run: npx oxlint src/app.js src/shogi-core.js scripts/*.js
     clippy:
       glob: "*.rs"
       run: cd generator && cargo clippy -- -D warnings
@@ -14,4 +14,4 @@ pre-push:
     test-rust:
       run: cd generator && cargo test
     test-e2e:
-      run: npx playwright test
+      run: npx vite build && npx playwright test
