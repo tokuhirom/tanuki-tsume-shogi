@@ -15,6 +15,34 @@ pub struct Puzzle {
     pub solution: Vec<Move>,
     pub quality: String,
     pub score: i32,
+    #[serde(default)]
+    pub hash: String,
+}
+
+/// 初期局面から決定的なハッシュIDを計算する（8文字hex）
+pub fn compute_puzzle_hash(initial: &InitialData) -> String {
+    // 駒を正規化ソート（owner, x, y, piece_type）して決定的にする
+    let mut pieces = initial.pieces.clone();
+    pieces.sort_by(|a, b| {
+        let oa = if a.owner == Owner::Attacker { 0 } else { 1 };
+        let ob = if b.owner == Owner::Attacker { 0 } else { 1 };
+        oa.cmp(&ob)
+            .then(a.x.cmp(&b.x))
+            .then(a.y.cmp(&b.y))
+            .then(format!("{:?}", a.piece_type).cmp(&format!("{:?}", b.piece_type)))
+    });
+    let normalized = InitialData {
+        pieces,
+        hands: initial.hands.clone(),
+        side_to_move: initial.side_to_move,
+    };
+    let json = serde_json::to_string(&normalized).unwrap_or_default();
+    // djb2 ハッシュ
+    let mut hash: u64 = 5381;
+    for b in json.bytes() {
+        hash = hash.wrapping_mul(33).wrapping_add(b as u64);
+    }
+    format!("{:08x}", hash as u32)
 }
 
 struct Rng {
@@ -772,7 +800,7 @@ fn attacker_composition_key(initial: &InitialData) -> String {
         h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
-pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32) -> Vec<Puzzle> {
+pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle]) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
     let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
@@ -780,6 +808,47 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
     let max_per_composition: u32 = 3; // 同一駒構成のパズルは最大3問
     let max_per_atk_composition: u32 = 3; // 攻め方の駒構成が同じパズルは最大3問
     let mut results: Vec<(InitialData, Vec<Move>, i32)> = Vec::new();
+
+    // 既存パズルの再検証・取り込み
+    let mut kept = 0u32;
+    let mut dropped = 0u32;
+    for p in existing {
+        let mut state = p.initial.to_state();
+        let valid = validate_tsume_puzzle(&mut state, mate_length);
+        let has_leftover = match &valid {
+            Some(sol) => {
+                let mut final_state = p.initial.to_state();
+                for m in sol {
+                    final_state = apply_move(&final_state, m);
+                }
+                final_state.hands.attacker.iter().sum::<u8>() > 0
+            }
+            None => true,
+        };
+        if valid.is_none() || has_leftover {
+            dropped += 1;
+            continue;
+        }
+        let sol = valid.unwrap();
+        let sig = serde_json::to_string(&p.initial).unwrap_or_default();
+        let ssig = structural_signature(&p.initial);
+        sig_set.insert(sig);
+        struct_set.insert(ssig);
+        let ckey = composition_key(&p.initial);
+        *comp_count.entry(ckey).or_insert(0) += 1;
+        let akey = attacker_composition_key(&p.initial);
+        *atk_comp_count.entry(akey).or_insert(0) += 1;
+        results.push((p.initial.clone(), sol, p.score));
+        kept += 1;
+    }
+    if !existing.is_empty() {
+        eprintln!("  {}手詰: 既存パズル {}/{} 問を保持 ({}問除外)", mate_length, kept, existing.len(), dropped);
+    }
+
+    // 既に十分な数がある場合はスキップ
+    if results.len() as u32 >= max {
+        eprintln!("  {}手詰: 既存パズルで十分 ({}問), 新規生成をスキップ", mate_length, results.len());
+    } else {
 
     let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
                       sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>,
@@ -904,6 +973,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             }
         }
     }
+    } // end of else block (既存パズルが不足の場合)
 
     // Diversify ordering: greedy "pick the most different puzzle next"
     let final_results = diversify_order(results, max as usize);
@@ -916,6 +986,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             solution: sol.clone(),
             quality: "validated".to_string(),
             score: *score,
+            hash: compute_puzzle_hash(init),
         }
     }).collect()
 }

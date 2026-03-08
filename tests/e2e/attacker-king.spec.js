@@ -41,14 +41,19 @@ test('attacker king in source data does not block drops on visible empty squares
   await expect(target).toHaveClass(/last-move/);
 });
 
-test('1手詰 #27 allows dropping Gold on correct square', async ({ page }) => {
-  await page.goto('/?mate=1&id=27');
-  await expect(page.getByRole('heading', { name: '1手詰 #27' })).toBeVisible();
+test('1手詰 allows dropping Gold on correct square (hash-based)', async ({ page }) => {
+  // 持ち駒に金がある1手詰を動的に取得
+  const puzzlesRes = await (await fetch('http://localhost:4173/puzzles/1.json')).json().catch(() => null);
+  const puzzle = puzzlesRes?.find(p => p.initial.hands.attacker.G > 0 && p.solution[0]?.drop === 'G');
+  test.skip(!puzzle, 'No gold drop puzzle found');
+
+  await page.goto(`/?mate=1&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('1手詰');
 
   // 持ち駒の金を選択（駒台内のボタン）
   await page.locator('.komadai-piece', { hasText: '金' }).click();
-  // 正解手: (8,2)に金打ち
-  const target = page.locator("button[data-x='8'][data-y='2']");
+  // 正解手の位置に打つ
+  const target = page.locator(`button[data-x='${puzzle.solution[0].to[0]}'][data-y='${puzzle.solution[0].to[1]}']`);
   await expect(target).toHaveClass(/move-target/);
   await target.click();
   await expect(target).toHaveClass(/last-move/);

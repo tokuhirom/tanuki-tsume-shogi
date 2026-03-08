@@ -81,20 +81,24 @@ function parseRoute() {
   const page = params.get("page");
   if (page === "rules") return { screen: "rules" };
   const mate = Number(params.get("mate"));
-  const id = Number(params.get("id"));
   if (!lengths.includes(mate)) return { screen: "title" };
+  // pid（ハッシュID）を優先、後方互換で id（番号）もサポート
+  const pid = params.get("pid");
+  if (pid) return { screen: "puzzle", mateLength: mate, puzzleHash: pid };
+  const id = Number(params.get("id"));
   if (!Number.isInteger(id) || id <= 0) return { screen: "list", mateLength: mate };
   return { screen: "puzzle", mateLength: mate, puzzleId: id };
 }
 
-function setRoute({ mateLength = null, puzzleId = null, page = null } = {}, { replace = false } = {}) {
+function setRoute({ mateLength = null, puzzleHash = null, page = null } = {}, { replace = false } = {}) {
   const url = new URL(window.location.href);
   url.searchParams.delete("page");
   url.searchParams.delete("mate");
   url.searchParams.delete("id");
+  url.searchParams.delete("pid");
   if (page) url.searchParams.set("page", page);
   if (mateLength) url.searchParams.set("mate", String(mateLength));
-  if (puzzleId) url.searchParams.set("id", String(puzzleId));
+  if (puzzleHash) url.searchParams.set("pid", puzzleHash);
   const path = `${url.pathname}${url.search}`;
   if (replace) {
     window.history.replaceState({}, "", path);
@@ -245,13 +249,13 @@ function goPuzzle(p, { replace = false } = {}) {
     ? "✅ クリア済み — もう一度解けます"
     : "攻め方の手を選んでください";
   state.screen = "puzzle";
-  setRoute({ mateLength: state.mateLength, puzzleId: p.id }, { replace });
+  setRoute({ mateLength: state.mateLength, puzzleHash: p.hash }, { replace });
   render();
 }
 
 function goNextPuzzle() {
   if (!state.puzzle || !state.puzzles.length) return;
-  const idx = state.puzzles.findIndex((p) => p.id === state.puzzle.id);
+  const idx = state.puzzles.findIndex((p) => p.hash === state.puzzle.hash);
   const next = state.puzzles[idx + 1];
   if (next) {
     goPuzzle(next);
@@ -262,7 +266,7 @@ function goNextPuzzle() {
 
 function goPrevPuzzle() {
   if (!state.puzzle || !state.puzzles.length) return;
-  const idx = state.puzzles.findIndex((p) => p.id === state.puzzle.id);
+  const idx = state.puzzles.findIndex((p) => p.hash === state.puzzle.hash);
   const prev = state.puzzles[idx - 1];
   if (prev) {
     goPuzzle(prev);
@@ -528,8 +532,9 @@ function choosePromotion(promote) {
 async function copyPuzzleLink() {
   if (!state.puzzle || !state.mateLength) return;
   const url = new URL(window.location.href);
+  url.searchParams.delete("id");
   url.searchParams.set("mate", String(state.mateLength));
-  url.searchParams.set("id", String(state.puzzle.id));
+  url.searchParams.set("pid", state.puzzle.hash);
   const text = url.toString();
   try {
     await navigator.clipboard.writeText(text);
@@ -817,7 +822,10 @@ async function navigateToRoute(route, { replace = false } = {}) {
     return;
   }
   await goList(route.mateLength, { replace });
-  const target = state.puzzles.find((p) => p.id === route.puzzleId);
+  // pid（ハッシュ）優先、後方互換で id（番号）もサポート
+  const target = route.puzzleHash
+    ? state.puzzles.find((p) => p.hash === route.puzzleHash)
+    : state.puzzles.find((p) => p.id === route.puzzleId);
   if (target) {
     goPuzzle(target, { replace });
   } else {

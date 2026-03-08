@@ -58,7 +58,19 @@ fn run_generate(args: &[String]) {
         }
         let attempts = ga.attempts[i];
         let seeds = curated.get(&mate_len).cloned().unwrap_or_default();
-        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max);
+
+        // 既存パズルを読み込み（インクリメンタル生成用）
+        let existing: Vec<generate::Puzzle> = {
+            let file = format!("puzzles/{}.json", mate_len);
+            if Path::new(&file).exists() {
+                let data = fs::read_to_string(&file).unwrap_or_default();
+                serde_json::from_str(&data).unwrap_or_default()
+            } else {
+                vec![]
+            }
+        };
+
+        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing);
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 

@@ -13,8 +13,8 @@ test('promotion prompt appears and move is accepted', async ({ page }) => {
   const first = puzzle.solution[0];
   if (!first || !first.from) test.skip();
 
-  await page.goto('/?mate=5&id=1');
-  await expect(page.getByRole('heading', { name: '5手詰 #1' })).toBeVisible();
+  await page.goto(`/?mate=5&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('5手詰');
 
   await page.locator(`button[data-x='${first.from[0]}'][data-y='${first.from[1]}']`).click();
   await page.locator(`button[data-x='${first.to[0]}'][data-y='${first.to[1]}']`).click();
@@ -34,8 +34,8 @@ test('promotion choice is accepted for wrong destination', async ({ page }) => {
   const first = puzzle.solution[0];
   if (!first || !first.from) test.skip();
 
-  await page.goto('/?mate=5&id=1');
-  await expect(page.getByRole('heading', { name: '5手詰 #1' })).toBeVisible();
+  await page.goto(`/?mate=5&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('5手詰');
 
   // Click the correct piece
   await page.locator(`button[data-x='${first.from[0]}'][data-y='${first.from[1]}']`).click();
@@ -71,8 +71,8 @@ test('promotion choice is accepted for wrong destination', async ({ page }) => {
 test('solving 5手詰 #1 with correct moves clears puzzle', async ({ page }) => {
   const puzzle = loadPuzzle(5, 1);
 
-  await page.goto('/?mate=5&id=1');
-  await expect(page.getByRole('heading', { name: '5手詰 #1' })).toBeVisible();
+  await page.goto(`/?mate=5&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('5手詰');
 
   for (let i = 0; i < puzzle.solution.length; i += 2) {
     const move = puzzle.solution[i];

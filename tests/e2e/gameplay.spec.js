@@ -72,7 +72,7 @@ test('can open puzzle, play first move, and restore by reload', async ({ page })
 
   await page.getByRole('button', { name: '1', exact: true }).click();
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
-  await expect(page).toHaveURL(/\?mate=3&id=1$/);
+  await expect(page).toHaveURL(new RegExp(`pid=${puzzle.hash}`));
 
   await playMove(page, first);
 
@@ -80,13 +80,13 @@ test('can open puzzle, play first move, and restore by reload', async ({ page })
 
   await page.reload();
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
-  await expect(page).toHaveURL(/\?mate=3&id=1$/);
+  await expect(page).toHaveURL(new RegExp(`pid=${puzzle.hash}`));
 });
 
 test('can fully solve 3手詰 #1 and mark clear', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
 
   await solveAllMoves(page, puzzle);
@@ -99,7 +99,7 @@ test('can fully solve 3手詰 #1 and mark clear', async ({ page }) => {
 test('clear badge and next button shown after solving', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await solveAllMoves(page, puzzle);
 
   await expect(page.locator('.clear-badge')).toBeVisible();
@@ -109,16 +109,16 @@ test('clear badge and next button shown after solving', async ({ page }) => {
 test('next puzzle button navigates to next puzzle', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await solveAllMoves(page, puzzle);
 
   await page.getByRole('button', { name: '次の問題へ →' }).click();
   await expect(page.getByRole('heading', { name: '3手詰 #2' })).toBeVisible();
-  await expect(page).toHaveURL(/\?mate=3&id=2$/);
+  await expect(page).toHaveURL(new RegExp(`pid=${loadPuzzle(3, 2).hash}`));
 });
 
 test('prev/next navigation buttons work', async ({ page }) => {
-  await page.goto('/?mate=3&id=2');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 2).hash}`);
   await expect(page.getByRole('heading', { name: '3手詰 #2' })).toBeVisible();
 
   await page.getByRole('button', { name: '◀ 前' }).click();
@@ -132,7 +132,7 @@ test('undo restores previous state', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
   const first = puzzle.solution[0];
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await playMove(page, first);
   await expect(page.getByText(/次の一手へ。|クリア！/)).toBeVisible();
 
@@ -145,7 +145,7 @@ test('wrong move leads to incorrect result', async ({ page }) => {
   const wrongPiece = findWrongPiece(puzzle);
   if (!wrongPiece) test.skip();
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
 
   // Click the wrong attacker piece to select it
@@ -193,7 +193,7 @@ test('retry button resets puzzle after wrong answer', async ({ page }) => {
   const wrongPiece = findWrongPiece(puzzle);
   if (!wrongPiece) test.skip();
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
 
   // Play wrong moves until 不正解
   await page.locator(`button[data-x='${wrongPiece.x}'][data-y='${wrongPiece.y}']`).click();
@@ -233,7 +233,7 @@ test('retry button resets puzzle after wrong answer', async ({ page }) => {
 test('puzzle list shows clear count', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await solveAllMoves(page, puzzle);
   await expect(page.getByText('クリア！')).toBeVisible();
 
@@ -242,7 +242,7 @@ test('puzzle list shows clear count', async ({ page }) => {
 });
 
 test('solution toggle hides/shows solution', async ({ page }) => {
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
 
   await expect(page.getByText('▶ 手順を表示')).toBeVisible();
@@ -285,13 +285,13 @@ test('hand pieces show Japanese labels', async ({ page }) => {
   );
   if (!withHand) test.skip();
 
-  await page.goto(`/?mate=3&id=${withHand.id}`);
+  await page.goto(`/?mate=3&pid=${withHand.hash}`);
   await expect(page.getByText('持駒')).toBeVisible();
 });
 
 test('cleared puzzles shown in green on puzzle list', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await solveAllMoves(page, puzzle);
 
   await page.getByRole('button', { name: '← 一覧' }).click();
@@ -301,16 +301,16 @@ test('cleared puzzles shown in green on puzzle list', async ({ page }) => {
 
 test('reopening cleared puzzle shows cleared status', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await solveAllMoves(page, puzzle);
   await expect(page.getByText('クリア！')).toBeVisible();
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await expect(page.getByText('✅ クリア済み')).toBeVisible();
 });
 
 test('board cells have minimum tap size', async ({ page }) => {
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   const cell = page.locator('.board button').first();
   const box = await cell.boundingBox();
   expect(box.width).toBeGreaterThanOrEqual(40);
@@ -353,7 +353,7 @@ test('any legal move is accepted (free play)', async ({ page }) => {
   const puzzle = loadPuzzle(3, 1);
   const sol = puzzle.solution[0];
 
-  await page.goto('/?mate=3&id=1');
+  await page.goto(`/?mate=3&pid=${loadPuzzle(3, 1).hash}`);
   await expect(page.getByRole('heading', { name: '3手詰 #1' })).toBeVisible();
 
   if (sol.drop) {
@@ -384,39 +384,41 @@ test('any legal move is accepted (free play)', async ({ page }) => {
 });
 
 test('lance drop (香打ち) can be played from hand', async ({ page }) => {
-  // 3手詰 #31: 持ち駒に香、初手は香打ち(8,6)
-  await page.goto('/?mate=3&id=31');
-  await expect(page.getByRole('heading', { name: '3手詰 #31' })).toBeVisible();
+  // 持ち駒に香がある3手詰を動的に取得
+  const puzzles = loadAllPuzzles(3);
+  const puzzle = puzzles.find(p => p.initial.hands.attacker.L > 0 && p.solution[0]?.drop === 'L');
+  test.skip(!puzzle, 'No lance drop puzzle found');
 
-  // 駒台に「香」が表示されている
+  await page.goto(`/?mate=3&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('3手詰');
+
   const lancePiece = page.locator('.komadai-piece', { hasText: '香' });
   await expect(lancePiece).toBeVisible();
 
-  // 香を選択して打つ
   await lancePiece.click();
-  const target = page.locator("button[data-x='8'][data-y='6']");
+  const target = page.locator(`button[data-x='${puzzle.solution[0].to[0]}'][data-y='${puzzle.solution[0].to[1]}']`);
   await expect(target).toHaveClass(/move-target/);
   await target.click();
 
-  // 正解なので守り方が応手し「次の一手へ」のメッセージが表示される
   await expect(page.locator('.message')).toHaveText('次の一手へ。');
 });
 
 test('knight drop (桂打ち) can be played from hand', async ({ page }) => {
-  // 3手詰 #53: 持ち駒に桂、初手は桂打ち(6,3)
-  await page.goto('/?mate=3&id=53');
-  await expect(page.getByRole('heading', { name: '3手詰 #53' })).toBeVisible();
+  // 持ち駒に桂がある3手詰を動的に取得
+  const puzzles = loadAllPuzzles(3);
+  const puzzle = puzzles.find(p => p.initial.hands.attacker.N > 0 && p.solution[0]?.drop === 'N');
+  test.skip(!puzzle, 'No knight drop puzzle found');
 
-  // 駒台に「桂」が表示されている
+  await page.goto(`/?mate=3&pid=${puzzle.hash}`);
+  await expect(page.locator('h2')).toContainText('3手詰');
+
   const knightPiece = page.locator('.komadai-piece', { hasText: '桂' });
   await expect(knightPiece).toBeVisible();
 
-  // 桂を選択して打つ
   await knightPiece.click();
-  const target = page.locator("button[data-x='6'][data-y='3']");
+  const target = page.locator(`button[data-x='${puzzle.solution[0].to[0]}'][data-y='${puzzle.solution[0].to[1]}']`);
   await expect(target).toHaveClass(/move-target/);
   await target.click();
 
-  // 正解なので守り方が応手し「次の一手へ」のメッセージが表示される
   await expect(page.locator('.message')).toHaveText('次の一手へ。');
 });

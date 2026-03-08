@@ -405,7 +405,7 @@ function forcedMateWithin(state, plies, memo) {
     }
     const unique = children.every((c) => c.result.unique);
     // 守り方は最長抵抗の応手を選ぶ（駒余り防止のため最長lineを記録）
-    const best = children.reduce((a, b) => b.result.line.length > a.result.line.length ? b : a);
+    const best = children.reduce((a, b) => b.result.line.length >= a.result.line.length ? b : a);
     const res = { mate: true, unique, line: [best.move, ...best.result.line] };
     memo.set(memoKey, res);
     return res;
@@ -452,7 +452,7 @@ export function findBestDefense(state, remainingPlies) {
     const next = applyMove(state, m);
     const result = forcedMateWithin(next, remainingPlies - 1, memo);
     if (!result.mate) return m;
-    if (result.line.length > bestLen) {
+    if (result.line.length >= bestLen) {
       bestLen = result.line.length;
       bestMove = m;
     }
