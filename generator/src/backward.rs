@@ -5,7 +5,7 @@
 
 use std::collections::HashSet;
 
-use crate::shogi::*;
+use shogi_core::shogi::*;
 
 /// 簡易乱数生成器（generate.rs と同じ xorshift）
 struct Rng {

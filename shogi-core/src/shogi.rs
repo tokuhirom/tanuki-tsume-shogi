@@ -233,6 +233,12 @@ pub struct State {
     pub zobrist_hash: u64,
 }
 
+impl Default for State {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl State {
     pub fn new() -> Self {
         State {

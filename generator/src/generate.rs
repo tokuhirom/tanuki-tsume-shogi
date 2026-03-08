@@ -4,9 +4,9 @@ use std::fs;
 use rayon::prelude::*;
 use serde::{Serialize, Deserialize};
 
-use crate::shogi::*;
+use shogi_core::shogi::*;
+use shogi_core::dfpn;
 use crate::backward;
-use crate::dfpn;
 use crate::GenerateMethod;
 
 /// 手数に応じて最適なソルバーを自動選択する

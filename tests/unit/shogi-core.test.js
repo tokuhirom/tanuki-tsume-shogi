@@ -1,4 +1,4 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, beforeAll } from "vitest";
 import {
   applyMove,
   cloneState,
@@ -6,6 +6,7 @@ import {
   emptyHands,
   findBestDefense,
   formatMove,
+  initWasm,
   isInCheck,
   legalMoves,
   normalizeMove,
@@ -14,6 +15,10 @@ import {
   toSerializable,
   validateTsumePuzzle,
 } from "../../src/shogi-core.js";
+
+beforeAll(async () => {
+  await initWasm();
+});
 
 // ヘルパー: 簡易局面作成
 function mkState(pieces, hands, sideToMove = "attacker") {

@@ -36,6 +36,12 @@ fn tt_key(state: &State, depth: u32) -> u64 {
     state.zobrist_hash.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(depth as u64)
 }
 
+impl Default for DfpnSolver {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DfpnSolver {
     pub fn new() -> Self {
         DfpnSolver {
@@ -492,7 +498,6 @@ mod tests {
     use super::*;
     use crate::shogi::{
         BoardPiece, Owner, PieceType, Pos, State,
-        validate_tsume_puzzle,
     };
 
     /// テスト用: 簡単な1手詰局面を作成
@@ -538,69 +543,5 @@ mod tests {
         let mut solver = DfpnSolver::new().with_node_limit(100_000);
         assert!(!solver.solve(&mut state, 1), "詰まないはず");
         assert!(!solver.solve(&mut state, 3), "詰まないはず");
-    }
-
-    #[test]
-    fn test_dfpn_matches_existing_solver() {
-        let file = "puzzles/1.json";
-        if !std::path::Path::new(file).exists() { return; }
-        let data = std::fs::read_to_string(file).unwrap();
-        let puzzles: Vec<crate::generate::Puzzle> = serde_json::from_str(&data).unwrap();
-
-        for p in puzzles.iter().take(20) {
-            let mut s1 = p.initial.to_state();
-            let mut s2 = p.initial.to_state();
-            let old = validate_tsume_puzzle(&mut s1, 1);
-            let new = validate_tsume_dfpn(&mut s2, 1);
-            assert_eq!(old.is_some(), new.is_some(), "問題 {} で結果が異なる", p.id);
-        }
-    }
-
-    #[test]
-    fn test_dfpn_matches_3mate() {
-        let file = "puzzles/3.json";
-        if !std::path::Path::new(file).exists() { return; }
-        let data = std::fs::read_to_string(file).unwrap();
-        let puzzles: Vec<crate::generate::Puzzle> = serde_json::from_str(&data).unwrap();
-
-        for p in puzzles.iter().take(20) {
-            let mut s1 = p.initial.to_state();
-            let mut s2 = p.initial.to_state();
-            let old = validate_tsume_puzzle(&mut s1, 3);
-            let new = validate_tsume_dfpn(&mut s2, 3);
-            assert_eq!(old.is_some(), new.is_some(), "問題 {} で結果が異なる", p.id);
-        }
-    }
-
-    #[test]
-    fn test_dfpn_matches_5mate() {
-        let file = "puzzles/5.json";
-        if !std::path::Path::new(file).exists() { return; }
-        let data = std::fs::read_to_string(file).unwrap();
-        let puzzles: Vec<crate::generate::Puzzle> = serde_json::from_str(&data).unwrap();
-
-        for p in puzzles.iter().take(10) {
-            let mut s1 = p.initial.to_state();
-            let mut s2 = p.initial.to_state();
-            let old = validate_tsume_puzzle(&mut s1, 5);
-            let new = validate_tsume_dfpn(&mut s2, 5);
-            assert_eq!(old.is_some(), new.is_some(), "問題 {} で結果が異なる", p.id);
-        }
-    }
-
-    #[test]
-    fn test_dfpn_matches_7mate() {
-        let file = "puzzles/7.json";
-        if !std::path::Path::new(file).exists() { return; }
-        let data = std::fs::read_to_string(file).unwrap();
-        let puzzles: Vec<crate::generate::Puzzle> = serde_json::from_str(&data).unwrap();
-
-        for p in puzzles.iter().take(5) {
-            let mut s1 = p.initial.to_state();
-            let mut s2 = p.initial.to_state();
-            let old = validate_tsume_puzzle(&mut s1, 7);
-            let new = validate_tsume_dfpn(&mut s2, 7);
-            assert_eq!(old.is_some(), new.is_some(), "問題 {} で結果が異なる", p.id);
-        }
     }
 }

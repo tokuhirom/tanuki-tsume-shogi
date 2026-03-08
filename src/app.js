@@ -4,6 +4,7 @@ import {
   createState,
   findBestDefense,
   formatMove,
+  initWasm,
   isInCheck,
   legalMoves,
   pieceToText,
@@ -853,6 +854,7 @@ window.addEventListener("popstate", () => {
 });
 
 async function boot() {
+  await initWasm();
   await navigateToRoute(parseRoute(), { replace: true });
 }
 

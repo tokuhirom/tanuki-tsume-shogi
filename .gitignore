@@ -1,7 +1,9 @@
 node_modules/
 test-results/
 playwright-report/
+/target/
 /generator/target/
 /generator/puzzles/
 /generator/public/
+/src/wasm-pkg/
 dist/

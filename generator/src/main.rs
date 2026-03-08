@@ -1,7 +1,7 @@
-mod shogi;
 mod generate;
 mod backward;
-mod dfpn;
+
+use shogi_core::shogi;
 
 use std::collections::HashSet;
 use std::env;

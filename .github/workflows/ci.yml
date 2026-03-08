@@ -22,8 +22,14 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Install dependencies
         run: npm install
+
+      - name: Build WASM
+        run: npm run build:wasm
 
       - name: oxlint
         run: npx oxlint src/app.js src/shogi-core.js scripts/*.js
@@ -47,11 +53,20 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
       - name: Install dependencies
         run: npm install
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
+
+      - name: Build WASM
+        run: npm run build:wasm
 
       - name: Build for E2E
         run: npx vite build
@@ -73,9 +88,7 @@ jobs:
           components: clippy
 
       - name: cargo clippy
-        working-directory: generator
         run: cargo clippy -- -D warnings
 
       - name: cargo test
-        working-directory: generator
         run: cargo test
