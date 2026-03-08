@@ -17,7 +17,7 @@ const ALL_MATE_LENGTHS: [u32; 4] = [1, 3, 5, 7];
 
 fn parse_generate_args(args: &[String]) -> GenerateArgs {
     let mut ga = GenerateArgs {
-        max: 100,
+        max: u32::MAX,  // 上限なし（見つかっただけ収録）
         attempts: [100_000, 200_000, 100_000, 200_000],
         seed: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

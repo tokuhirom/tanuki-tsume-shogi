@@ -725,11 +725,8 @@ fn diversify_within(
 /// Easier puzzles come first, harder puzzles later.
 fn diversify_order(
     pool: Vec<(InitialData, Vec<Move>, i32)>,
-    max: usize,
 ) -> Vec<(InitialData, Vec<Move>, i32)> {
     if pool.is_empty() { return vec![]; }
-
-    let count = max.min(pool.len());
 
     // Pre-compute features and difficulty scores
     let features: Vec<Vec<i32>> = pool.iter()
@@ -743,14 +740,11 @@ fn diversify_order(
     let mut indices: Vec<usize> = (0..pool.len()).collect();
     indices.sort_by_key(|&i| difficulties[i]);
 
-    // Take only the number we need
-    indices.truncate(count);
-
     // Split into 4 tiers (quartiles)
     let num_tiers = 4usize;
     let tier_size = indices.len().div_ceil(num_tiers);
 
-    let mut result = Vec::with_capacity(count);
+    let mut result = Vec::with_capacity(pool.len());
     for tier in indices.chunks(tier_size) {
         let diversified = diversify_within(tier, &features);
         for &idx in &diversified {
@@ -844,11 +838,6 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
     if !existing.is_empty() {
         eprintln!("  {}手詰: 既存パズル {}/{} 問を保持 ({}問除外)", mate_length, kept, existing.len(), dropped);
     }
-
-    // 既に十分な数がある場合はスキップ
-    if results.len() as u32 >= max {
-        eprintln!("  {}手詰: 既存パズルで十分 ({}問), 新規生成をスキップ", mate_length, results.len());
-    } else {
 
     let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
                       sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>,
@@ -973,10 +962,9 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             }
         }
     }
-    } // end of else block (既存パズルが不足の場合)
 
     // Diversify ordering: greedy "pick the most different puzzle next"
-    let final_results = diversify_order(results, max as usize);
+    let final_results = diversify_order(results);
 
     final_results.iter().enumerate().map(|(i, (init, sol, score))| {
         Puzzle {
@@ -1303,7 +1291,7 @@ mod tests {
     // --- diversify_order テスト ---
 
     #[test]
-    fn test_diversify_order_respects_max() {
+    fn test_diversify_order_keeps_all() {
         let pool: Vec<(InitialData, Vec<Move>, i32)> = (0..10).map(|i| {
             let init = mk_initial(vec![
                 PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
@@ -1313,13 +1301,13 @@ mod tests {
             let sol = vec![Move { from: Some([3, 5]), to: [3, 4], drop: None, promote: false }];
             (init, sol, i)
         }).collect();
-        let result = diversify_order(pool, 5);
-        assert_eq!(result.len(), 5);
+        let result = diversify_order(pool);
+        assert_eq!(result.len(), 10);
     }
 
     #[test]
     fn test_diversify_order_empty() {
-        let result = diversify_order(vec![], 10);
+        let result = diversify_order(vec![]);
         assert!(result.is_empty());
     }
 
