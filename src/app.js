@@ -795,11 +795,36 @@ function renderBoard() {
 function renderSolutionToggle() {
   const wrong = state.puzzleResult === "wrong";
   // デバッグモード: 常に表示
+  const renderSolutionList = () => {
+    // 実際に指した手と正解手順を照合し、連続一致した手数を算出
+    const playedMoves = [];
+    for (const entry of state.history) {
+      if (entry.lastMove) playedMoves.push(entry.lastMove);
+    }
+    if (state.lastMove) playedMoves.push(state.lastMove);
+    let matchedPly = 0;
+    for (let i = 0; i < playedMoves.length && i < state.puzzle.solution.length; i++) {
+      if (sameMove(playedMoves[i], state.puzzle.solution[i])) {
+        matchedPly = i + 1;
+      } else {
+        break;
+      }
+    }
+
+    const nodes = [];
+    state.puzzle.solution.forEach((m, i) => {
+      if (i > 0) nodes.push(" ");
+      const side = i % 2 === 0 ? "sol-atk" : "sol-def";
+      const played = i < matchedPly ? " sol-played" : "";
+      nodes.push(h("span", { class: side + played }, `${i + 1}.${formatMove(m)}`));
+    });
+    return h("div", { class: "solution-moves" }, nodes);
+  };
+
   if (state.debugMode) {
-    const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
     return h("div", { class: "log" }, [
       h("div", { class: "solution-toggle" }, "手順（デバッグ）"),
-      h("div", {}, list.join(" / ")),
+      renderSolutionList(),
     ]);
   }
   // 不正解時のみ「答えを見る」ボタンを表示
@@ -813,10 +838,9 @@ function renderSolutionToggle() {
     };
     return h("div", { class: "solution-toggle", onclick: confirmAndShow }, "▶ 答えを見る");
   }
-  const list = state.puzzle.solution.map((m, i) => `${i + 1}. ${formatMove(m)}`);
   return h("div", { class: "log" }, [
     h("div", { class: "solution-toggle", onclick: () => { state.showSolution = false; render(); } }, "▼ 答えを隠す"),
-    h("div", {}, list.join(" / ")),
+    renderSolutionList(),
   ]);
 }
 

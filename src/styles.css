@@ -389,6 +389,24 @@ h1, h2 { margin: 8px 0 12px; }
   color: #8a7357;
 }
 
+.solution-moves {
+  line-height: 1.6;
+}
+
+.sol-atk {
+  color: #1a5c1a;
+  font-weight: 700;
+}
+
+.sol-def {
+  color: #8a4a2a;
+}
+
+.sol-played {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
 /* --- タヌキ顔アイコン --- */
 .tanuki-face {
   display: block;
