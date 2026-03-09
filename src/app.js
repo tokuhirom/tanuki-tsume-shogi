@@ -872,7 +872,8 @@ function renderPuzzle() {
       cleared ? h("div", { class: "clear-badge" }, "CLEAR!") : null,
       wrong ? h("div", { class: "wrong-badge" }, "不正解…") : null,
       h("div", { class: "message" }, state.message),
-      h("div", { class: "board-wrap" }, [renderBoard(), renderKomadai()]),
+      renderKomadai(),
+      h("div", { class: "board-wrap" }, [renderBoard()]),
       null,
       h("div", { class: "toolbar" }, [
         !finished ? h("button", { class: "btn small", onclick: undoOneTurn }, "↩ 一手戻す") : null,

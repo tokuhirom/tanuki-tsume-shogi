@@ -7,7 +7,7 @@
   --accent: #d96b24;
   --board: #e7be78;
   --clear: #4b8f29;
-  --cell-size: 44px;
+  --cell-size: min(44px, calc((100vw - 100px) / 9));
 }
 
 * { box-sizing: border-box; }
@@ -283,37 +283,34 @@ h1, h2 { margin: 8px 0 12px; }
 /* --- 駒台（持ち駒） --- */
 .komadai {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   background: var(--board);
   border: 2px solid #7c5c35;
   border-radius: 6px;
-  padding: 6px 4px;
-  min-width: 40px;
-  margin-left: 6px;
-  align-self: flex-start;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  gap: 4px;
 }
 
 .komadai-label {
   font-size: 11px;
   font-weight: 700;
   color: #5a452b;
-  writing-mode: vertical-rl;
   letter-spacing: 0.15em;
-  margin-bottom: 4px;
+  margin-right: 4px;
 }
 
 .komadai-empty {
   font-size: 11px;
   color: #8a7357;
-  writing-mode: vertical-rl;
 }
 
 .komadai-pieces {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .komadai-piece {
@@ -479,14 +476,14 @@ h1, h2 { margin: 8px 0 12px; }
 
 /* --- Responsive --- */
 @media (max-width: 400px) {
-  :root { --cell-size: min(38px, calc((100vw - 36px) / 9)); }
+  :root { --cell-size: min(38px, calc((100vw - 60px) / 9)); }
   .top-hero { grid-template-columns: 1fr; }
   .puzzle-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   main { padding: 4px; }
   .panel { padding: 8px; }
   .board button { font-size: min(16px, calc(var(--cell-size) * 0.44)); }
   .coord { width: 14px; min-width: 14px; font-size: 10px; }
-  .komadai { min-width: 32px; padding: 4px 2px; margin-left: 4px; }
+  .komadai { padding: 3px 6px; }
   .komadai-piece { width: 30px; height: 34px; }
   .komadai-char { font-size: 13px; width: 26px; height: 30px; }
   .komadai-count { font-size: 10px; }
