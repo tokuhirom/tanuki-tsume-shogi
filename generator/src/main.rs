@@ -78,9 +78,22 @@ fn run_generate(args: &[String]) {
 
     let curated = generate::load_curated("data/curated-puzzles.json");
 
+    // 前の手数の結果を保持（延長法で使用）
+    let mut prev_puzzles: Vec<generate::Puzzle> = vec![];
+
     for (i, &mate_len) in ALL_MATE_LENGTHS.iter().enumerate() {
         if let Some(only) = ga.only {
-            if mate_len != only { continue; }
+            if mate_len != only {
+                // --only 指定時でも、延長法のため前の手数の結果を読み込む
+                if mate_len == only.saturating_sub(2) {
+                    let file = format!("puzzles/{}.json", mate_len);
+                    if Path::new(&file).exists() {
+                        let data = fs::read_to_string(&file).unwrap_or_default();
+                        prev_puzzles = serde_json::from_str(&data).unwrap_or_default();
+                    }
+                }
+                continue;
+            }
         }
         let attempts = ga.attempts[i];
         let seeds = curated.get(&mate_len).cloned().unwrap_or_default();
@@ -96,7 +109,10 @@ fn run_generate(args: &[String]) {
             }
         };
 
-        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method);
+        // 延長法のソース: 1手詰には使えない（前の手数がない）
+        let shorter = if mate_len > 1 { &prev_puzzles } else { &vec![] };
+
+        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method, shorter);
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
@@ -108,6 +124,9 @@ fn run_generate(args: &[String]) {
         }
 
         eprintln!("{}手詰: {}問 (attempts={})", mate_len, puzzles.len(), attempts);
+
+        // 次の手数の延長法用に保持
+        prev_puzzles = puzzles;
     }
 
     eprintln!("seed={}", ga.seed);

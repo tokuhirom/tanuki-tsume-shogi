@@ -905,7 +905,8 @@ fn attacker_composition_key(initial: &InitialData) -> String {
         h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
-pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod) -> Vec<Puzzle> {
+#[allow(clippy::too_many_arguments)]
+pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Puzzle]) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
     let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
@@ -1039,6 +1040,48 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             }
             eprintln!("  {}手詰: backward phase done, {} found so far", mate_length, results.len());
         }
+    }
+
+    // --- 延長法フェーズ（短手数パズルから2手延長）---
+    if !shorter_puzzles.is_empty() {
+        let extend_attempts_per_puzzle = 50u32;
+        let total_extend = shorter_puzzles.len() as u32 * extend_attempts_per_puzzle;
+        eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰), {} attempts...",
+            mate_length, shorter_puzzles.len(), mate_length - 2, total_extend);
+
+        let shorter_initials: Vec<&InitialData> = shorter_puzzles.iter().map(|p| &p.initial).collect();
+        let extend_batch_size = 1000u32;
+        let extend_batches = total_extend.div_ceil(extend_batch_size);
+
+        for batch in 0..extend_batches {
+            if results.len() as u32 >= max { break; }
+
+            let batch_start = batch * extend_batch_size;
+            let batch_end = (batch_start + extend_batch_size).min(total_extend);
+            let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+
+            let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
+                .filter_map(|&i| {
+                    let source_idx = i as usize / extend_attempts_per_puzzle as usize;
+                    let source = shorter_initials.get(source_idx)?;
+                    let rng_seed = seed.wrapping_add(i as u64).wrapping_mul(2654435761);
+                    let cand = backward::extend_candidate(rng_seed, source)?;
+                    validate_and_prune(&cand, mate_length)
+                })
+                .collect();
+
+            for (fin, sol, score) in found {
+                if results.len() as u32 >= max { break; }
+                if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
+                    results.push((fin, sol, score));
+                }
+            }
+
+            if batch % 10 == 0 && batch > 0 {
+                eprintln!("  {}手詰 [extend]: {}/{} attempts, {} found", mate_length, batch_end, total_extend, results.len());
+            }
+        }
+        eprintln!("  {}手詰: extend phase done, {} found so far", mate_length, results.len());
     }
 
     // --- ランダム法フェーズ ---

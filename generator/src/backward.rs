@@ -718,6 +718,41 @@ pub fn backward_candidate(rng_seed: u64, mate_length: u32) -> Option<InitialData
     Some(InitialData::from_state(&final_state))
 }
 
+/// 既存の短手数パズルから2手延長して長手数の候補を生成する
+///
+/// N手詰のパズル初期局面を State に変換し、守り方→攻め方の1ペアを巻き戻して
+/// (N+2)手詰の候補を作る。ゼロから生成するより成功率が高い。
+pub fn extend_candidate(rng_seed: u64, source: &InitialData) -> Option<InitialData> {
+    let mut rng = Rng::new(rng_seed);
+    let mut current = source.to_state();
+
+    // 攻め方の手番にする（初期局面は攻め方手番のはず）
+    current.side_to_move = Owner::Attacker;
+
+    // 守り方の手を巻き戻す
+    let mut unwound_def = None;
+    for _ in 0..20 {
+        if let Some(s) = unwind_defender_move(&mut rng, &current) {
+            unwound_def = Some(s);
+            break;
+        }
+    }
+    current = unwound_def?;
+
+    // 攻め方の手を巻き戻す
+    let mut unwound_atk = None;
+    for _ in 0..20 {
+        if let Some(s) = unwind_attacker_move(&mut rng, &current) {
+            unwound_atk = Some(s);
+            break;
+        }
+    }
+    current = unwound_atk?;
+
+    current.side_to_move = Owner::Attacker;
+    Some(InitialData::from_state(&current))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -778,5 +813,31 @@ mod tests {
                 }
             }
         }
+    }
+
+    #[test]
+    fn test_extend_candidate() {
+        // 1手詰の候補をいくつか生成し、それを延長して3手詰候補を作る
+        let mut sources = Vec::new();
+        for seed in 0..500 {
+            if let Some(init) = backward_candidate(seed + 1, 1) {
+                sources.push(init);
+                if sources.len() >= 10 { break; }
+            }
+        }
+        assert!(!sources.is_empty(), "延長元の1手詰候補が生成できなかった");
+
+        let mut found = 0;
+        for (i, src) in sources.iter().enumerate() {
+            for attempt in 0..50 {
+                let rng_seed = (i * 100 + attempt) as u64 + 1;
+                if extend_candidate(rng_seed, src).is_some() {
+                    found += 1;
+                    break;
+                }
+            }
+        }
+        assert!(found > 0, "延長法で候補が1つも生成されなかった");
+        eprintln!("延長法候補生成: {}/{} 成功", found, sources.len());
     }
 }
