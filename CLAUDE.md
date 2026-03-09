@@ -18,9 +18,11 @@
   - `shogi-core/src/shogi.rs` — 将棋ルール・合法手生成・詰み探索
   - `shogi-core/src/solver.rs` — 詰将棋ソルバー（forcedMateWithin / findBestDefense）
   - `shogi-core/src/dfpn.rs` — df-pn ソルバー
+  - `shogi-core/src/rng.rs` — 共有乱数生成器（xorshift）
 - `wasm/` — WASM バインディングクレート（wasm-bindgen、JSON境界）
 - `generator/` — Rust製パズル生成・検証エンジン（rayon並列化）
   - `generator/src/generate.rs` — パズル生成ロジック（候補生成・変異・検証・並べ替え）
+  - `generator/src/backward.rs` — 逆算法・延長法による候補生成
   - `generator/src/main.rs` — CLI エントリポイント（generate / validate）
 - `scripts/` — Node.jsユーティリティ
 - `tests/` — テスト
@@ -52,6 +54,8 @@
 - パズルJSON は `puzzles/` と `public/puzzles/` の両方に同一内容を出力
 - 各パズルにハッシュID（初期局面から算出した8文字hex）を付与
 - URLは `?mate=N&pid=HASH` 形式（`?id=N` も後方互換で動作）
+- 生成フェーズ: 逆算法 → 延長法（短手数パズルから2手延長）→ ランダム法 → 変異法
+- 正規化: 玉を右上（x<=5側）に寄せ、スライド駒を玉から約4マスに配置
 
 ## 詰将棋ルール
 
@@ -67,3 +71,5 @@
 - ビルド情報は `vite.config.js` の `define` で `__BUILD_INFO__` としてコンパイル時注入
 - E2Eテストはハッシュベースの動的パズル参照を使用（再生成でも壊れない）
 - Cargo workspace 構成: shogi-core（共有lib）、wasm（cdylib）、generator（CLI）
+- 将棋盤の筋は右から1〜9（表示は降順）、段は上から一〜九
+- 不正解時に理由（取られる/逃げられる/合駒）とヒントマスを表示

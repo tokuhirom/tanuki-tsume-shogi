@@ -14,16 +14,18 @@
 ## 特徴
 
 - ブラウザだけでプレイ可能（インストール不要）
-- 1手詰・3手詰・5手詰を収録
-- 各カテゴリに 1〜100 の問題を収録
-- ステージ選択式（タイトル画面 -> 手数選択 -> 問題番号選択）
+- 1手詰〜11手詰を収録（問題数は手数により異なる）
+- 将棋ロジックは Rust で実装し、WASM 経由でブラウザから利用
+- Rust製パズル生成エンジンで自動生成（逆算法・延長法・変異法を併用）
+- 不正解時に理由（取られる/逃げられる/合駒）をヒントマス付きで表示
+- 駒余りなし・唯一解・駒箱ルール対応
 - クリア状況を `localStorage` に保存
 - タヌキテーマのタイトル画面・UI
 
 ## 遊び方
 
-1. タイトル画面で「1手詰 / 3手詰 / 5手詰」を選択
-2. 問題一覧から番号（1〜100）を選択
+1. タイトル画面で手数（1手詰〜11手詰）を選択
+2. 問題一覧から問題を選択
 3. 盤面で詰将棋を解く
 4. クリアすると自動で進捗が保存される
 
@@ -39,12 +41,24 @@
 
 ## 開発
 
-- 開発者向け情報は [DEVELOPMENT.md](./DEVELOPMENT.md) を参照
-- 検証済み問題の更新: `npm run generate` -> `npm run validate`
+```bash
+npm run dev          # WASM ビルド → Vite 開発サーバー起動
+npm run build        # WASM ビルド → パズル検証 → Vite ビルド
+cargo test           # Rust ユニットテスト
+npx vitest run       # JS ユニットテスト
+npx playwright test  # E2E テスト（事前に vite build が必要）
+```
+
+### パズル生成
+
+```bash
+cd generator && cargo run --release -- generate --seed=12345
+cd generator && cargo run --release -- validate
+```
 
 ## GitHub Pages
 
-- `main` ブランチへの push で `docs/` を自動デプロイします（`.github/workflows/pages.yml`）
+- `main` ブランチへの push で自動デプロイ（`.github/workflows/pages.yml`）
 - リポジトリ設定の `Settings > Pages > Build and deployment` は `GitHub Actions` を選択してください
 
 ## ライセンス
