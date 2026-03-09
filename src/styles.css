@@ -252,14 +252,14 @@ h1, h2 { margin: 8px 0 12px; }
   color: transparent;
 }
 
-/* --- 駒の五角形スタイル --- */
+/* --- 駒の五角形スタイル（実際の将棋駒に近い形状） --- */
 .piece {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: calc(var(--cell-size) * 0.82);
   height: calc(var(--cell-size) * 0.88);
-  clip-path: polygon(50% 0%, 97% 18%, 84% 100%, 16% 100%, 3% 18%);
+  clip-path: polygon(50% 0%, 85% 12%, 95% 100%, 5% 100%, 15% 12%);
   background: linear-gradient(175deg, #f7e8cc 0%, #dcc09a 60%, #c8a878 100%);
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
   font-weight: 700;
@@ -339,7 +339,7 @@ h1, h2 { margin: 8px 0 12px; }
   justify-content: center;
   width: 30px;
   height: 34px;
-  clip-path: polygon(50% 0%, 97% 18%, 84% 100%, 16% 100%, 3% 18%);
+  clip-path: polygon(50% 0%, 85% 12%, 95% 100%, 5% 100%, 15% 12%);
   background: linear-gradient(175deg, #f7e8cc 0%, #dcc09a 60%, #c8a878 100%);
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25));
   font-size: 16px;
