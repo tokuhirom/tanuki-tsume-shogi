@@ -574,13 +574,13 @@ fn strip_unused_hand(mut initial: InitialData, solution: Vec<Move>, mate_length:
         .map(|new_sol| (initial, new_sol))
 }
 
-/// Mirror the board so the defender king is on the right side (x >= 5),
-/// which is the standard tsume-shogi convention.
+/// 玉を盤面の右上に寄せる正規化（筋番号は右が小さい）
+/// 表示は右から1,2,...,9なので、x <= 5 が画面右側。
 fn normalize_right(initial: InitialData, solution: Vec<Move>) -> (InitialData, Vec<Move>) {
     let dk = initial.pieces.iter()
         .find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K);
     let needs_mirror = match dk {
-        Some(k) => k.x < 5,
+        Some(k) => k.x > 5,
         None => false,
     };
     if !needs_mirror {
