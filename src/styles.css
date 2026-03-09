@@ -238,6 +238,10 @@ h1, h2 { margin: 8px 0 12px; }
   background: #d4c07a;
 }
 
+.board button.hint {
+  background: #e8a0a0;
+}
+
 .coord {
   width: 20px;
   min-width: 20px;

@@ -70,6 +70,7 @@ const state = {
   history: [],
   promotionPrompt: null,
   lastMove: null,
+  hintSquares: [],
   showSolution: false,
   puzzleResult: null,
   confirmReset: false,
@@ -247,6 +248,7 @@ function goPuzzle(p, { replace = false } = {}) {
   state.selectedHand = null;
   state.promotionPrompt = null;
   state.lastMove = null;
+  state.hintSquares = [];
   state.showSolution = false;
   state.puzzleResult = null;
   state.message = isCleared(p)
@@ -303,6 +305,59 @@ function getMoveTargets() {
   return targets;
 }
 
+/** 不正解時の理由を分析する。{message, squares} を返す */
+function analyzeWrongReason(gameState, defenderMoves, attackerMove) {
+  // 王手になっていない場合
+  if (!isInCheck(gameState, "defender")) {
+    return { message: "王手になっていません。", squares: [] };
+  }
+
+  const attackTo = attackerMove.to;
+
+  // 攻め方の駒を取る手があるか
+  const captures = defenderMoves.filter(
+    (m) => m.to[0] === attackTo[0] && m.to[1] === attackTo[1],
+  );
+  if (captures.length > 0) {
+    const cap = captures[0];
+    const capPiece = cap.from
+      ? gameState.board.get(`${cap.from[0]},${cap.from[1]}`)
+      : null;
+    const label = capPiece ? PIECE_LABEL[capPiece.t] || capPiece.t : "";
+    // 取る駒の元位置をハイライト
+    const sq = captures.filter((m) => m.from).map((m) => m.from);
+    return {
+      message: label ? `${label}で取られてしまいます。` : "取られてしまいます。",
+      squares: sq,
+    };
+  }
+
+  // 守り方の玉の移動手があるか
+  const kingEscapes = defenderMoves.filter(
+    (m) => m.from && gameState.board.get(`${m.from[0]},${m.from[1]}`)?.t === "K",
+  );
+  if (kingEscapes.length > 0) {
+    // 逃げ先をハイライト
+    const sq = kingEscapes.map((m) => m.to);
+    return { message: "玉に逃げられてしまいます。", squares: sq };
+  }
+
+  // 合駒（持ち駒を打つ手）があるか
+  const blocks = defenderMoves.filter((m) => m.drop);
+  if (blocks.length > 0) {
+    // 合駒の打ち先をハイライト（重複除去）
+    const seen = new Set();
+    const sq = [];
+    for (const m of blocks) {
+      const key = `${m.to[0]},${m.to[1]}`;
+      if (!seen.has(key)) { seen.add(key); sq.push(m.to); }
+    }
+    return { message: "合駒で防がれてしまいます。", squares: sq };
+  }
+
+  return { message: "詰みませんでした。", squares: [] };
+}
+
 function tryUserMove(candidate) {
   if (!state.puzzle || !state.gameState) return false;
   if (isPuzzleFinished()) return false;
@@ -321,6 +376,7 @@ function tryUserMove(candidate) {
 
   state.gameState = applyMove(state.gameState, candidate);
   state.lastMove = candidate;
+  state.hintSquares = [];
   playMoveSound();
   state.ply += 1;
   state.selectedSquare = null;
@@ -336,7 +392,9 @@ function tryUserMove(candidate) {
     state.clearFxUntil = Date.now() + 1500;
     playClearSound();
   } else if (state.ply >= state.puzzle.mateLength) {
-    state.message = "不正解… 詰みませんでした。";
+    const reason = analyzeWrongReason(state.gameState, defenderMoves, candidate);
+    state.message = "不正解… " + reason.message;
+    state.hintSquares = reason.squares;
     state.puzzleResult = "wrong";
   } else if (defenderMoves.length === 0) {
     state.message = "不正解…";
@@ -370,6 +428,7 @@ function undoOneTurn() {
   state.selectedHand = null;
   state.promotionPrompt = null;
   state.clearFxUntil = 0;
+  state.hintSquares = [];
   state.message = "一手戻しました。";
   render();
 }
@@ -711,10 +770,12 @@ function renderBoard() {
       const edgeBottom = y === 9 ? " edge-bottom" : "";
       const edgeLeft = x === 1 ? " edge-left" : "";
       const edgeRight = x === 9 ? " edge-right" : "";
+      const isHint = state.hintSquares.some((s) => s[0] === x && s[1] === y);
       const classes = [
         selected ? "sel" : "",
         isTarget ? "move-target" : "",
         isLastMove && !selected ? "last-move" : "",
+        isHint ? "hint" : "",
         edgeTop, edgeBottom, edgeLeft, edgeRight,
       ].filter(Boolean).join(" ");
       tr.append(h("td", {}, h("button", {
