@@ -747,7 +747,7 @@ function renderBoard() {
 
   const head = h("tr");
   head.append(h("th", { class: "coord corner" }, " "));
-  for (let x = view.minX; x <= view.maxX; x += 1) {
+  for (let x = view.maxX; x >= view.minX; x -= 1) {
     head.append(h("th", { class: "coord file" }, fileLabel(x)));
   }
   head.append(h("th", { class: "coord corner" }, " "));
@@ -756,7 +756,7 @@ function renderBoard() {
   for (let y = view.minY; y <= view.maxY; y += 1) {
     const tr = h("tr");
     tr.append(h("th", { class: "coord corner" }, " "));
-    for (let x = view.minX; x <= view.maxX; x += 1) {
+    for (let x = view.maxX; x >= view.minX; x -= 1) {
       const p = boardPiece(x, y);
       const selected = state.selectedSquare && state.selectedSquare[0] === x && state.selectedSquare[1] === y;
       const isTarget = targets.has(`${x},${y}`);
@@ -768,8 +768,8 @@ function renderBoard() {
         : "";
       const edgeTop = y === 1 ? " edge-top" : "";
       const edgeBottom = y === 9 ? " edge-bottom" : "";
-      const edgeLeft = x === 1 ? " edge-left" : "";
-      const edgeRight = x === 9 ? " edge-right" : "";
+      const edgeLeft = x === view.maxX ? " edge-left" : "";
+      const edgeRight = x === view.minX ? " edge-right" : "";
       const isHint = state.hintSquares.some((s) => s[0] === x && s[1] === y);
       const classes = [
         selected ? "sel" : "",
