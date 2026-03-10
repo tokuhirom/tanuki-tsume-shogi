@@ -618,7 +618,7 @@ pub fn find_checkers(state: &State, king_owner: Owner) -> Vec<(Pos, BoardPiece)>
 }
 
 /// スライド駒と玉の間の遮断可能マスを列挙する（両端を含まない）
-fn interposition_squares(checker: Pos, king: Pos) -> Vec<Pos> {
+pub fn interposition_squares(checker: Pos, king: Pos) -> Vec<Pos> {
     let dx = (king.x - checker.x).signum();
     let dy = (king.y - checker.y).signum();
     let mut squares = Vec::new();
@@ -859,7 +859,7 @@ pub fn is_in_check(state: &State, owner: Owner) -> bool {
 }
 
 /// 手番側に合法手が1つでもあるか判定する（全手生成より高速）
-fn has_any_legal_move(state: &mut State) -> bool {
+pub fn has_any_legal_move(state: &mut State) -> bool {
     let owner = state.side_to_move;
 
     // 盤上の駒の位置を先に収集（state を後で &mut で使うため）

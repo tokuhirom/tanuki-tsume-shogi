@@ -1094,7 +1094,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
     }
 
     // --- 逆算法フェーズ（9手詰以上ではスキップ: 成功率が極端に低いため） ---
-    if (method == GenerateMethod::Backward || method == GenerateMethod::Both) && mate_length <= 7 {
+    if method == GenerateMethod::Backward || method == GenerateMethod::Both {
         let backward_attempts = match method {
             GenerateMethod::Backward => attempts,
             GenerateMethod::Both => attempts / 2, // 半分を逆算法に割り当て

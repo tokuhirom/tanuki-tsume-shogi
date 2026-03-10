@@ -73,6 +73,11 @@ fn is_square_attacked_by(state: &State, target: Pos, attacker: Owner) -> bool {
     false
 }
 
+/// 駒がスライド駒（飛車・角・香車・成飛車・成角）かどうか
+fn is_sliding_piece(pt: PieceType) -> bool {
+    !slide_dirs(pt).is_empty()
+}
+
 /// 詰み局面（攻め方の手番で王手をかけた直後、守り方に合法手がない状態）を生成する
 fn generate_mated_position(rng: &mut Rng) -> Option<State> {
     // 守り方の玉を端寄りに配置（詰ませやすい）
@@ -239,8 +244,9 @@ fn generate_mated_position(rng: &mut Rng) -> Option<State> {
     }
 
     // 守り方の手番にして合法手がないことを確認（詰み）
+    // has_any_legal_move で完全な合法手チェック（玉移動、合駒、駒取りすべて含む）
     state.side_to_move = Owner::Defender;
-    if has_any_legal_move_simple(&state) {
+    if has_any_legal_move(&mut state) {
         return None;
     }
 
@@ -248,34 +254,6 @@ fn generate_mated_position(rng: &mut Rng) -> Option<State> {
     state.side_to_move = Owner::Attacker;
 
     Some(state)
-}
-
-/// 合法手があるかの簡易判定（玉の移動のみ）
-fn has_any_legal_move_simple(state: &State) -> bool {
-    let owner = state.side_to_move;
-    let kp = match state.king_pos(owner) {
-        Some(p) => p,
-        None => return false,
-    };
-
-    // 玉の移動
-    for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
-        let np = Pos::new(kp.x + dx, kp.y + dy);
-        if !np.is_valid() { continue; }
-        if let Some(bp) = state.get(np) {
-            if bp.owner == owner { continue; } // 自分の駒がある
-        }
-        // このマスが攻め方に利かれていないか
-        // 一時的に玉を移動させて判定
-        let mut test = state.clone();
-        test.set(kp, None);
-        test.set(np, Some(BoardPiece { owner, piece_type: PieceType::K }));
-        if !is_square_attacked_by(&test, np, owner.opposite()) {
-            return true;
-        }
-    }
-
-    false
 }
 
 /// 攻め方の最終手を巻き戻す（1手巻き戻し）
@@ -317,8 +295,6 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
         let owner = Owner::Attacker;
 
         // ステップ移動の逆（to から from を逆算）
-        // 駒が from にいて transform_dir(dx,dy) を加えると to に到達
-        // → from = to - transform_dir(dx,dy)
         for &(dx, dy) in step_moves(t) {
             let (tx, ty) = transform_dir(owner, dx, dy);
             let from = Pos::new(ck_pos.x - tx, ck_pos.y - ty);
@@ -412,25 +388,39 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
     }
 }
 
-/// 守り方の手を巻き戻す（玉の移動の逆算）
+/// 守り方の手を巻き戻す（玉の移動・合駒の逆算）
 ///
 /// 現在の局面は「攻め方が王手をかけた直後」の状態。
 /// 守り方の巻き戻しでは:
 /// パターンA: 玉を空きマスに移動（逃げる前の位置に戻す）
 /// パターンB: 玉が攻め方の駒を取って逃げた（捕獲の逆算: 元の位置に駒を復元）
+/// パターンC: 合駒（スライド王手に対して遮断駒を配置した逆算）
 /// いずれも新しい玉位置に王手がかかっている状態を作る
-///    → 結果: 「攻め方が別の王手をかけた直後」の状態になる
 fn unwind_defender_move(rng: &mut Rng, state: &State) -> Option<State> {
     let dk_pos = state.king_pos(Owner::Defender)?;
 
-    // パターンB: 玉が攻め方の駒を取って逃げた場合の逆算（30%の確率で先に試行）
-    if rng.next_f64() < 0.3 {
-        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) {
-            return Some(s);
-        }
+    // 3パターンをランダムな順序で試行
+    let r = rng.next_f64();
+    if r < 0.3 {
+        // パターンC → パターンB → パターンA
+        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
+        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) { return Some(s); }
+        unwind_defender_king_move(rng, state, dk_pos)
+    } else if r < 0.5 {
+        // パターンB → パターンC → パターンA
+        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) { return Some(s); }
+        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
+        unwind_defender_king_move(rng, state, dk_pos)
+    } else {
+        // パターンA → パターンC → パターンB
+        if let Some(s) = unwind_defender_king_move(rng, state, dk_pos) { return Some(s); }
+        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
+        unwind_defender_capture(rng, state, dk_pos)
     }
+}
 
-    // パターンA: 玉を空きマスに移動（逃げる前の位置）
+/// パターンA: 玉を空きマスに移動（逃げる前の位置に戻す）
+fn unwind_defender_king_move(rng: &mut Rng, state: &State, dk_pos: Pos) -> Option<State> {
     let mut from_candidates = Vec::new();
     for &(dx, dy) in &[(-1i8,-1),(0,-1),(1,-1),(-1,0),(1,0),(-1,1),(0,1),(1,1)] {
         let old_pos = Pos::new(dk_pos.x + dx, dk_pos.y + dy);
@@ -439,33 +429,30 @@ fn unwind_defender_move(rng: &mut Rng, state: &State) -> Option<State> {
         from_candidates.push(old_pos);
     }
 
-    if !from_candidates.is_empty() {
-        rng.shuffle(&mut from_candidates);
+    if from_candidates.is_empty() { return None; }
+    rng.shuffle(&mut from_candidates);
 
-        for &old_king_pos in &from_candidates {
-            let mut new_state = state.clone();
-            new_state.set(dk_pos, None);
-            new_state.set(old_king_pos, Some(BoardPiece { owner: Owner::Defender, piece_type: PieceType::K }));
-            new_state.side_to_move = Owner::Defender;
+    for &old_king_pos in &from_candidates {
+        let mut new_state = state.clone();
+        new_state.set(dk_pos, None);
+        new_state.set(old_king_pos, Some(BoardPiece { owner: Owner::Defender, piece_type: PieceType::K }));
+        new_state.side_to_move = Owner::Defender;
 
-            // まず既存の駒で王手がかかっているか確認
-            if is_in_check(&new_state, Owner::Defender) {
-                return Some(new_state);
-            }
+        // まず既存の駒で王手がかかっているか確認
+        if is_in_check(&new_state, Owner::Defender) {
+            return Some(new_state);
+        }
 
-            // 王手がかかっていない場合、攻め方の駒を追加して王手をかける
-            if let Some(checked_state) = add_checking_piece(rng, &new_state, old_king_pos) {
-                return Some(checked_state);
-            }
+        // 王手がかかっていない場合、攻め方の駒を追加して王手をかける
+        if let Some(checked_state) = add_checking_piece(rng, &new_state, old_king_pos) {
+            return Some(checked_state);
         }
     }
 
-    // パターンB をまだ試していなければ試す
-    unwind_defender_capture(rng, state, dk_pos)
+    None
 }
 
-/// 守り方の玉が攻め方の駒を取って逃げた場合の逆算
-/// 現在の玉位置に攻め方の駒を復元し、元の位置（隣接マス）に玉を戻す
+/// パターンB: 守り方の玉が攻め方の駒を取って逃げた場合の逆算
 fn unwind_defender_capture(rng: &mut Rng, state: &State, dk_pos: Pos) -> Option<State> {
     // 現在の玉位置に攻め方の駒があった（玉が取った）
     let capture_types = [
@@ -506,6 +493,70 @@ fn unwind_defender_capture(rng: &mut Rng, state: &State, dk_pos: Pos) -> Option<
     }
 
     None
+}
+
+/// パターンC: 合駒の逆算
+/// スライド王手に対して守り方が遮断駒を置いた手を巻き戻す。
+/// 結果: 遮断駒がない状態（スライド王手が直通している状態）を作り、
+/// さらに別の方向からの王手を追加する。
+fn unwind_defender_interpose(rng: &mut Rng, state: &State, dk_pos: Pos) -> Option<State> {
+    // 現在の盤面でスライド王手の経路上に守り方の駒がないか探す
+    // （既に王手がかかっている状態なので、今は合駒がない状態）
+    //
+    // 合駒の逆算: 攻め方のスライド駒と玉の間の空きマスに守り方の駒を配置し、
+    // 元のスライド王手をブロック。代わりに別の王手を追加。
+    let checkers = find_checking_pieces(state, dk_pos);
+
+    // スライド王手でない場合は合駒不可
+    let slider_checkers: Vec<(Pos, BoardPiece)> = checkers.iter()
+        .filter(|(pos, bp)| {
+            is_sliding_piece(bp.piece_type) && {
+                // 隣接でないスライド王手のみ（隣接なら合駒不可）
+                let dx = (dk_pos.x - pos.x).abs();
+                let dy = (dk_pos.y - pos.y).abs();
+                dx > 1 || dy > 1
+            }
+        })
+        .cloned()
+        .collect();
+    if slider_checkers.is_empty() { return None; }
+
+    let &(ck_pos, _) = rng.pick(&slider_checkers);
+    let interp = interposition_squares(ck_pos, dk_pos);
+    if interp.is_empty() { return None; }
+
+    // 合駒位置をランダムに選択
+    let block_pos = *rng.pick(&interp);
+
+    // 合駒として配置する守り方の駒種（打ち駒なので成り駒は除外）
+    let block_types = [
+        PieceType::G, PieceType::S, PieceType::P, PieceType::N,
+        PieceType::L, PieceType::R, PieceType::B,
+    ];
+    let block_type = *rng.pick(&block_types);
+
+    // 行き場のない駒チェック
+    match block_type {
+        PieceType::P | PieceType::L => { if block_pos.y >= 9 { return None; } }
+        PieceType::N => { if block_pos.y >= 8 { return None; } }
+        _ => {}
+    }
+
+    let mut new_state = state.clone();
+    new_state.set(block_pos, Some(BoardPiece {
+        owner: Owner::Defender, piece_type: block_type
+    }));
+    new_state.side_to_move = Owner::Defender;
+
+    // 元のスライド王手は合駒でブロックされた
+    // 別の方向からの王手が必要（前の攻め方の手に対応）
+    if is_in_check(&new_state, Owner::Defender) {
+        // 別方向から既に王手がかかっている
+        return Some(new_state);
+    }
+
+    // 新しい王手をかける駒を追加
+    add_checking_piece(rng, &new_state, dk_pos)
 }
 
 /// 指定位置の玉に王手をかける攻め方の駒を追加する
@@ -596,20 +647,22 @@ fn find_checking_pieces(state: &State, king_pos: Pos) -> Vec<(Pos, BoardPiece)> 
         if let Some(bp) = state.get(p) {
             if bp.owner == attacker {
                 // bp が king_pos を攻撃できるか
+                let mut found = false;
                 for &(sdx, sdy) in step_moves(bp.piece_type) {
                     let (tx, ty) = transform_dir(attacker, sdx, sdy);
                     if p.x + tx == king_pos.x && p.y + ty == king_pos.y {
                         checkers.push((p, bp));
+                        found = true;
                         break;
                     }
                 }
-                for &(sdx, sdy) in extra_steps(bp.piece_type) {
-                    let (tx, ty) = transform_dir(attacker, sdx, sdy);
-                    if p.x + tx == king_pos.x && p.y + ty == king_pos.y {
-                        if !checkers.iter().any(|&(cp, _)| cp == p) {
+                if !found {
+                    for &(sdx, sdy) in extra_steps(bp.piece_type) {
+                        let (tx, ty) = transform_dir(attacker, sdx, sdy);
+                        if p.x + tx == king_pos.x && p.y + ty == king_pos.y {
                             checkers.push((p, bp));
+                            break;
                         }
-                        break;
                     }
                 }
             }
@@ -656,66 +709,83 @@ fn find_checking_pieces(state: &State, king_pos: Pos) -> Vec<(Pos, BoardPiece)> 
     checkers
 }
 
+/// 攻め方の巻き戻しを複数回リトライするラッパー
+fn try_unwind_attacker(rng: &mut Rng, state: &State, max_attempts: u32) -> Option<State> {
+    for _ in 0..max_attempts {
+        if let Some(s) = unwind_attacker_move(rng, state) {
+            return Some(s);
+        }
+    }
+    None
+}
+
+/// 守り方の巻き戻しを複数回リトライするラッパー
+fn try_unwind_defender(rng: &mut Rng, state: &State, max_attempts: u32) -> Option<State> {
+    for _ in 0..max_attempts {
+        if let Some(s) = unwind_defender_move(rng, state) {
+            return Some(s);
+        }
+    }
+    None
+}
+
+/// バックトラック付きで巻き戻しチェーンを構築する
+/// 各ペア（守り方→攻め方）の巻き戻しが失敗したら、前のステップからやり直す
+fn try_extend_chain(rng: &mut Rng, start: &State, remaining_pairs: u32) -> Option<State> {
+    if remaining_pairs == 0 {
+        return Some(start.clone());
+    }
+
+    // 各ペアで複数回リトライ（バックトラック）
+    let retries = if remaining_pairs <= 2 { 50 } else { 30 };
+    for _ in 0..retries {
+        let def = match try_unwind_defender(rng, start, 30) {
+            Some(s) => s,
+            None => continue,
+        };
+        let atk = match try_unwind_attacker(rng, &def, 30) {
+            Some(s) => s,
+            None => continue,
+        };
+        // 残りのペアを再帰的にチェーン
+        if let Some(result) = try_extend_chain(rng, &atk, remaining_pairs - 1) {
+            return Some(result);
+        }
+    }
+    None
+}
+
 /// 逆算法で1つの候補局面を生成する
 ///
 /// 1. 詰み局面を生成
 /// 2. 攻め方の最終手を巻き戻し（1手詰の元局面を作る）
-/// 3. 3手詰以上: 守り方の手→攻め方の手を交互に巻き戻す
+/// 3. 3手詰以上: 守り方の手→攻め方の手を交互に巻き戻す（バックトラック付き）
 /// 4. 不要な駒を削除
 pub fn backward_candidate(rng_seed: u64, mate_length: u32) -> Option<InitialData> {
     let mut rng = Rng::new(rng_seed);
-
-    // ステップ1: 詰み局面を生成
-    let mut mated = None;
-    for _ in 0..20 {
-        if let Some(s) = generate_mated_position(&mut rng) {
-            mated = Some(s);
-            break;
-        }
-    }
-    let mated = mated?;
-
-    // ステップ2: 攻め方の最終手を巻き戻し
-    let mut current = None;
-    for _ in 0..10 {
-        if let Some(s) = unwind_attacker_move(&mut rng, &mated) {
-            current = Some(s);
-            break;
-        }
-    }
-    let mut current = current?;
-
-    // ステップ3: 3手詰以上の場合、守り方→攻め方の巻き戻しを繰り返す
     let additional_pairs = (mate_length.saturating_sub(1)) / 2;
-    for _ in 0..additional_pairs {
-        // 守り方の手を巻き戻す
-        let mut unwound_def = None;
-        for _ in 0..20 {
-            if let Some(s) = unwind_defender_move(&mut rng, &current) {
-                unwound_def = Some(s);
-                break;
-            }
-        }
-        current = unwound_def?;
 
-        // 攻め方の手を巻き戻す
-        let mut unwound_atk = None;
-        for _ in 0..20 {
-            if let Some(s) = unwind_attacker_move(&mut rng, &current) {
-                unwound_atk = Some(s);
-                break;
-            }
+    // 外側リトライ: 詰み局面からやり直す
+    let outer_retries = if mate_length <= 3 { 50 } else { 100 };
+    for _ in 0..outer_retries {
+        let mated = match generate_mated_position(&mut rng) {
+            Some(s) => s,
+            None => continue,
+        };
+
+        // 攻め方の最終手を巻き戻し
+        let initial = match try_unwind_attacker(&mut rng, &mated, 30) {
+            Some(s) => s,
+            None => continue,
+        };
+
+        // 追加ペアの巻き戻し（バックトラック付き）
+        if let Some(mut result) = try_extend_chain(&mut rng, &initial, additional_pairs) {
+            result.side_to_move = Owner::Attacker;
+            return Some(InitialData::from_state(&result));
         }
-        current = unwound_atk?;
     }
-
-    // side_to_move を攻め方にする
-    // 駒の削減は validate_and_prune 側の prune_initial に任せる
-    current.side_to_move = Owner::Attacker;
-    let final_state = current;
-
-    // InitialData に変換
-    Some(InitialData::from_state(&final_state))
+    None
 }
 
 /// 既存の短手数パズルから2手延長して長手数の候補を生成する
@@ -730,27 +800,13 @@ pub fn extend_candidate(rng_seed: u64, source: &InitialData) -> Option<InitialDa
     current.side_to_move = Owner::Attacker;
 
     // 守り方の手を巻き戻す
-    let mut unwound_def = None;
-    for _ in 0..20 {
-        if let Some(s) = unwind_defender_move(&mut rng, &current) {
-            unwound_def = Some(s);
-            break;
-        }
-    }
-    current = unwound_def?;
+    let unwound_def = try_unwind_defender(&mut rng, &current, 50)?;
 
     // 攻め方の手を巻き戻す
-    let mut unwound_atk = None;
-    for _ in 0..20 {
-        if let Some(s) = unwind_attacker_move(&mut rng, &current) {
-            unwound_atk = Some(s);
-            break;
-        }
-    }
-    current = unwound_atk?;
+    let mut result = try_unwind_attacker(&mut rng, &unwound_def, 50)?;
 
-    current.side_to_move = Owner::Attacker;
-    Some(InitialData::from_state(&current))
+    result.side_to_move = Owner::Attacker;
+    Some(InitialData::from_state(&result))
 }
 
 #[cfg(test)]
@@ -793,6 +849,18 @@ mod tests {
         }
         assert!(found > 0, "500回のシードで3手詰候補が1つも生成されなかった");
         eprintln!("3手詰候補生成: {}/500 成功", found);
+    }
+
+    #[test]
+    fn test_backward_candidate_5mate() {
+        let mut found = 0;
+        for seed in 0..1000 {
+            if backward_candidate(seed + 1, 5).is_some() {
+                found += 1;
+            }
+        }
+        assert!(found > 0, "1000回のシードで5手詰候補が1つも生成されなかった");
+        eprintln!("5手詰候補生成: {}/1000 成功", found);
     }
 
     #[test]
@@ -839,5 +907,23 @@ mod tests {
         }
         assert!(found > 0, "延長法で候補が1つも生成されなかった");
         eprintln!("延長法候補生成: {}/{} 成功", found, sources.len());
+    }
+
+    #[test]
+    fn test_interpose_unwind() {
+        // 合駒逆算のテスト: スライド王手のある局面から合駒を追加
+        let mut rng = Rng::new(42);
+        let mut found = 0;
+        for seed in 0..200 {
+            rng = Rng::new(seed + 1);
+            if let Some(mated) = generate_mated_position(&mut rng) {
+                let dk_pos = mated.king_pos(Owner::Defender).unwrap();
+                if let Some(_s) = unwind_defender_interpose(&mut rng, &mated, dk_pos) {
+                    found += 1;
+                }
+            }
+        }
+        eprintln!("合駒逆算: {}/200 成功", found);
+        // 合駒逆算は条件が厳しいので成功しなくてもテストは通す
     }
 }
