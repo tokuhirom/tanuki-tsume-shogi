@@ -1,7 +1,7 @@
 # たぬき詰将棋
 
 <p align="center">
-  <img src="docs/assets/tanuki.svg" alt="たぬき詰将棋のタヌキ" width="280">
+  <img src="public/assets/tanuki-title.png" alt="たぬき詰将棋のタヌキ" width="280">
 </p>
 
 スマホでサクサク遊べる、GitHub Pages ホスティング前提の Web 詰将棋アプリです。
