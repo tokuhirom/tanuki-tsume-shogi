@@ -654,19 +654,39 @@ function renderTitle() {
   ]);
 }
 
+/// 盤面の簡易シグネチャ（類似度ソート用）
+function puzzleSignature(p) {
+  const dk = p.initial.pieces.find(pc => pc.owner === "defender" && pc.piece === "K");
+  if (!dk) return "";
+  const parts = p.initial.pieces
+    .filter(pc => !(pc.owner === "defender" && pc.piece === "K"))
+    .map(pc => {
+      const base = pc.piece.replace("+", "");
+      const dx = pc.x - dk.x;
+      const dy = pc.y - dk.y;
+      return `${pc.owner[0]}${base}${dx},${dy}`;
+    })
+    .sort();
+  return parts.join("|");
+}
+
 function renderList() {
   const hasPuzzles = state.puzzles.length > 0;
   const cleared = state.puzzles.filter((p) => isCleared(p)).length;
+  // デバッグモード: 類似盤面順にソート
+  const displayPuzzles = state.debugMode
+    ? [...state.puzzles].sort((a, b) => puzzleSignature(a).localeCompare(puzzleSignature(b)))
+    : state.puzzles;
   return h("section", { class: "panel" }, [
     h("div", { class: "toolbar" }, [
       h("button", { class: "btn small", onclick: goTitle }, "← タイトル"),
       h("span", { class: "spacer" }),
       soundToggleButton(),
     ]),
-    h("h2", {}, `${state.mateLength}手詰`),
+    h("h2", {}, `${state.mateLength}手詰${state.debugMode ? "（類似順）" : ""}`),
     h("p", {}, `クリア: ${cleared} / ${state.puzzles.length}`),
     hasPuzzles
-      ? h("div", { class: "puzzle-grid" }, state.puzzles.map((p) =>
+      ? h("div", { class: "puzzle-grid" }, displayPuzzles.map((p) =>
           h("button", {
             class: `puzzle-num${isCleared(p) ? " clear" : ""}`,
             onclick: () => goPuzzle(p),

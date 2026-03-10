@@ -1162,8 +1162,7 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
                 let to_pos = Pos::new(m.to[0], m.to[1]);
                 if !is_between(ck_pos, kp, to_pos) { return false; }
                 // 玉の移動は合駒ではない
-                if m.from.is_some() {
-                    let from = m.from.unwrap();
+                if let Some(from) = m.from {
                     if let Some(bp) = state.get(Pos::new(from[0], from[1])) {
                         if bp.piece_type == PieceType::K { return false; }
                     }
