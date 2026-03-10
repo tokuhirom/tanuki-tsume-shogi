@@ -11,13 +11,76 @@ use crate::backward;
 use crate::GenerateMethod;
 
 /// 手数に応じて最適なソルバーを自動選択する
-/// 7手以上は df-pn、それ未満は従来の全幅探索
+/// 7手以上は df-pn（段階的バリデーション版）、それ未満は従来の全幅探索
 fn validate_tsume_auto(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
     if mate_length >= 7 {
-        dfpn::validate_tsume_dfpn(state, mate_length)
+        dfpn::validate_tsume_dfpn_staged(state, mate_length)
     } else {
         validate_tsume_puzzle(state, mate_length)
     }
+}
+
+/// 安価な事前フィルタ: フルバリデーションの前に候補を早期棄却する
+fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
+    // 駒数上限チェック（角4枚など不正な局面を棄却）
+    if initial.has_excess_pieces() {
+        return true;
+    }
+
+    let normalized = strip_attacker_king(initial);
+    let mut state = normalized.to_state();
+
+    // 守り方の玉がなければ棄却
+    let dk = match state.king_pos(Owner::Defender) {
+        Some(p) => p,
+        None => return true,
+    };
+
+    // すでに王手がかかっている（攻め方手番で不正）
+    if is_in_check(&state, Owner::Defender) {
+        return true;
+    }
+
+    // 王手できる手が1つもなければ棄却
+    let checks = {
+        let moves = legal_moves(&mut state);
+        let enemy = state.side_to_move.opposite();
+        moves.into_iter().filter(|m| {
+            let undo = make_move(&mut state, m);
+            let check = is_in_check(&state, enemy);
+            undo_move(&mut state, m, &undo);
+            check
+        }).count()
+    };
+    if checks == 0 {
+        return true;
+    }
+
+    // 長手数で王手の手が多すぎると唯一解になりにくい
+    if mate_length >= 7 && checks > 12 {
+        return true;
+    }
+
+    // 玉の周囲の空きマスが多すぎると長手数詰みになりにくい
+    if mate_length >= 7 {
+        let mut empty_around = 0;
+        for dx in -1..=1i8 {
+            for dy in -1..=1i8 {
+                if dx == 0 && dy == 0 { continue; }
+                let nx = dk.x + dx;
+                let ny = dk.y + dy;
+                if (1..=9).contains(&nx) && (1..=9).contains(&ny)
+                    && state.get(Pos::new(nx, ny)).is_none() {
+                    empty_around += 1;
+                }
+            }
+        }
+        if empty_around >= 6 {
+            return true;
+        }
+    }
+
+    false
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -512,14 +575,26 @@ fn strip_attacker_king(initial: &InitialData) -> InitialData {
 }
 
 fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(InitialData, Vec<Move>, i32)> {
+    // 安価な事前フィルタ
+    if quick_reject(initial, mate_length) {
+        return None;
+    }
+
     let normalized = strip_attacker_king(initial);
     let mut state = normalized.to_state();
     let solution = validate_tsume_auto(&mut state, mate_length)?;
 
+    // prune: 駒を減らしても成立するか試す
     let pruned = prune_initial(&normalized, mate_length);
-    let mut pruned_state = pruned.to_state();
-    let (final_initial, final_solution) = if let Some(pruned_sol) = validate_tsume_auto(&mut pruned_state, mate_length) {
-        (InitialData::from_state(&pruned_state), pruned_sol)
+    let pruned_changed = serde_json::to_string(&pruned).unwrap_or_default()
+        != serde_json::to_string(&normalized).unwrap_or_default();
+    let (final_initial, final_solution) = if pruned_changed {
+        let mut pruned_state = pruned.to_state();
+        if let Some(pruned_sol) = validate_tsume_auto(&mut pruned_state, mate_length) {
+            (InitialData::from_state(&pruned_state), pruned_sol)
+        } else {
+            (InitialData::from_state(&state), solution)
+        }
     } else {
         (InitialData::from_state(&state), solution)
     };
@@ -906,7 +981,7 @@ fn attacker_composition_key(initial: &InitialData) -> String {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Puzzle]) -> Vec<Puzzle> {
+pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Vec<Puzzle>]) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
     let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
@@ -999,8 +1074,8 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         }
     }
 
-    // --- 逆算法フェーズ ---
-    if method == GenerateMethod::Backward || method == GenerateMethod::Both {
+    // --- 逆算法フェーズ（9手詰以上ではスキップ: 成功率が極端に低いため） ---
+    if (method == GenerateMethod::Backward || method == GenerateMethod::Both) && mate_length <= 7 {
         let backward_attempts = match method {
             GenerateMethod::Backward => attempts,
             GenerateMethod::Both => attempts / 2, // 半分を逆算法に割り当て
@@ -1042,14 +1117,22 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         }
     }
 
-    // --- 延長法フェーズ（短手数パズルから2手延長）---
-    if !shorter_puzzles.is_empty() {
-        let extend_attempts_per_puzzle = 50u32;
-        let total_extend = shorter_puzzles.len() as u32 * extend_attempts_per_puzzle;
-        eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰), {} attempts...",
-            mate_length, shorter_puzzles.len(), mate_length - 2, total_extend);
+    // --- 延長法フェーズ（短手数パズルから2手延長、多段チェーン対応）---
+    for shorter_set in shorter_puzzles {
+        if shorter_set.is_empty() { continue; }
+        if results.len() as u32 >= max { break; }
 
-        let shorter_initials: Vec<&InitialData> = shorter_puzzles.iter().map(|p| &p.initial).collect();
+        let source_mate = shorter_set[0].mate_length;
+        // 延長する段数を計算（例: 5手詰→9手詰 = 2段延長）
+        let extend_steps = ((mate_length - source_mate) / 2) as usize;
+        if extend_steps == 0 { continue; }
+
+        let extend_attempts_per_puzzle = 50u32;
+        let total_extend = shorter_set.len() as u32 * extend_attempts_per_puzzle;
+        eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰, {}段延長), {} attempts...",
+            mate_length, shorter_set.len(), source_mate, extend_steps, total_extend);
+
+        let shorter_initials: Vec<&InitialData> = shorter_set.iter().map(|p| &p.initial).collect();
         let extend_batch_size = 1000u32;
         let extend_batches = total_extend.div_ceil(extend_batch_size);
 
@@ -1064,9 +1147,16 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 .filter_map(|&i| {
                     let source_idx = i as usize / extend_attempts_per_puzzle as usize;
                     let source = shorter_initials.get(source_idx)?;
-                    let rng_seed = seed.wrapping_add(i as u64).wrapping_mul(2654435761);
-                    let cand = backward::extend_candidate(rng_seed, source)?;
-                    validate_and_prune(&cand, mate_length)
+                    // 多段延長: extend_steps 回繰り返す
+                    let mut current = (*source).clone();
+                    for step in 0..extend_steps {
+                        let rng_seed = seed
+                            .wrapping_add(i as u64)
+                            .wrapping_mul(2654435761)
+                            .wrapping_add(step as u64 * 999979);
+                        current = backward::extend_candidate(rng_seed, &current)?;
+                    }
+                    validate_and_prune(&current, mate_length)
                 })
                 .collect();
 
@@ -1078,10 +1168,11 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             }
 
             if batch % 10 == 0 && batch > 0 {
-                eprintln!("  {}手詰 [extend]: {}/{} attempts, {} found", mate_length, batch_end, total_extend, results.len());
+                eprintln!("  {}手詰 [extend from {}手詰]: {}/{} attempts, {} found",
+                    mate_length, source_mate, batch_end, total_extend, results.len());
             }
         }
-        eprintln!("  {}手詰: extend phase done, {} found so far", mate_length, results.len());
+        eprintln!("  {}手詰: extend from {}手詰 done, {} found so far", mate_length, source_mate, results.len());
     }
 
     // --- ランダム法フェーズ ---

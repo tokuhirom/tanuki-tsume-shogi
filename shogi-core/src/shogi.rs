@@ -1435,6 +1435,34 @@ impl InitialData {
         defender
     }
 
+    /// 盤上+持ち駒の合計が正規の駒数上限を超えていないかチェック
+    pub fn has_excess_pieces(&self) -> bool {
+        // 玉を除く各駒種の上限: R2, B2, G4, S4, N4, L4, P18
+        let max_counts: [u8; 7] = [2, 2, 4, 4, 4, 4, 18];
+        let mut used = [0u8; 7];
+
+        for p in &self.pieces {
+            if p.piece_type == PieceType::K { continue; }
+            let base = p.piece_type.unpromote();
+            let idx = HAND_TYPES.iter().position(|&t| t == base);
+            if let Some(i) = idx {
+                used[i] += 1;
+            }
+        }
+
+        let atk = self.hands.attacker.to_array();
+        for i in 0..7 {
+            used[i] += atk[i];
+        }
+
+        for i in 0..7 {
+            if used[i] > max_counts[i] {
+                return true;
+            }
+        }
+        false
+    }
+
     pub fn from_state(state: &State) -> Self {
         let mut pieces = Vec::new();
         for y in 1..=9i8 {

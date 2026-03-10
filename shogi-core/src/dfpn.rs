@@ -458,6 +458,43 @@ fn generate_checks(state: &mut State) -> Vec<Move> {
     checks
 }
 
+/// 指定手数ちょうどで詰むかだけ判定する（唯一解チェックなし）
+/// 段階的バリデーションの第1段階として使用
+pub fn has_mate_at_depth(state: &mut State, mate_length: u32) -> bool {
+    if mate_length.is_multiple_of(2) || mate_length == 0 {
+        return false;
+    }
+    if state.side_to_move != Owner::Attacker {
+        return false;
+    }
+    if state.king_pos(Owner::Defender).is_none() {
+        return false;
+    }
+    if is_in_check(state, Owner::Defender) {
+        return false;
+    }
+
+    let mut solver = DfpnSolver::new();
+    solver.solve(state, mate_length)
+}
+
+/// より短い手数で詰むかを判定する
+/// 段階的バリデーションの第2段階として使用
+pub fn has_shorter_mate(state: &mut State, mate_length: u32) -> bool {
+    if mate_length <= 1 {
+        return false;
+    }
+    let mut solver = DfpnSolver::new();
+    let mut d = 1;
+    while d < mate_length {
+        if solver.solve(state, d) {
+            return true;
+        }
+        d += 2;
+    }
+    false
+}
+
 /// df-pn による詰将棋検証
 /// 既存の validate_tsume_puzzle と同じインターフェースで、内部は df-pn を使用
 pub fn validate_tsume_dfpn(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
@@ -490,6 +527,41 @@ pub fn validate_tsume_dfpn(state: &mut State, mate_length: u32) -> Option<Vec<Mo
     }
 
     // 解の抽出と唯一解チェック
+    solver.extract_unique_solution(state, mate_length)
+}
+
+/// 段階的バリデーション: 安い順に検証し、早期棄却する
+/// 1. 指定手数で詰むか（唯一解チェックなし）
+/// 2. より短い手数で詰まないか
+/// 3. 唯一解か（最も重い処理）
+pub fn validate_tsume_dfpn_staged(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
+    if mate_length.is_multiple_of(2) || mate_length == 0 {
+        return None;
+    }
+    if state.side_to_move != Owner::Attacker {
+        return None;
+    }
+    state.king_pos(Owner::Defender)?;
+    if is_in_check(state, Owner::Defender) {
+        return None;
+    }
+
+    // 第1段階: 指定手数で詰むか（安い）
+    let mut solver = DfpnSolver::new();
+    if !solver.solve(state, mate_length) {
+        return None;
+    }
+
+    // 第2段階: より短い手数で詰まないか
+    let mut d = 1;
+    while d < mate_length {
+        if solver.solve(state, d) {
+            return None;
+        }
+        d += 2;
+    }
+
+    // 第3段階: 唯一解チェック（最も重い）
     solver.extract_unique_solution(state, mate_length)
 }
 

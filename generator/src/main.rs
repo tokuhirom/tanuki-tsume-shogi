@@ -78,18 +78,21 @@ fn run_generate(args: &[String]) {
 
     let curated = generate::load_curated("data/curated-puzzles.json");
 
-    // 前の手数の結果を保持（延長法で使用）
-    let mut prev_puzzles: Vec<generate::Puzzle> = vec![];
+    // 全手数の結果を保持（多段延長法で使用）
+    let mut all_puzzles: Vec<(u32, Vec<generate::Puzzle>)> = vec![];
 
     for (i, &mate_len) in ALL_MATE_LENGTHS.iter().enumerate() {
         if let Some(only) = ga.only {
             if mate_len != only {
-                // --only 指定時でも、延長法のため前の手数の結果を読み込む
-                if mate_len == only.saturating_sub(2) {
+                // --only 指定時でも、延長法のためより短い手数の結果を読み込む
+                if mate_len < only {
                     let file = format!("puzzles/{}.json", mate_len);
                     if Path::new(&file).exists() {
                         let data = fs::read_to_string(&file).unwrap_or_default();
-                        prev_puzzles = serde_json::from_str(&data).unwrap_or_default();
+                        let loaded: Vec<generate::Puzzle> = serde_json::from_str(&data).unwrap_or_default();
+                        if !loaded.is_empty() {
+                            all_puzzles.push((mate_len, loaded));
+                        }
                     }
                 }
                 continue;
@@ -109,10 +112,17 @@ fn run_generate(args: &[String]) {
             }
         };
 
-        // 延長法のソース: 1手詰には使えない（前の手数がない）
-        let shorter = if mate_len > 1 { &prev_puzzles } else { &vec![] };
+        // 延長法のソース: より短い手数のパズルをすべて渡す（多段チェーン）
+        let shorter: Vec<Vec<generate::Puzzle>> = if mate_len > 1 {
+            all_puzzles.iter()
+                .filter(|(ml, _)| *ml < mate_len)
+                .map(|(_, puzzles)| puzzles.clone())
+                .collect()
+        } else {
+            vec![]
+        };
 
-        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method, shorter);
+        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method, &shorter);
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
@@ -126,7 +136,7 @@ fn run_generate(args: &[String]) {
         eprintln!("{}手詰: {}問 (attempts={})", mate_len, puzzles.len(), attempts);
 
         // 次の手数の延長法用に保持
-        prev_puzzles = puzzles;
+        all_puzzles.push((mate_len, puzzles));
     }
 
     eprintln!("seed={}", ga.seed);
@@ -170,6 +180,13 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
             continue;
         }
         checked.insert(sig);
+
+        // 駒数上限チェック
+        if p.initial.has_excess_pieces() {
+            eprintln!("[NG] {}手詰 #{}: 駒数上限超え", mate_len, p.id);
+            *failed += 1;
+            continue;
+        }
 
         let mut state = p.initial.to_state();
         let result = shogi::validate_tsume_puzzle(&mut state, mate_len);
