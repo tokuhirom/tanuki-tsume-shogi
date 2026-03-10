@@ -729,28 +729,28 @@ fn try_unwind_defender(rng: &mut Rng, state: &State, max_attempts: u32) -> Optio
     None
 }
 
-/// バックトラック付きで巻き戻しチェーンを構築する
-/// 各ペア（守り方→攻め方）の巻き戻しが失敗したら、前のステップからやり直す
-fn try_extend_chain(rng: &mut Rng, start: &State, remaining_pairs: u32) -> Option<State> {
-    if remaining_pairs == 0 {
+/// 巻き戻しチェーンを構築する（線形リトライ）
+/// 各ペア（守り方→攻め方）を順番に巻き戻す。失敗したら最初からやり直す。
+fn try_extend_chain(rng: &mut Rng, start: &State, total_pairs: u32) -> Option<State> {
+    if total_pairs == 0 {
         return Some(start.clone());
     }
 
-    // 各ペアで複数回リトライ（バックトラック）
-    let retries = if remaining_pairs <= 2 { 50 } else { 30 };
-    for _ in 0..retries {
-        let def = match try_unwind_defender(rng, start, 30) {
-            Some(s) => s,
-            None => continue,
-        };
-        let atk = match try_unwind_attacker(rng, &def, 30) {
-            Some(s) => s,
-            None => continue,
-        };
-        // 残りのペアを再帰的にチェーン
-        if let Some(result) = try_extend_chain(rng, &atk, remaining_pairs - 1) {
-            return Some(result);
+    // 全体を通してリトライ（再帰ではなく線形ループ）
+    'outer: for _ in 0..50 {
+        let mut current = start.clone();
+        for _ in 0..total_pairs {
+            let def = match try_unwind_defender(rng, &current, 20) {
+                Some(s) => s,
+                None => continue 'outer,
+            };
+            let atk = match try_unwind_attacker(rng, &def, 20) {
+                Some(s) => s,
+                None => continue 'outer,
+            };
+            current = atk;
         }
+        return Some(current);
     }
     None
 }
@@ -766,8 +766,7 @@ pub fn backward_candidate(rng_seed: u64, mate_length: u32) -> Option<InitialData
     let additional_pairs = (mate_length.saturating_sub(1)) / 2;
 
     // 外側リトライ: 詰み局面からやり直す
-    let outer_retries = if mate_length <= 3 { 50 } else { 100 };
-    for _ in 0..outer_retries {
+    for _ in 0..50 {
         let mated = match generate_mated_position(&mut rng) {
             Some(s) => s,
             None => continue,
@@ -926,4 +925,5 @@ mod tests {
         eprintln!("合駒逆算: {}/200 成功", found);
         // 合駒逆算は条件が厳しいので成功しなくてもテストは通す
     }
+
 }

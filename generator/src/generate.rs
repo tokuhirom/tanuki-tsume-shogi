@@ -56,13 +56,19 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
         return true;
     }
 
-    // 長手数で王手の手が多すぎると唯一解になりにくい
-    if mate_length >= 7 && checks > 12 {
+    // 王手の手が多すぎると唯一解になりにくい（手数別に閾値を調整）
+    let max_checks = match mate_length {
+        1..=3 => 20,   // 短手数は比較的緩く
+        5 => 15,
+        7 => 10,
+        _ => 8,        // 9手詰以上は厳しく
+    };
+    if checks > max_checks {
         return true;
     }
 
     // 玉の周囲の空きマスが多すぎると長手数詰みになりにくい
-    if mate_length >= 7 {
+    if mate_length >= 5 {
         let mut empty_around = 0;
         for dx in -1..=1i8 {
             for dy in -1..=1i8 {
@@ -75,7 +81,12 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
                 }
             }
         }
-        if empty_around >= 6 {
+        let max_empty = match mate_length {
+            5 => 6,
+            7 => 5,
+            _ => 4,  // 9手詰以上: 空き4マス以上で棄却
+        };
+        if empty_around >= max_empty {
             return true;
         }
     }
@@ -1229,58 +1240,58 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         for (fin, sol, score) in found {
             if results.len() as u32 >= max { break; }
             if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
-                results.push((fin.clone(), sol, score));
-
-                // Try mutations of found puzzles
-                let mut rng = Rng::new(seed.wrapping_add(results.len() as u64 * 999983));
-                for _ in 0..20 {
-                    if results.len() as u32 >= max { break; }
-                    if let Some(mutated) = mutate_initial(&mut rng, &fin) {
-                        if let Some((mfin, msol, mscore)) = validate_and_prune(&mutated, mate_length) {
-                            if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
-                                results.push((mfin, msol, mscore));
-                            }
-                        }
-                    }
-                }
-
-                // Try mirror
-                let mirrored = fin.mirror();
-                if basic_validity(&mirrored) {
-                    if let Some((mfin, msol, mscore)) = validate_and_prune(&mirrored, mate_length) {
-                        if add_result(mfin.clone(), msol.clone(), mscore, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
-                            results.push((mfin, msol, mscore));
-                        }
-                    }
-                }
+                results.push((fin, sol, score));
             }
         }
 
-        if batch % 10 == 0 && batch > 0 {
+        if (batch + 1) % 5 == 0 || batch + 1 == num_batches {
             eprintln!("  {}手詰: {}/{} attempts, {} found", mate_length, batch_end, random_attempts, results.len());
         }
     }
 
-    // Phase 2: mutate from found results
+    // Phase 2: mutate + mirror from found results（並列化）
     if !results.is_empty() {
-        let mutate_attempts = random_attempts / 2;
-        let mut rng = Rng::new(seed.wrapping_add(77777));
+        let mutate_attempts = random_attempts;
+        let snapshot: Vec<InitialData> = results.iter().map(|(init, _, _)| init.clone()).collect();
 
-        for i in 0..mutate_attempts {
+        let mut_batch_size = 1000u32;
+        let mut_batches = mutate_attempts.div_ceil(mut_batch_size);
+
+        for batch in 0..mut_batches {
             if results.len() as u32 >= max { break; }
-            let seed_idx = rng.next_u64() as usize % results.len();
-            let seed_initial = results[seed_idx].0.clone();
 
-            if let Some(cand) = mutate_initial(&mut rng, &seed_initial) {
-                if let Some((fin, sol, score)) = validate_and_prune(&cand, mate_length) {
-                    if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
-                        results.push((fin, sol, score));
+            let batch_start = batch * mut_batch_size;
+            let batch_end = (batch_start + mut_batch_size).min(mutate_attempts);
+            let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+
+            let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
+                .filter_map(|&i| {
+                    let mut rng = Rng::new(seed.wrapping_add(77777).wrapping_add(i as u64).wrapping_mul(6364136223846793005));
+                    let seed_idx = rng.next_u64() as usize % snapshot.len();
+                    let seed_initial = &snapshot[seed_idx];
+                    // mutation と mirror を交互に試行
+                    if i % 5 == 0 {
+                        // mirror
+                        let mirrored = seed_initial.mirror();
+                        if basic_validity(&mirrored) {
+                            return validate_and_prune(&mirrored, mate_length);
+                        }
+                        return None;
                     }
+                    let cand = mutate_initial(&mut rng, seed_initial)?;
+                    validate_and_prune(&cand, mate_length)
+                })
+                .collect();
+
+            for (fin, sol, score) in found {
+                if results.len() as u32 >= max { break; }
+                if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
+                    results.push((fin, sol, score));
                 }
             }
 
-            if i % 10000 == 0 && i > 0 {
-                eprintln!("  {}手詰: mutation phase {}/{}, {} found", mate_length, i, mutate_attempts, results.len());
+            if (batch + 1) % 5 == 0 || batch + 1 == mut_batches {
+                eprintln!("  {}手詰: mutation phase {}/{}, {} found", mate_length, batch_end, mutate_attempts, results.len());
             }
         }
     }

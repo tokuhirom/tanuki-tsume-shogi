@@ -51,13 +51,16 @@ impl DfpnSolver {
         }
     }
 
-    #[allow(dead_code)]
     pub fn with_node_limit(mut self, limit: u64) -> Self {
         self.node_limit = limit;
         self
     }
 
-    #[allow(dead_code)]
+    /// ノード上限を変更する（TTは保持したまま）
+    pub fn set_node_limit(&mut self, limit: u64) {
+        self.node_limit = limit;
+    }
+
     pub fn node_count(&self) -> u64 {
         self.node_count
     }
@@ -541,9 +544,9 @@ pub fn validate_tsume_dfpn(state: &mut State, mate_length: u32) -> Option<Vec<Mo
 }
 
 /// 段階的バリデーション: 安い順に検証し、早期棄却する
-/// 1. 指定手数で詰むか（唯一解チェックなし）
+/// 1. 指定手数で詰むか（低ノード上限で高速判定）
 /// 2. より短い手数で詰まないか
-/// 3. 唯一解か（最も重い処理）
+/// 3. 唯一解か（フルノード上限で実行）
 pub fn validate_tsume_dfpn_staged(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
     if mate_length.is_multiple_of(2) || mate_length == 0 {
         return None;
@@ -556,13 +559,20 @@ pub fn validate_tsume_dfpn_staged(state: &mut State, mate_length: u32) -> Option
         return None;
     }
 
-    // 第1段階: 指定手数で詰むか（安い）
-    let mut solver = DfpnSolver::new();
+    // 第1段階: 指定手数で詰むか（中程度のノード上限で判定）
+    // 不詰候補の大半をここで棄却する
+    let stage1_limit = match mate_length {
+        1..=5 => 500_000,
+        7 => 2_000_000,
+        _ => 5_000_000, // 9手詰以上
+    };
+    let mut solver = DfpnSolver::new().with_node_limit(stage1_limit);
     if !solver.solve(state, mate_length) {
         return None;
     }
 
-    // 第2段階: より短い手数で詰まないか
+    // 第2段階: より短い手数で詰まないか（中程度のノード上限）
+    solver.set_node_limit(1_000_000);
     let mut d = 1;
     while d < mate_length {
         if solver.solve(state, d) {
@@ -571,7 +581,8 @@ pub fn validate_tsume_dfpn_staged(state: &mut State, mate_length: u32) -> Option
         d += 2;
     }
 
-    // 第3段階: 唯一解チェック（最も重い）
+    // 第3段階: 唯一解チェック（フルノード上限）
+    solver.set_node_limit(DEFAULT_NODE_LIMIT);
     solver.extract_unique_solution(state, mate_length)
 }
 
