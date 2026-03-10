@@ -633,7 +633,7 @@ function renderTitle() {
           h("button", { class: "btn primary", onclick: () => goList(n) }, `${n}手詰へ`)
         )),
       ]),
-      h("img", { src: "./assets/tanuki.svg", alt: "タヌキ", onclick: onTanukiTap }),
+      h("img", { src: "./assets/tanuki-title.png", alt: "タヌキ", onclick: onTanukiTap }),
     ]),
     h("div", { class: "toolbar" }, [
       soundToggleButton(),
@@ -673,7 +673,7 @@ function renderList() {
           }, p.id)
         ))
       : h("p", { class: "log" }, "この手数カテゴリは検証済み問題を準備中です。"),
-    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-icon.png", alt: "タヌキ" }),
     renderFooter(),
   ]);
 }
@@ -695,7 +695,7 @@ function renderRules() {
       h("li", {}, "このアプリの問題は、生成時に唯一解チェック済みです。"),
     ]),
     h("p", { class: "rules-note" }, "補足: 作品詰将棋では「駒余りなし」を重視する流儀があります。現状の問題は駒余りが含まれる場合があります。"),
-    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-icon.png", alt: "タヌキ" }),
     renderFooter(),
   ]);
 }
@@ -768,8 +768,8 @@ function renderBoard() {
         : "";
       const edgeTop = y === 1 ? " edge-top" : "";
       const edgeBottom = y === 9 ? " edge-bottom" : "";
-      const edgeLeft = x === view.maxX ? " edge-left" : "";
-      const edgeRight = x === view.minX ? " edge-right" : "";
+      const edgeLeft = x === 9 ? " edge-left" : "";
+      const edgeRight = x === 1 ? " edge-right" : "";
       const isHint = state.hintSquares.some((s) => s[0] === x && s[1] === y);
       const classes = [
         selected ? "sel" : "",
@@ -884,7 +884,7 @@ function renderPuzzle() {
       ]),
       renderSolutionToggle(),
     ]),
-    h("img", { class: "tanuki-face", src: "./assets/tanuki-face.svg", alt: "タヌキ" }),
+    h("img", { class: "tanuki-face", src: "./assets/tanuki-icon.png", alt: "タヌキ" }),
     renderFooter(),
   ]);
 }
