@@ -197,10 +197,17 @@ fn basic_validity(initial: &InitialData) -> bool {
     true
 }
 
+/// スライド駒かどうかを判定（飛・角・香は位置をずらしただけの類似局面を同一視する）
+fn is_slider(pt: PieceType) -> bool {
+    matches!(pt, PieceType::R | PieceType::B | PieceType::L)
+}
+
 /// 局面の構造的シグネチャを計算する（左右反転を正規化して同一視）
 /// 守り方玉からの相対座標で表現するため、盤面上の位置が違っても
 /// 構造が同じなら同じシグネチャになる
-fn structural_signature(initial: &InitialData) -> String {
+/// スライド駒（飛・角・香）は正確な座標ではなく玉からの方向のみで表現し、
+/// 距離をずらしただけの類似パズルを同一視する
+pub fn structural_signature(initial: &InitialData) -> String {
     let dk = match initial.pieces.iter().find(|p| p.owner == Owner::Defender && p.piece_type == PieceType::K) {
         Some(k) => k,
         None => return String::new(),
@@ -216,13 +223,25 @@ fn structural_signature(initial: &InitialData) -> String {
         });
     }
 
+    /// スライド駒は方向（signum）のみに丸め、非スライド駒はそのまま相対座標
+    fn to_rel(p: &PieceData, dk_x: i8, dk_y: i8, mirror: bool) -> (Owner, PieceType, i8, i8) {
+        let rx = if mirror { -(p.x - dk_x) } else { p.x - dk_x };
+        let ry = p.y - dk_y;
+        if is_slider(p.piece_type) {
+            // 方向のみ（-1, 0, 1）で表現
+            (p.owner, p.piece_type, rx.signum(), ry.signum())
+        } else {
+            (p.owner, p.piece_type, rx, ry)
+        }
+    }
+
     let mut rel_base: Vec<_> = initial.pieces.iter()
-        .map(|p| (p.owner, p.piece_type, p.x - dk.x, p.y - dk.y))
+        .map(|p| to_rel(p, dk.x, dk.y, false))
         .collect();
     sort_rel(&mut rel_base);
 
     let mut rel_mirror: Vec<_> = initial.pieces.iter()
-        .map(|p| (p.owner, p.piece_type, -(p.x - dk.x), p.y - dk.y))
+        .map(|p| to_rel(p, dk.x, dk.y, true))
         .collect();
     sort_rel(&mut rel_mirror);
 
@@ -1439,6 +1458,55 @@ mod tests {
             PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
             PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
             PieceData { x: 6, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        assert_ne!(structural_signature(&init1), structural_signature(&init2));
+    }
+
+    #[test]
+    fn test_structural_signature_slider_distance_ignored() {
+        // 角を1マスずらしただけの2つの局面は同じシグネチャになるべき
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::B },
+        ]);
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 2, y: 4, owner: Owner::Attacker, piece_type: PieceType::B },
+        ]);
+        assert_eq!(structural_signature(&init1), structural_signature(&init2));
+    }
+
+    #[test]
+    fn test_structural_signature_slider_different_direction() {
+        // 角が玉の左下 vs 真下なら別シグネチャ（左右反転で同一視されない方向）
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::B },
+        ]);
+        // 飛車を玉の真下に配置（方向が異なる）
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 3, owner: Owner::Attacker, piece_type: PieceType::B },
+        ]);
+        assert_ne!(structural_signature(&init1), structural_signature(&init2));
+    }
+
+    #[test]
+    fn test_structural_signature_non_slider_position_matters() {
+        // 金は非スライド駒なので位置が異なれば別シグネチャ
+        let init1 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 4, y: 2, owner: Owner::Attacker, piece_type: PieceType::G },
+        ]);
+        let init2 = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::G },
         ]);
         assert_ne!(structural_signature(&init1), structural_signature(&init2));
     }

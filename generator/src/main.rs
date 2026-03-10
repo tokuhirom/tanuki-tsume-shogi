@@ -172,6 +172,7 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
     let original_count = puzzles.len();
 
     let mut checked = HashSet::new();
+    let mut struct_set: HashSet<String> = HashSet::new();
     let mut valid_puzzles: Vec<generate::Puzzle> = Vec::new();
 
     for p in &puzzles {
@@ -180,6 +181,15 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
             continue;
         }
         checked.insert(sig);
+
+        // 構造的重複チェック（スライド駒の位置ずれも同一視）
+        let ssig = generate::structural_signature(&p.initial);
+        if struct_set.contains(&ssig) {
+            eprintln!("[NG] {}手詰 #{}: 構造的重複", mate_len, p.id);
+            *failed += 1;
+            continue;
+        }
+        struct_set.insert(ssig);
 
         // 駒数上限チェック
         if p.initial.has_excess_pieces() {
