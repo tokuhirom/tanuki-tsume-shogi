@@ -1146,8 +1146,51 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
             let mut best_move: Option<Move> = None;
             let mut best_line: Vec<Move> = vec![];
 
+            // 無駄合い判定の共通処理（ドロップ・移動合い両対応）
+            // スライド駒による単独王手時、合駒をライン上に打つ/移動する手に対して
+            // 同Xで取り返して詰むなら無駄合いとしてスキップ
+            let is_wasteful_interposition = |state: &mut State, m: &Move, memo: &mut FxHashMap<u64, MateResult>| -> bool {
+                if plies < 2 { return false; }
+                let (ck_pos, ck_bp) = match sliding_checker {
+                    Some(v) => v,
+                    None => return false,
+                };
+                let kp = match def_king_pos {
+                    Some(p) => p,
+                    None => return false,
+                };
+                let to_pos = Pos::new(m.to[0], m.to[1]);
+                if !is_between(ck_pos, kp, to_pos) { return false; }
+                // 玉の移動は合駒ではない
+                if m.from.is_some() {
+                    let from = m.from.unwrap();
+                    if let Some(bp) = state.get(Pos::new(from[0], from[1])) {
+                        if bp.piece_type == PieceType::K { return false; }
+                    }
+                }
+                let can_promote = ck_bp.piece_type.is_promotable()
+                    && (promotion_zone(ck_bp.owner, ck_pos.y) || promotion_zone(ck_bp.owner, to_pos.y));
+                let recapture = Move {
+                    from: Some([ck_pos.x, ck_pos.y]),
+                    to: [to_pos.x, to_pos.y],
+                    drop: None,
+                    promote: can_promote,
+                };
+                let undo1 = make_move(state, m);
+                let undo2 = make_move(state, &recapture);
+                let r = forced_mate_within(state, plies - 2, memo);
+                undo_move(state, &recapture, &undo2);
+                undo_move(state, m, &undo1);
+                r.mate
+            };
+
             // Phase 1: 盤上の駒の手を先に処理（早期打ち切り可能）
             for m in &board_moves {
+                // 移動合いの無駄合い判定
+                if is_wasteful_interposition(state, m, memo) {
+                    continue;
+                }
+
                 let undo = make_move(state, m);
                 let r = forced_mate_within(state, plies - 1, memo);
                 undo_move(state, m, &undo);
@@ -1173,29 +1216,9 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
                 }
 
                 for m in &drop_moves {
-                    // 無駄合い判定
-                    if plies >= 2 {
-                        if let (Some((ck_pos, ck_bp)), Some(kp)) = (sliding_checker, def_king_pos) {
-                            let drop_pos = Pos::new(m.to[0], m.to[1]);
-                            if is_between(ck_pos, kp, drop_pos) {
-                                let can_promote = ck_bp.piece_type.is_promotable()
-                                    && (promotion_zone(ck_bp.owner, ck_pos.y) || promotion_zone(ck_bp.owner, drop_pos.y));
-                                let recapture = Move {
-                                    from: Some([ck_pos.x, ck_pos.y]),
-                                    to: [drop_pos.x, drop_pos.y],
-                                    drop: None,
-                                    promote: can_promote,
-                                };
-                                let undo1 = make_move(state, m);
-                                let undo2 = make_move(state, &recapture);
-                                let r = forced_mate_within(state, plies - 2, memo);
-                                undo_move(state, &recapture, &undo2);
-                                undo_move(state, m, &undo1);
-                                if r.mate {
-                                    continue; // 無駄合い
-                                }
-                            }
-                        }
+                    // ドロップの無駄合い判定
+                    if is_wasteful_interposition(state, m, memo) {
+                        continue;
                     }
 
                     let undo = make_move(state, m);
@@ -2075,6 +2098,60 @@ mod tests {
         assert!(result.mate, "無駄合いスキップにより詰みと判定されるべき");
         // 無駄合いがスキップされるので、手順は空（有効な防御手なし）
         assert!(result.line.is_empty(), "無駄合いのみの場合、手順は空であるべき");
+    }
+
+    #[test]
+    fn test_futile_move_interposition_skipped() {
+        // 移動合いの無駄合い判定テスト
+        // 飛車による王手に対して、守り方の歩が利きライン上に移動して合駒するが、
+        // 同飛で取られても詰み → 無駄合いとしてスキップされるべき
+        //
+        // 局面:
+        //   守り方玉(1,1), 守り方歩(2,3) — 歩が(2,2)にいて(1,2)へは動けないが
+        //   攻め方飛(1,5) — 1筋を通して王手
+        //   攻め方金(2,1) — (2,1)を塞ぐ
+        //   攻め方金(2,2) — (2,2)も塞ぐ → 玉は逃げ場なし、合駒のみ
+        //   守り方は駒箱ルールで大量の持ち駒を持つが、全て無駄合い
+        let pieces = vec![
+            PieceData { x: 1, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 2, y: 1, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 2, y: 2, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 1, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+        ];
+        let init = InitialData { pieces, hands: empty_hands_data(), side_to_move: Owner::Defender };
+        let mut state = init.to_state();
+
+        assert!(is_in_check(&state, Owner::Defender));
+
+        // 守り方は(1,2)(1,3)(1,4)に合駒できるが、全て同飛で詰み → 無駄合い
+        let mut memo = FxHashMap::default();
+        let result = forced_mate_within(&mut state, 4, &mut memo);
+        assert!(result.mate, "無駄合いスキップにより詰みと判定されるべき");
+        assert!(result.line.is_empty(), "無駄合いのみの場合、手順は空であるべき");
+    }
+
+    #[test]
+    fn test_futile_move_interposition_with_board_piece() {
+        // 盤上の駒による移動合いの無駄合い判定テスト
+        // 飛車(1,5)で王手、守り方に盤上の銀がライン外にいて移動合い可能
+        let pieces2 = vec![
+            PieceData { x: 1, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 2, y: 3, owner: Owner::Defender, piece_type: PieceType::S },
+            PieceData { x: 2, y: 1, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 2, y: 2, owner: Owner::Attacker, piece_type: PieceType::G },
+            PieceData { x: 1, y: 5, owner: Owner::Attacker, piece_type: PieceType::R },
+        ];
+        let init2 = InitialData { pieces: pieces2, hands: empty_hands_data(), side_to_move: Owner::Defender };
+        let mut state2 = init2.to_state();
+
+        assert!(is_in_check(&state2, Owner::Defender));
+
+        // 銀(2,3)→(1,2)移動合い可能だが、同飛で取られて詰み → 無駄合い
+        // ただし銀が(2,3)を離れると(2,2)の金が利かなくなるわけではないので
+        // 局面は変わらない → 無駄合い
+        let mut memo = FxHashMap::default();
+        let result = forced_mate_within(&mut state2, 4, &mut memo);
+        assert!(result.mate, "移動合いの無駄合いスキップにより詰みと判定されるべき");
     }
 
     // --- 守り方(Defender)の駒の動き テスト ---

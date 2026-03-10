@@ -171,8 +171,9 @@ impl DfpnSolver {
             return;
         }
 
-        // 詰み判定時は無駄合いフィルタ不要（唯一解チェック時のみ適用）
-        let moves: Vec<Move> = board_moves.into_iter().chain(drop_moves).collect();
+        // 無駄合いフィルタ（ドロップ・移動合い両方に適用）
+        let all_moves: Vec<Move> = board_moves.into_iter().chain(drop_moves).collect();
+        let moves = filter_moves_if_wasteful(state, &all_moves, depth, self);
 
         let n = moves.len();
         let mut child_pn = vec![0u32; n];
@@ -325,9 +326,9 @@ impl DfpnSolver {
                 return None;
             }
 
-            // 無駄合いフィルタ（mid_and と同様）
-            let filtered_drops = filter_drops_if_wasteful(state, &drop_moves, depth, self);
-            let moves: Vec<Move> = board_moves.into_iter().chain(filtered_drops).collect();
+            // 無駄合いフィルタ（ドロップ・移動合い両方に適用）
+            let all_moves: Vec<Move> = board_moves.into_iter().chain(drop_moves).collect();
+            let moves = filter_moves_if_wasteful(state, &all_moves, depth, self);
 
             if moves.is_empty() {
                 if is_in_check(state, Owner::Defender) {
@@ -375,38 +376,47 @@ impl DfpnSolver {
 }
 
 /// 無駄合いフィルタの共通処理
-/// スライド駒による単独王手の場合、無駄な合駒を除外する
-fn filter_drops_if_wasteful(
+/// スライド駒による単独王手の場合、無駄な合駒（ドロップ・移動合い両方）を除外する
+fn filter_moves_if_wasteful(
     state: &mut State,
-    drops: &[Move],
+    moves: &[Move],
     depth: u32,
     solver: &mut DfpnSolver,
 ) -> Vec<Move> {
     if depth < 2 {
-        return drops.to_vec();
+        return moves.to_vec();
     }
     let checkers = find_checkers(state, Owner::Defender);
     if checkers.len() != 1 {
-        return drops.to_vec();
+        return moves.to_vec();
     }
     let (ck_pos, ck_bp) = checkers[0];
     if !is_sliding_piece(ck_bp.piece_type) {
-        return drops.to_vec();
+        return moves.to_vec();
     }
     let kp = match state.king_pos(Owner::Defender) {
         Some(p) => p,
-        None => return drops.to_vec(),
+        None => return moves.to_vec(),
     };
 
     let mut result = Vec::new();
-    for m in drops {
-        let drop_pos = Pos::new(m.to[0], m.to[1]);
-        if is_between(ck_pos, kp, drop_pos) {
+    for m in moves {
+        let to_pos = Pos::new(m.to[0], m.to[1]);
+        if is_between(ck_pos, kp, to_pos) {
+            // 玉の移動は合駒ではないのでスキップしない
+            if let Some(from) = m.from {
+                if let Some(bp) = state.get(Pos::new(from[0], from[1])) {
+                    if bp.piece_type == PieceType::K {
+                        result.push(m.clone());
+                        continue;
+                    }
+                }
+            }
             let can_promote = ck_bp.piece_type.is_promotable()
-                && (promotion_zone(ck_bp.owner, ck_pos.y) || promotion_zone(ck_bp.owner, drop_pos.y));
+                && (promotion_zone(ck_bp.owner, ck_pos.y) || promotion_zone(ck_bp.owner, to_pos.y));
             let recapture = Move {
                 from: Some([ck_pos.x, ck_pos.y]),
-                to: [drop_pos.x, drop_pos.y],
+                to: [to_pos.x, to_pos.y],
                 drop: None,
                 promote: can_promote,
             };

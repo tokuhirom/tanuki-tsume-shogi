@@ -118,8 +118,47 @@ fn forced_mate_within_defender(state: &mut State, plies: u32, memo: &mut FxHashM
     let mut best_move: Option<Move> = None;
     let mut best_line: Vec<Move> = vec![];
 
-    // Phase 1: 盤上の手
+    // 無駄合い判定の共通処理（ドロップ・移動合い両対応）
+    let is_wasteful = |state: &mut State, m: &Move, memo: &mut FxHashMap<MemoKey, MateResult>| -> bool {
+        if plies < 2 { return false; }
+        let (ck_pos, ck_bp) = match &sliding_checker {
+            Some(v) => *v,
+            None => return false,
+        };
+        let kp = match def_king_pos {
+            Some(p) => p,
+            None => return false,
+        };
+        let to_pos = Pos::new(m.to[0], m.to[1]);
+        if !is_between(ck_pos, kp, to_pos) { return false; }
+        // 玉の移動は合駒ではない
+        if let Some(from) = m.from {
+            if let Some(bp) = state.get(Pos::new(from[0], from[1])) {
+                if bp.piece_type == PieceType::K { return false; }
+            }
+        }
+        let can_promote = ck_bp.piece_type.is_promotable()
+            && (promotion_zone(Owner::Attacker, ck_pos.y)
+                || promotion_zone(Owner::Attacker, to_pos.y));
+        let recapture = Move {
+            from: Some([ck_pos.x, ck_pos.y]),
+            to: [to_pos.x, to_pos.y],
+            promote: can_promote,
+            drop: None,
+        };
+        let undo1 = make_move(state, m);
+        let undo2 = make_move(state, &recapture);
+        let r = forced_mate_within(state, plies - 2, memo);
+        undo_move(state, &recapture, &undo2);
+        undo_move(state, m, &undo1);
+        r.mate
+    };
+
+    // Phase 1: 盤上の手（移動合いの無駄合い判定付き）
     for m in &board_moves {
+        if is_wasteful(state, m, memo) {
+            continue;
+        }
         let undo = make_move(state, m);
         let result = forced_mate_within(state, plies - 1, memo);
         undo_move(state, m, &undo);
@@ -149,31 +188,8 @@ fn forced_mate_within_defender(state: &mut State, plies: u32, memo: &mut FxHashM
         }
 
         for m in &drop_moves {
-            // 無駄合い判定
-            if plies >= 2 {
-                if let (Some((ck_pos, ck_bp)), Some(kp)) = (&sliding_checker, def_king_pos) {
-                    let drop_pos = Pos::new(m.to[0], m.to[1]);
-                    if is_between(*ck_pos, kp, drop_pos) {
-                        let can_promote = ck_bp.piece_type.is_promotable()
-                            && (promotion_zone(Owner::Attacker, ck_pos.y)
-                                || promotion_zone(Owner::Attacker, drop_pos.y));
-                        let recapture = Move {
-                            from: Some([ck_pos.x, ck_pos.y]),
-                            to: [drop_pos.x, drop_pos.y],
-                            promote: can_promote,
-                            drop: None,
-                        };
-                        // ドロップ → 同X の2手を適用
-                        let undo1 = make_move(state, m);
-                        let undo2 = make_move(state, &recapture);
-                        let r = forced_mate_within(state, plies - 2, memo);
-                        undo_move(state, &recapture, &undo2);
-                        undo_move(state, m, &undo1);
-                        if r.mate {
-                            continue; // 無駄合い
-                        }
-                    }
-                }
+            if is_wasteful(state, m, memo) {
+                continue;
             }
 
             let undo = make_move(state, m);
@@ -245,27 +261,34 @@ pub fn find_best_defense(state: &mut State, remaining_plies: u32) -> Option<Move
     let mut best_len: i32 = -1;
 
     for m in &moves {
-        // 無駄合い判定
-        if m.drop.is_some() && remaining_plies >= 2 {
+        // 無駄合い判定（ドロップ・移動合い両対応）
+        if remaining_plies >= 2 {
             if let (Some((ck_pos, ck_bp)), Some(kp)) = (&sliding_checker, def_king_pos) {
-                let drop_pos = Pos::new(m.to[0], m.to[1]);
-                if is_between(*ck_pos, kp, drop_pos) {
-                    let can_promote = ck_bp.piece_type.is_promotable()
-                        && (promotion_zone(Owner::Attacker, ck_pos.y)
-                            || promotion_zone(Owner::Attacker, drop_pos.y));
-                    let recapture = Move {
-                        from: Some([ck_pos.x, ck_pos.y]),
-                        to: [drop_pos.x, drop_pos.y],
-                        promote: can_promote,
-                        drop: None,
-                    };
-                    let undo1 = make_move(state, m);
-                    let undo2 = make_move(state, &recapture);
-                    let r = forced_mate_within(state, remaining_plies - 2, &mut memo);
-                    undo_move(state, &recapture, &undo2);
-                    undo_move(state, m, &undo1);
-                    if r.mate {
-                        continue; // 無駄合い → スキップ
+                let to_pos = Pos::new(m.to[0], m.to[1]);
+                if is_between(*ck_pos, kp, to_pos) {
+                    // 玉の移動は合駒ではない
+                    let is_king_move = m.from.is_some_and(|from| {
+                        state.get(Pos::new(from[0], from[1]))
+                            .is_some_and(|bp| bp.piece_type == PieceType::K)
+                    });
+                    if !is_king_move {
+                        let can_promote = ck_bp.piece_type.is_promotable()
+                            && (promotion_zone(Owner::Attacker, ck_pos.y)
+                                || promotion_zone(Owner::Attacker, to_pos.y));
+                        let recapture = Move {
+                            from: Some([ck_pos.x, ck_pos.y]),
+                            to: [to_pos.x, to_pos.y],
+                            promote: can_promote,
+                            drop: None,
+                        };
+                        let undo1 = make_move(state, m);
+                        let undo2 = make_move(state, &recapture);
+                        let r = forced_mate_within(state, remaining_plies - 2, &mut memo);
+                        undo_move(state, &recapture, &undo2);
+                        undo_move(state, m, &undo1);
+                        if r.mate {
+                            continue; // 無駄合い → スキップ
+                        }
                     }
                 }
             }
