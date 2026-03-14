@@ -37,17 +37,8 @@ fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<MemoKe
         return res;
     }
 
-    // 王手になる手を生成
-    let all_moves = generate_legal_moves(state);
-    let mut checks = Vec::new();
-    for m in &all_moves {
-        let undo = make_move(state, m);
-        let gives_check = is_in_check(state, Owner::Defender);
-        undo_move(state, m, &undo);
-        if gives_check {
-            checks.push(m.clone());
-        }
-    }
+    // 王手になる手だけを直接生成
+    let checks = legal_check_moves(state);
 
     let mut winning: Vec<(Move, MateResult)> = Vec::new();
     for m in &checks {

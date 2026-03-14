@@ -398,25 +398,69 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
 /// いずれも新しい玉位置に王手がかかっている状態を作る
 fn unwind_defender_move(rng: &mut Rng, state: &State) -> Option<State> {
     let dk_pos = state.king_pos(Owner::Defender)?;
+    let mut candidates: Vec<(u32, State)> = Vec::new();
 
-    // 3パターンをランダムな順序で試行
-    let r = rng.next_f64();
-    if r < 0.3 {
-        // パターンC → パターンB → パターンA
-        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
-        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) { return Some(s); }
-        unwind_defender_king_move(rng, state, dk_pos)
-    } else if r < 0.5 {
-        // パターンB → パターンC → パターンA
-        if let Some(s) = unwind_defender_capture(rng, state, dk_pos) { return Some(s); }
-        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
-        unwind_defender_king_move(rng, state, dk_pos)
-    } else {
-        // パターンA → パターンC → パターンB
-        if let Some(s) = unwind_defender_king_move(rng, state, dk_pos) { return Some(s); }
-        if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) { return Some(s); }
-        unwind_defender_capture(rng, state, dk_pos)
+    if let Some(s) = unwind_defender_king_move(rng, state, dk_pos) {
+        if let Some(score) = accept_defender_unwind(&s) {
+            candidates.push((score, s));
+        }
     }
+    if let Some(s) = unwind_defender_capture(rng, state, dk_pos) {
+        if let Some(score) = accept_defender_unwind(&s) {
+            candidates.push((score, s));
+        }
+    }
+    if let Some(s) = unwind_defender_interpose(rng, state, dk_pos) {
+        if let Some(score) = accept_defender_unwind(&s) {
+            candidates.push((score, s));
+        }
+    }
+
+    if candidates.is_empty() {
+        return None;
+    }
+
+    candidates.sort_by_key(|(score, _)| *score);
+    let best_score = candidates[0].0;
+    let best_count = candidates.iter().take_while(|(score, _)| *score == best_score).count();
+    let pick_idx = (rng.next_u64() as usize) % best_count;
+    Some(candidates.swap_remove(pick_idx).1)
+}
+
+fn defender_unwind_stats(state: &State) -> Option<(u32, u32, u32, u32)> {
+    let dk = state.king_pos(Owner::Defender)?;
+
+    let mut empty_around = 0u32;
+    for dx in -1..=1i8 {
+        for dy in -1..=1i8 {
+            if dx == 0 && dy == 0 {
+                continue;
+            }
+            let nx = dk.x + dx;
+            let ny = dk.y + dy;
+            if (1..=9).contains(&nx) && (1..=9).contains(&ny) && state.get(Pos::new(nx, ny)).is_none() {
+                empty_around += 1;
+            }
+        }
+    }
+
+    let checkers = find_checking_pieces(state, dk);
+    let slider_count = checkers.iter().filter(|(_, bp)| is_sliding_piece(bp.piece_type)).count() as u32;
+    let contact_count = checkers.len() as u32 - slider_count;
+
+    let score = (empty_around * 8 + slider_count * 3).saturating_sub(contact_count * 2);
+    Some((score, empty_around, slider_count, contact_count))
+}
+
+fn accept_defender_unwind(state: &State) -> Option<u32> {
+    let (score, empty_around, slider_count, contact_count) = defender_unwind_stats(state)?;
+    if empty_around >= 5 {
+        return None;
+    }
+    if slider_count >= 2 && contact_count == 0 {
+        return None;
+    }
+    Some(score)
 }
 
 /// パターンA: 玉を空きマスに移動（逃げる前の位置に戻す）
@@ -793,19 +837,87 @@ pub fn backward_candidate(rng_seed: u64, mate_length: u32) -> Option<InitialData
 /// (N+2)手詰の候補を作る。ゼロから生成するより成功率が高い。
 pub fn extend_candidate(rng_seed: u64, source: &InitialData) -> Option<InitialData> {
     let mut rng = Rng::new(rng_seed);
-    let mut current = source.to_state();
+    let mut best: Option<(u32, u32, u32, u32, InitialData)> = None;
 
-    // 攻め方の手番にする（初期局面は攻め方手番のはず）
-    current.side_to_move = Owner::Attacker;
+    for _ in 0..4 {
+        let mut current = source.to_state();
 
-    // 守り方の手を巻き戻す
-    let unwound_def = try_unwind_defender(&mut rng, &current, 50)?;
+        // 攻め方の手番にする（初期局面は攻め方手番のはず）
+        current.side_to_move = Owner::Attacker;
 
-    // 攻め方の手を巻き戻す
-    let mut result = try_unwind_attacker(&mut rng, &unwound_def, 50)?;
+        // 守り方の手を巻き戻す
+        let unwound_def = match try_unwind_defender(&mut rng, &current, 50) {
+            Some(s) => s,
+            None => continue,
+        };
 
-    result.side_to_move = Owner::Attacker;
-    Some(InitialData::from_state(&result))
+        // 攻め方の手を巻き戻す
+        let mut result = match try_unwind_attacker(&mut rng, &unwound_def, 50) {
+            Some(s) => s,
+            None => continue,
+        };
+
+        result.side_to_move = Owner::Attacker;
+        let initial = InitialData::from_state(&result);
+        if initial.has_excess_pieces() {
+            continue;
+        }
+
+        let (pressure, empty_around) = match result.king_pos(Owner::Defender) {
+            Some(dk) => {
+                let mut pressure = 0u32;
+                let mut count = 0u32;
+                for p in &initial.pieces {
+                    if p.owner != Owner::Attacker || p.piece_type == PieceType::K {
+                        continue;
+                    }
+                    let dx = (p.x - dk.x).abs();
+                    let dy = (p.y - dk.y).abs();
+                    if dx <= 2 && dy <= 2 {
+                        pressure += 3;
+                    } else if dx <= 4 && dy <= 4 {
+                        pressure += 1;
+                    }
+                }
+                pressure += initial.hands.attacker.to_array().iter().map(|&v| v as u32).sum::<u32>();
+                for dx in -1..=1i8 {
+                    for dy in -1..=1i8 {
+                        if dx == 0 && dy == 0 {
+                            continue;
+                        }
+                        let nx = dk.x + dx;
+                        let ny = dk.y + dy;
+                        if (1..=9).contains(&nx)
+                            && (1..=9).contains(&ny)
+                            && result.get(Pos::new(nx, ny)).is_none()
+                        {
+                            count += 1;
+                        }
+                    }
+                }
+                (pressure, count)
+            }
+            None => continue,
+        };
+        let piece_count = initial.pieces.len() as u32;
+        let hand_count = initial.hands.attacker.to_array().iter().map(|&v| v as u32).sum::<u32>();
+
+        match &best {
+            Some((best_pressure, best_empty, best_piece_count, best_hand_count, _))
+                if pressure < *best_pressure
+                    || (pressure == *best_pressure && empty_around > *best_empty)
+                    || (pressure == *best_pressure && empty_around == *best_empty && piece_count > *best_piece_count)
+                    || (pressure == *best_pressure && empty_around == *best_empty && piece_count == *best_piece_count && hand_count >= *best_hand_count) => {}
+            _ => {
+                best = Some((pressure, empty_around, piece_count, hand_count, initial));
+                if pressure >= 8 && empty_around <= 3 && piece_count <= 7 && hand_count <= 2 {
+                    break;
+                }
+            }
+        }
+    }
+
+    best.map(|(_, _, _, _, initial)| initial)
 }
 
 #[cfg(test)]
@@ -911,10 +1023,9 @@ mod tests {
     #[test]
     fn test_interpose_unwind() {
         // 合駒逆算のテスト: スライド王手のある局面から合駒を追加
-        let mut rng = Rng::new(42);
         let mut found = 0;
         for seed in 0..200 {
-            rng = Rng::new(seed + 1);
+            let mut rng = Rng::new(seed + 1);
             if let Some(mated) = generate_mated_position(&mut rng) {
                 let dk_pos = mated.king_pos(Owner::Defender).unwrap();
                 if let Some(_s) = unwind_defender_interpose(&mut rng, &mated, dk_pos) {
@@ -924,6 +1035,60 @@ mod tests {
         }
         eprintln!("合駒逆算: {}/200 成功", found);
         // 合駒逆算は条件が厳しいので成功しなくてもテストは通す
+    }
+
+    /// 9手詰パズルからの延長成功率を診断するテスト（候補生成のみ）
+    #[test]
+    fn test_extend_from_9mate_diagnostic() {
+        // 9手詰パズルファイルを読む
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../puzzles/9.json");
+        let data = match std::fs::read_to_string(&path) {
+            Ok(d) => d,
+            Err(_) => {
+                eprintln!("puzzles/9.json が見つからない、スキップ");
+                return;
+            }
+        };
+        let puzzles: Vec<serde_json::Value> = serde_json::from_str(&data).unwrap();
+        eprintln!("9手詰パズル数: {}", puzzles.len());
+
+        let mut total_attempts = 0;
+        let mut extend_success = 0;
+        let mut extend_fail_defender = 0;
+        let mut extend_fail_attacker = 0;
+
+        for (pi, puzzle) in puzzles.iter().enumerate() {
+            let initial: InitialData = serde_json::from_value(puzzle["initial"].clone()).unwrap();
+            for attempt in 0..100 {
+                total_attempts += 1;
+                let rng_seed = (pi * 1000 + attempt) as u64 + 1;
+                let mut rng = Rng::new(rng_seed);
+                let mut current = initial.to_state();
+                current.side_to_move = Owner::Attacker;
+
+                // 守り方の手を巻き戻す
+                let unwound_def = try_unwind_defender(&mut rng, &current, 50);
+                if unwound_def.is_none() {
+                    extend_fail_defender += 1;
+                    continue;
+                }
+                let unwound_def = unwound_def.unwrap();
+
+                // 攻め方の手を巻き戻す
+                let unwound_atk = try_unwind_attacker(&mut rng, &unwound_def, 50);
+                if unwound_atk.is_none() {
+                    extend_fail_attacker += 1;
+                    continue;
+                }
+                extend_success += 1;
+            }
+        }
+
+        eprintln!("=== 延長法診断 (9手詰→11手詰) ===");
+        eprintln!("総試行: {}", total_attempts);
+        eprintln!("守り方巻き戻し失敗: {} ({:.1}%)", extend_fail_defender, extend_fail_defender as f64 / total_attempts as f64 * 100.0);
+        eprintln!("攻め方巻き戻し失敗: {} ({:.1}%)", extend_fail_attacker, extend_fail_attacker as f64 / total_attempts as f64 * 100.0);
+        eprintln!("延長候補生成成功: {} ({:.1}%)", extend_success, extend_success as f64 / total_attempts as f64 * 100.0);
     }
 
 }

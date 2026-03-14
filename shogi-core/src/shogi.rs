@@ -287,6 +287,20 @@ impl State {
         }
     }
 
+    /// 盤面+手番のみの Zobrist ハッシュ（持ち駒を除外）を返す
+    /// 証明駒・反証駒の支配性テーブルで使用する
+    pub fn board_only_zobrist(&self) -> u64 {
+        let mut h = self.zobrist_hash;
+        // 持ち駒成分を XOR で除去
+        for (hi, &t) in HAND_TYPES.iter().enumerate() {
+            let ac = self.hands.get(Owner::Attacker, t);
+            h ^= ZOBRIST.hand_hash(Owner::Attacker, hi, ac);
+            let dc = self.hands.get(Owner::Defender, t);
+            h ^= ZOBRIST.hand_hash(Owner::Defender, hi, dc);
+        }
+        h
+    }
+
     /// Zobrist ハッシュをゼロから計算する（初期化時に使用）
     pub fn compute_zobrist(&self) -> u64 {
         let mut h = 0u64;
@@ -1079,6 +1093,67 @@ pub fn legal_drop_moves(state: &mut State) -> Vec<Move> {
 pub fn legal_moves(state: &mut State) -> Vec<Move> {
     let mut out = legal_board_moves(state);
     out.extend(legal_drop_moves(state));
+    out
+}
+
+/// 現在の手番側の「王手になる合法手」を生成する
+pub fn legal_check_moves(state: &mut State) -> Vec<Move> {
+    let owner = state.side_to_move;
+    let enemy = owner.opposite();
+    let mut out = Vec::new();
+
+    let mut piece_positions = Vec::new();
+    for y in 1..=9i8 {
+        for x in 1..=9i8 {
+            let p = Pos::new(x, y);
+            if let Some(bp) = state.get(p) {
+                if bp.owner == owner {
+                    piece_positions.push((p, bp));
+                }
+            }
+        }
+    }
+
+    for (p, bp) in &piece_positions {
+        for m in pseudo_moves_from(state, *p, *bp) {
+            let undo = make_move(state, &m);
+            let is_legal = !is_in_check(state, owner);
+            let gives_check = is_legal && is_in_check(state, enemy);
+            undo_move(state, &m, &undo);
+            if gives_check {
+                out.push(m);
+            }
+        }
+    }
+
+    let drops = pseudo_drops(state, owner);
+    for m in drops {
+        if pawn_drop_mate_forbidden(state, &m) {
+            continue;
+        }
+        let undo = make_move(state, &m);
+        let is_legal = !is_in_check(state, owner);
+        let gives_check = is_legal && is_in_check(state, enemy);
+        undo_move(state, &m, &undo);
+        if gives_check {
+            out.push(m);
+        }
+    }
+
+    // ソート: 捕獲+成り > 捕獲 > 成り > 移動 > 打ち
+    out.sort_by_key(|m| {
+        if m.from.is_some() {
+            let to = Pos::new(m.to[0], m.to[1]);
+            let is_capture = state.get(to).is_some();
+            if is_capture && m.promote { 0 }
+            else if is_capture { 1 }
+            else if m.promote { 2 }
+            else { 3 }
+        } else {
+            4
+        }
+    });
+
     out
 }
 

@@ -20,6 +20,11 @@ fn validate_tsume_auto(state: &mut State, mate_length: u32) -> Option<Vec<Move>>
     }
 }
 
+/// validate コマンド用の検証関数（生成時と同じソルバーを使用）
+pub fn validate_tsume_for_verify(state: &mut State, mate_length: u32) -> Option<Vec<Move>> {
+    validate_tsume_auto(state, mate_length)
+}
+
 /// 安価な事前フィルタ: フルバリデーションの前に候補を早期棄却する
 fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
     // 駒数上限チェック（角4枚など不正な局面を棄却）
@@ -42,16 +47,7 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
     }
 
     // 王手できる手が1つもなければ棄却
-    let checks = {
-        let moves = legal_moves(&mut state);
-        let enemy = state.side_to_move.opposite();
-        moves.into_iter().filter(|m| {
-            let undo = make_move(&mut state, m);
-            let check = is_in_check(&state, enemy);
-            undo_move(&mut state, m, &undo);
-            check
-        }).count()
-    };
+    let checks = legal_check_moves(&mut state).len();
     if checks == 0 {
         return true;
     }
@@ -61,7 +57,8 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
         1..=3 => 20,   // 短手数は比較的緩く
         5 => 15,
         7 => 10,
-        _ => 8,        // 9手詰以上は厳しく
+        9 => 10,
+        _ => 10,       // 11手詰以上も分岐を厳しめに抑える
     };
     if checks > max_checks {
         return true;
@@ -84,7 +81,8 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
         let max_empty = match mate_length {
             5 => 6,
             7 => 5,
-            _ => 4,  // 9手詰以上: 空き4マス以上で棄却
+            9 => 4,
+            _ => 4,  // 11手詰以上も玉周りの疎な局面を早めに棄却
         };
         if empty_around >= max_empty {
             return true;
@@ -132,7 +130,6 @@ pub fn compute_puzzle_hash(initial: &InitialData) -> String {
     }
     format!("{:08x}", hash as u32)
 }
-
 
 fn empty_hands_data() -> HandsData {
     HandsData {
@@ -560,6 +557,10 @@ fn difficulty_score(initial: &InitialData, solution: &[Move]) -> i32 {
         + attacker_count
 }
 
+fn should_run_piece_prune(mate_length: u32) -> bool {
+    mate_length <= 7
+}
+
 fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
     let mut cur = initial.clone();
     let mut changed = true;
@@ -581,7 +582,7 @@ fn prune_initial(initial: &InitialData, mate_length: u32) -> InitialData {
             cand.pieces.remove(i);
             if !basic_validity(&cand) { continue; }
             let mut state = cand.to_state();
-            if validate_tsume_puzzle(&mut state, mate_length).is_some() {
+            if validate_tsume_auto(&mut state, mate_length).is_some() {
                 cur = cand;
                 changed = true;
                 break;
@@ -614,14 +615,27 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
     let mut state = normalized.to_state();
     let solution = validate_tsume_auto(&mut state, mate_length)?;
 
+    // 手順長が正確に mate_length であることを確認（dfpn が短い手順を返すケースを防ぐ）
+    if solution.len() != mate_length as usize {
+        return None;
+    }
+
     // prune: 駒を減らしても成立するか試す
-    let pruned = prune_initial(&normalized, mate_length);
+    let pruned = if should_run_piece_prune(mate_length) {
+        prune_initial(&normalized, mate_length)
+    } else {
+        normalized.clone()
+    };
     let pruned_changed = serde_json::to_string(&pruned).unwrap_or_default()
         != serde_json::to_string(&normalized).unwrap_or_default();
     let (final_initial, final_solution) = if pruned_changed {
         let mut pruned_state = pruned.to_state();
         if let Some(pruned_sol) = validate_tsume_auto(&mut pruned_state, mate_length) {
-            (InitialData::from_state(&pruned_state), pruned_sol)
+            if pruned_sol.len() == mate_length as usize {
+                (InitialData::from_state(&pruned_state), pruned_sol)
+            } else {
+                (InitialData::from_state(&state), solution)
+            }
         } else {
             (InitialData::from_state(&state), solution)
         }
@@ -631,6 +645,11 @@ fn validate_and_prune(initial: &InitialData, mate_length: u32) -> Option<(Initia
 
     // Remove unused attacker hand pieces; reject if stripping fails
     let (final_initial, final_solution) = strip_unused_hand(final_initial, final_solution, mate_length)?;
+
+    // 最終的な手順長の確認
+    if final_solution.len() != mate_length as usize {
+        return None;
+    }
 
     // 駒余りなし: 最終局面で攻め方の持ち駒が残っていたらリジェクト
     if has_leftover_pieces(&final_initial, &final_solution) {
@@ -1010,22 +1029,25 @@ fn attacker_composition_key(initial: &InitialData) -> String {
         h.R, h.B, h.G, h.S, h.N, h.L, h.P)
 }
 
+type GeneratedPuzzleEntry = (InitialData, Vec<Move>, i32);
+type SaveCallback<'a> = dyn Fn(&[GeneratedPuzzleEntry], u32) + 'a;
+
 #[allow(clippy::too_many_arguments)]
-pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Vec<Puzzle>]) -> Vec<Puzzle> {
+pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Vec<Puzzle>], save_callback: Option<&SaveCallback<'_>>, extend_from: Option<u32>, run_extend: bool, extend_only: bool) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
     let mut struct_set: HashSet<String> = HashSet::new();
     let mut comp_count: FxHashMap<String, u32> = FxHashMap::default();
     let mut atk_comp_count: FxHashMap<String, u32> = FxHashMap::default();
     let max_per_composition: u32 = 3; // 同一駒構成のパズルは最大3問
     let max_per_atk_composition: u32 = 3; // 攻め方の駒構成が同じパズルは最大3問
-    let mut results: Vec<(InitialData, Vec<Move>, i32)> = Vec::new();
+    let mut results: Vec<GeneratedPuzzleEntry> = Vec::new();
 
     // 既存パズルの再検証・取り込み
     let mut kept = 0u32;
     let mut dropped = 0u32;
     for p in existing {
         let mut state = p.initial.to_state();
-        let valid = validate_tsume_puzzle(&mut state, mate_length);
+        let valid = validate_tsume_for_verify(&mut state, mate_length);
         let has_leftover = match &valid {
             Some(sol) => {
                 let mut final_state = p.initial.to_state();
@@ -1063,6 +1085,17 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         eprintln!("  {}手詰: 既存パズル {}/{} 問を保持 ({}問除外)", mate_length, kept, existing.len(), dropped);
     }
 
+    // 中間結果を保存するヘルパー（既存パズル数以上になってから保存開始、再検証途中の上書き防止）
+    let mut last_saved_count = results.len();
+    let save_if_changed = |results: &[(InitialData, Vec<Move>, i32)], last: &mut usize, mate_length: u32| {
+        if results.len() > *last {
+            if let Some(cb) = &save_callback {
+                cb(results, mate_length);
+            }
+            *last = results.len();
+        }
+    };
+
     let add_result = |initial: InitialData, _solution: Vec<Move>, _score: i32,
                       sig_set: &mut HashSet<String>, struct_set: &mut HashSet<String>,
                       comp_count: &mut FxHashMap<String, u32>,
@@ -1083,29 +1116,31 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         true
     };
 
-    // Add curated puzzles
-    for initial in curated_seeds {
-        if let Some((fin, sol, score)) = validate_and_prune(initial, mate_length) {
-            if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
-                results.push((fin, sol, score));
-            }
-        }
-    }
-
-    // Mirror curated
-    for initial in curated_seeds {
-        let mirrored = initial.mirror();
-        if basic_validity(&mirrored) {
-            if let Some((fin, sol, score)) = validate_and_prune(&mirrored, mate_length) {
+    if !extend_only {
+        // Add curated puzzles
+        for initial in curated_seeds {
+            if let Some((fin, sol, score)) = validate_and_prune(initial, mate_length) {
                 if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
                     results.push((fin, sol, score));
+                }
+            }
+        }
+
+        // Mirror curated
+        for initial in curated_seeds {
+            let mirrored = initial.mirror();
+            if basic_validity(&mirrored) {
+                if let Some((fin, sol, score)) = validate_and_prune(&mirrored, mate_length) {
+                    if add_result(fin.clone(), sol.clone(), score, &mut sig_set, &mut struct_set, &mut comp_count, &mut atk_comp_count) {
+                        results.push((fin, sol, score));
+                    }
                 }
             }
         }
     }
 
     // --- 逆算法フェーズ（9手詰以上ではスキップ: 成功率が極端に低いため） ---
-    if method == GenerateMethod::Backward || method == GenerateMethod::Both {
+    if !extend_only && (method == GenerateMethod::Backward || method == GenerateMethod::Both) {
         let backward_attempts = match method {
             GenerateMethod::Backward => attempts,
             GenerateMethod::Both => attempts / 2, // 半分を逆算法に割り当て
@@ -1142,43 +1177,53 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 if batch % 10 == 0 && batch > 0 {
                     eprintln!("  {}手詰 [backward]: {}/{} attempts, {} found", mate_length, batch_end, backward_attempts, results.len());
                 }
+                save_if_changed(&results, &mut last_saved_count, mate_length);
             }
             eprintln!("  {}手詰: backward phase done, {} found so far", mate_length, results.len());
         }
     }
 
     // --- 延長法フェーズ（短手数パズルから2手延長、多段チェーン対応）---
-    for shorter_set in shorter_puzzles {
-        if shorter_set.is_empty() { continue; }
-        if results.len() as u32 >= max { break; }
-
-        let source_mate = shorter_set[0].mate_length;
-        // 延長する段数を計算（例: 5手詰→9手詰 = 2段延長）
-        let extend_steps = ((mate_length - source_mate) / 2) as usize;
-        if extend_steps == 0 { continue; }
-
-        let extend_attempts_per_puzzle = 50u32;
-        let total_extend = shorter_set.len() as u32 * extend_attempts_per_puzzle;
-        eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰, {}段延長), {} attempts...",
-            mate_length, shorter_set.len(), source_mate, extend_steps, total_extend);
-
-        let shorter_initials: Vec<&InitialData> = shorter_set.iter().map(|p| &p.initial).collect();
-        let extend_batch_size = 1000u32;
-        let extend_batches = total_extend.div_ceil(extend_batch_size);
-
-        for batch in 0..extend_batches {
+    if run_extend {
+        for shorter_set in shorter_puzzles {
+            if shorter_set.is_empty() { continue; }
             if results.len() as u32 >= max { break; }
+
+            let source_mate = shorter_set[0].mate_length;
+            // --extend-from 指定時は該当する手数からの延長のみ実行
+            if let Some(ef) = extend_from {
+                if source_mate != ef { continue; }
+            }
+            // 延長する段数を計算（例: 5手詰→9手詰 = 2段延長）
+            let extend_steps = ((mate_length - source_mate) / 2) as usize;
+            if extend_steps == 0 { continue; }
+
+            let extend_attempts_per_puzzle = 200u32;
+            let total_extend = shorter_set.len() as u32 * extend_attempts_per_puzzle;
+            eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰, {}段延長), {} attempts...",
+                mate_length, shorter_set.len(), source_mate, extend_steps, total_extend);
+
+            let extend_batch_size = 1000u32;
+            let extend_batches = total_extend.div_ceil(extend_batch_size);
+
+            for batch in 0..extend_batches {
+                if results.len() as u32 >= max { break; }
 
             let batch_start = batch * extend_batch_size;
             let batch_end = (batch_start + extend_batch_size).min(total_extend);
             let batch_range: Vec<u32> = (batch_start..batch_end).collect();
 
+            let extend_ok = std::sync::atomic::AtomicU32::new(0);
+            let quick_reject_count = std::sync::atomic::AtomicU32::new(0);
+            let validate_fail_count = std::sync::atomic::AtomicU32::new(0);
+            let validate_ok_count = std::sync::atomic::AtomicU32::new(0);
+
             let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
                 .filter_map(|&i| {
                     let source_idx = i as usize / extend_attempts_per_puzzle as usize;
-                    let source = shorter_initials.get(source_idx)?;
+                    let source = shorter_set.get(source_idx)?.initial.clone();
                     // 多段延長: extend_steps 回繰り返す
-                    let mut current = (*source).clone();
+                    let mut current = source;
                     for step in 0..extend_steps {
                         let rng_seed = seed
                             .wrapping_add(i as u64)
@@ -1186,9 +1231,30 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                             .wrapping_add(step as u64 * 999979);
                         current = backward::extend_candidate(rng_seed, &current)?;
                     }
-                    validate_and_prune(&current, mate_length)
+                    extend_ok.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    let rejected = quick_reject(&current, mate_length);
+                    if rejected {
+                        quick_reject_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        return None;
+                    }
+                    match validate_and_prune(&current, mate_length) {
+                        Some(r) => {
+                            validate_ok_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            Some(r)
+                        }
+                        None => {
+                            validate_fail_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                            None
+                        }
+                    }
                 })
                 .collect();
+
+            eprintln!("    [diag] extend_ok={}, quick_reject={}, validate_fail={}, validate_ok={}",
+                extend_ok.load(std::sync::atomic::Ordering::Relaxed),
+                quick_reject_count.load(std::sync::atomic::Ordering::Relaxed),
+                validate_fail_count.load(std::sync::atomic::Ordering::Relaxed),
+                validate_ok_count.load(std::sync::atomic::Ordering::Relaxed));
 
             for (fin, sol, score) in found {
                 if results.len() as u32 >= max { break; }
@@ -1201,8 +1267,10 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 eprintln!("  {}手詰 [extend from {}手詰]: {}/{} attempts, {} found",
                     mate_length, source_mate, batch_end, total_extend, results.len());
             }
+            save_if_changed(&results, &mut last_saved_count, mate_length);
+            }
+            eprintln!("  {}手詰: extend from {}手詰 done, {} found so far", mate_length, source_mate, results.len());
         }
-        eprintln!("  {}手詰: extend from {}手詰 done, {} found so far", mate_length, source_mate, results.len());
     }
 
     // --- ランダム法フェーズ ---
@@ -1212,7 +1280,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         GenerateMethod::Backward => 0,
     };
 
-    if random_attempts > 0 {
+    if !extend_only && random_attempts > 0 {
     eprintln!("  {}手詰: Starting parallel generation with {} attempts...", mate_length, random_attempts);
 
     // Generate candidates in parallel using rayon
@@ -1247,6 +1315,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         if (batch + 1) % 5 == 0 || batch + 1 == num_batches {
             eprintln!("  {}手詰: {}/{} attempts, {} found", mate_length, batch_end, random_attempts, results.len());
         }
+        save_if_changed(&results, &mut last_saved_count, mate_length);
     }
 
     // Phase 2: mutate + mirror from found results（並列化）
@@ -1293,6 +1362,7 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             if (batch + 1) % 5 == 0 || batch + 1 == mut_batches {
                 eprintln!("  {}手詰: mutation phase {}/{}, {} found", mate_length, batch_end, mutate_attempts, results.len());
             }
+            save_if_changed(&results, &mut last_saved_count, mate_length);
         }
     }
     } // if random_attempts > 0
@@ -1749,5 +1819,106 @@ mod tests {
         let score_with = score_puzzle(&init, &sol_with);
         let score_without = score_puzzle(&init, &sol_without);
         assert!(score_with > score_without, "捨て駒ありの方がスコアが高いはず");
+    }
+
+    /// 延長法候補の quick_reject 通過率と validate 成功率を診断
+    #[test]
+    #[ignore] // 長時間かかるため手動実行のみ
+    fn test_extend_11mate_rejection_diagnostic() {
+        use crate::backward;
+
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../puzzles/9.json");
+        let data = match std::fs::read_to_string(&path) {
+            Ok(d) => d,
+            Err(_) => { eprintln!("puzzles/9.json なし、スキップ"); return; }
+        };
+        let puzzles: Vec<serde_json::Value> = serde_json::from_str(&data).unwrap();
+        eprintln!("9手詰パズル数: {}", puzzles.len());
+
+        let mut extend_ok = 0;
+        let mut rejected = 0;
+        let mut passed_reject = 0;
+        let mate_length = 11;
+
+        // 各パズルから延長候補を生成して quick_reject のみ判定
+        for (pi, puzzle) in puzzles.iter().enumerate() {
+            let initial: InitialData = serde_json::from_value(puzzle["initial"].clone()).unwrap();
+            for attempt in 0..100 {
+                let rng_seed = (pi * 1000 + attempt) as u64 + 1;
+                if let Some(candidate) = backward::extend_candidate(rng_seed, &initial) {
+                    extend_ok += 1;
+                    if quick_reject(&candidate, mate_length) {
+                        rejected += 1;
+                    } else {
+                        passed_reject += 1;
+                    }
+                }
+            }
+        }
+
+        eprintln!("=== quick_reject 診断 (11手詰延長候補) ===");
+        eprintln!("延長候補生成: {}", extend_ok);
+        eprintln!("quick_reject 棄却: {} ({:.1}%)", rejected, rejected as f64 / extend_ok as f64 * 100.0);
+        eprintln!("quick_reject 通過: {} ({:.1}%)", passed_reject, passed_reject as f64 / extend_ok as f64 * 100.0);
+
+        // quick_reject を通過したものの中から少数だけ validate_and_prune を試す
+        let mut validated = 0;
+        let mut validate_tried = 0;
+        for (pi, puzzle) in puzzles.iter().enumerate() {
+            if validate_tried >= 20 { break; }
+            let initial: InitialData = serde_json::from_value(puzzle["initial"].clone()).unwrap();
+            for attempt in 0..100 {
+                if validate_tried >= 20 { break; }
+                let rng_seed = (pi * 1000 + attempt) as u64 + 1;
+                if let Some(candidate) = backward::extend_candidate(rng_seed, &initial) {
+                    if !quick_reject(&candidate, mate_length) {
+                        validate_tried += 1;
+                        if validate_and_prune(&candidate, mate_length).is_some() {
+                            validated += 1;
+                        }
+                    }
+                }
+            }
+        }
+        eprintln!("validate_and_prune 試行: {}, 成功: {}", validate_tried, validated);
+    }
+
+    /// quick_reject の通過率を再計測（閾値変更後）
+    #[test]
+    fn test_extend_11mate_reject_breakdown() {
+        use crate::backward;
+
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../puzzles/9.json");
+        let data = match std::fs::read_to_string(&path) {
+            Ok(d) => d,
+            Err(_) => { eprintln!("puzzles/9.json なし、スキップ"); return; }
+        };
+        let puzzles: Vec<serde_json::Value> = serde_json::from_str(&data).unwrap();
+
+        let mut total = 0u32;
+        let mut rejected = 0u32;
+        let mut passed = 0u32;
+
+        for (pi, puzzle) in puzzles.iter().enumerate() {
+            let initial: InitialData = serde_json::from_value(puzzle["initial"].clone()).unwrap();
+            for attempt in 0..100 {
+                let rng_seed = (pi * 1000 + attempt) as u64 + 1;
+                let candidate = match backward::extend_candidate(rng_seed, &initial) {
+                    Some(c) => c,
+                    None => continue,
+                };
+                total += 1;
+                if quick_reject(&candidate, 11) {
+                    rejected += 1;
+                } else {
+                    passed += 1;
+                }
+            }
+        }
+
+        eprintln!("=== quick_reject 通過率 (11手詰, 閾値変更後) ===");
+        eprintln!("延長候補総数: {}", total);
+        eprintln!("棄却: {} ({:.1}%)", rejected, rejected as f64 / total as f64 * 100.0);
+        eprintln!("通過: {} ({:.1}%)", passed, passed as f64 / total as f64 * 100.0);
     }
 }

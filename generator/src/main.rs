@@ -22,6 +22,10 @@ struct GenerateArgs {
     seed: u64,
     only: Option<u32>,   // 特定の手数だけ生成する場合
     method: GenerateMethod,
+    extend_from: Option<u32>, // 延長元の手数を指定（例: 9 → 9手詰からの延長のみ）
+    no_extend: bool,
+    extend_only: bool,
+    save_found_dir: Option<String>,
 }
 
 const ALL_MATE_LENGTHS: [u32; 6] = [1, 3, 5, 7, 9, 11];
@@ -37,6 +41,10 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             % 2_147_483_647,
         only: None,
         method: GenerateMethod::Both,
+        extend_from: None,
+        no_extend: false,
+        extend_only: false,
+        save_found_dir: None,
     };
 
     for a in args {
@@ -58,6 +66,14 @@ fn parse_generate_args(args: &[String]) -> GenerateArgs {
             ga.attempts[4] = v.parse().unwrap_or(ga.attempts[4]);
         } else if let Some(v) = a.strip_prefix("--attempts11=") {
             ga.attempts[5] = v.parse().unwrap_or(ga.attempts[5]);
+        } else if let Some(v) = a.strip_prefix("--extend-from=") {
+            ga.extend_from = v.parse().ok();
+        } else if a == "--no-extend" {
+            ga.no_extend = true;
+        } else if a == "--extend-only" {
+            ga.extend_only = true;
+        } else if let Some(v) = a.strip_prefix("--save-found-dir=") {
+            ga.save_found_dir = Some(v.to_string());
         } else if let Some(v) = a.strip_prefix("--method=") {
             ga.method = match v {
                 "random" => GenerateMethod::Random,
@@ -77,6 +93,9 @@ fn run_generate(args: &[String]) {
     let ga = parse_generate_args(args);
 
     let curated = generate::load_curated("data/curated-puzzles.json");
+
+    let persistent_save_dir = ga.save_found_dir.as_deref().map(Path::new);
+    let run_seed = ga.seed;
 
     // 全手数の結果を保持（多段延長法で使用）
     let mut all_puzzles: Vec<(u32, Vec<generate::Puzzle>)> = vec![];
@@ -122,7 +141,50 @@ fn run_generate(args: &[String]) {
             vec![]
         };
 
-        let puzzles = generate::generate_puzzles(ga.seed, mate_len, attempts, &seeds, ga.max, &existing, ga.method, &shorter);
+        // 中間結果をバッチごとにファイルへ保存するコールバック（途中killでも結果を失わない）
+        let save_intermediate = |results: &[(shogi::InitialData, Vec<shogi::Move>, i32)], ml: u32| {
+            let puzzles: Vec<generate::Puzzle> = results.iter().enumerate().map(|(i, (init, sol, score))| {
+                generate::Puzzle {
+                    id: i as u32 + 1,
+                    mate_length: ml,
+                    initial: init.clone(),
+                    solution: sol.clone(),
+                    quality: "validated".to_string(),
+                    score: *score,
+                    hash: generate::compute_puzzle_hash(init),
+                }
+            }).collect();
+            let json = serde_json::to_string_pretty(&puzzles).unwrap();
+            for dir in &["puzzles", "public/puzzles"] {
+                let dir_path = Path::new(dir);
+                fs::create_dir_all(dir_path).ok();
+                let file = dir_path.join(format!("{}.json", ml));
+                fs::write(&file, &json).ok();
+            }
+            if let Some(dir) = persistent_save_dir {
+                fs::create_dir_all(dir).ok();
+                let file = dir.join(format!("{}.json", ml));
+                fs::write(&file, &json).ok();
+                let file = dir.join(format!("{}-seed-{}.json", ml, run_seed));
+                fs::write(&file, &json).ok();
+            }
+            eprintln!("  [save] {}手詰: {}問を中間保存", ml, puzzles.len());
+        };
+
+        let puzzles = generate::generate_puzzles(
+            ga.seed,
+            mate_len,
+            attempts,
+            &seeds,
+            ga.max,
+            &existing,
+            ga.method,
+            &shorter,
+            Some(&save_intermediate),
+            ga.extend_from,
+            !ga.no_extend,
+            ga.extend_only,
+        );
 
         let json = serde_json::to_string_pretty(&puzzles).unwrap();
 
@@ -131,6 +193,13 @@ fn run_generate(args: &[String]) {
             fs::create_dir_all(dir_path).ok();
             let file = dir_path.join(format!("{}.json", mate_len));
             fs::write(&file, &json).unwrap();
+        }
+        if let Some(dir) = persistent_save_dir {
+            fs::create_dir_all(dir).ok();
+            let file = dir.join(format!("{}.json", mate_len));
+            fs::write(&file, &json).ok();
+            let file = dir.join(format!("{}-seed-{}.json", mate_len, run_seed));
+            fs::write(&file, &json).ok();
         }
 
         eprintln!("{}手詰: {}問 (attempts={})", mate_len, puzzles.len(), attempts);
@@ -199,7 +268,7 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
         }
 
         let mut state = p.initial.to_state();
-        let result = shogi::validate_tsume_puzzle(&mut state, mate_len);
+        let result = generate::validate_tsume_for_verify(&mut state, mate_len);
         match result {
             None => {
                 eprintln!("[NG] {}手詰 #{}: 詰将棋として不正", mate_len, p.id);
