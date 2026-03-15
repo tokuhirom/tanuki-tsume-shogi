@@ -7728,66 +7728,6 @@
         },
         {
           "x": 1,
-          "y": 2,
-          "owner": "attacker",
-          "type": "N"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "attacker",
-          "type": "G"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 2,
-          "B": 2,
-          "G": 3,
-          "S": 3,
-          "N": 3,
-          "L": 4,
-          "P": 18
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          2,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 11,
-    "hash": "c7f79ed5"
-  },
-  {
-    "id": 121,
-    "mateLength": 1,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 1,
           "y": 3,
           "owner": "attacker",
           "type": "S"
@@ -7836,7 +7776,7 @@
     "hash": "d275b7db"
   },
   {
-    "id": 122,
+    "id": 121,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -7902,7 +7842,7 @@
     "hash": "d1fc1b6e"
   },
   {
-    "id": 123,
+    "id": 122,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -7962,7 +7902,7 @@
     "hash": "fafca355"
   },
   {
-    "id": 124,
+    "id": 123,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8022,7 +7962,7 @@
     "hash": "99fa54fb"
   },
   {
-    "id": 125,
+    "id": 124,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8082,7 +8022,7 @@
     "hash": "682eaaf9"
   },
   {
-    "id": 126,
+    "id": 125,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8148,7 +8088,7 @@
     "hash": "06b4e772"
   },
   {
-    "id": 127,
+    "id": 126,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8214,7 +8154,7 @@
     "hash": "ba6ac4f5"
   },
   {
-    "id": 128,
+    "id": 127,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8274,7 +8214,7 @@
     "hash": "b3987fc6"
   },
   {
-    "id": 129,
+    "id": 128,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8334,7 +8274,7 @@
     "hash": "75b49b81"
   },
   {
-    "id": 130,
+    "id": 129,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8394,7 +8334,7 @@
     "hash": "6ec0ad4e"
   },
   {
-    "id": 131,
+    "id": 130,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8454,7 +8394,7 @@
     "hash": "19d26ebf"
   },
   {
-    "id": 132,
+    "id": 131,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8514,7 +8454,7 @@
     "hash": "31b3fb42"
   },
   {
-    "id": 133,
+    "id": 132,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8574,7 +8514,7 @@
     "hash": "39cfcec7"
   },
   {
-    "id": 134,
+    "id": 133,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8640,7 +8580,7 @@
     "hash": "7f68ccc4"
   },
   {
-    "id": 135,
+    "id": 134,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8700,7 +8640,7 @@
     "hash": "2152be60"
   },
   {
-    "id": 136,
+    "id": 135,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8760,7 +8700,7 @@
     "hash": "9f13212e"
   },
   {
-    "id": 137,
+    "id": 136,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8820,7 +8760,7 @@
     "hash": "b9d767ff"
   },
   {
-    "id": 138,
+    "id": 137,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8880,7 +8820,7 @@
     "hash": "16b31301"
   },
   {
-    "id": 139,
+    "id": 138,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -8940,7 +8880,7 @@
     "hash": "15cc6c26"
   },
   {
-    "id": 140,
+    "id": 139,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9000,7 +8940,7 @@
     "hash": "10ab2e37"
   },
   {
-    "id": 141,
+    "id": 140,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9060,7 +9000,7 @@
     "hash": "d206918a"
   },
   {
-    "id": 142,
+    "id": 141,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9120,7 +9060,7 @@
     "hash": "f7db7d34"
   },
   {
-    "id": 143,
+    "id": 142,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9180,7 +9120,7 @@
     "hash": "0c8dd40b"
   },
   {
-    "id": 144,
+    "id": 143,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9240,7 +9180,7 @@
     "hash": "ac8dfa71"
   },
   {
-    "id": 145,
+    "id": 144,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9300,7 +9240,7 @@
     "hash": "81b7a88a"
   },
   {
-    "id": 146,
+    "id": 145,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9360,7 +9300,7 @@
     "hash": "9b1f8cdc"
   },
   {
-    "id": 147,
+    "id": 146,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9426,7 +9366,7 @@
     "hash": "d27bb89f"
   },
   {
-    "id": 148,
+    "id": 147,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9486,7 +9426,7 @@
     "hash": "4281ece8"
   },
   {
-    "id": 149,
+    "id": 148,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9546,7 +9486,7 @@
     "hash": "06265724"
   },
   {
-    "id": 150,
+    "id": 149,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9606,7 +9546,7 @@
     "hash": "b82a1f43"
   },
   {
-    "id": 151,
+    "id": 150,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9666,7 +9606,7 @@
     "hash": "a10fcea7"
   },
   {
-    "id": 152,
+    "id": 151,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9726,7 +9666,7 @@
     "hash": "8e121922"
   },
   {
-    "id": 153,
+    "id": 152,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9786,7 +9726,7 @@
     "hash": "c05b0b35"
   },
   {
-    "id": 154,
+    "id": 153,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9846,7 +9786,7 @@
     "hash": "6592b0e8"
   },
   {
-    "id": 155,
+    "id": 154,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9906,7 +9846,7 @@
     "hash": "d2140208"
   },
   {
-    "id": 156,
+    "id": 155,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -9966,7 +9906,7 @@
     "hash": "a356d971"
   },
   {
-    "id": 157,
+    "id": 156,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10026,7 +9966,7 @@
     "hash": "bf91e733"
   },
   {
-    "id": 158,
+    "id": 157,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10086,7 +10026,7 @@
     "hash": "743d8c33"
   },
   {
-    "id": 159,
+    "id": 158,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10146,7 +10086,7 @@
     "hash": "de17fba7"
   },
   {
-    "id": 160,
+    "id": 159,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10212,7 +10152,7 @@
     "hash": "08278a3d"
   },
   {
-    "id": 161,
+    "id": 160,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10272,7 +10212,7 @@
     "hash": "42479dc3"
   },
   {
-    "id": 162,
+    "id": 161,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10338,7 +10278,7 @@
     "hash": "bbdd67c0"
   },
   {
-    "id": 163,
+    "id": 162,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10398,7 +10338,7 @@
     "hash": "843a8401"
   },
   {
-    "id": 164,
+    "id": 163,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10458,7 +10398,7 @@
     "hash": "f9422654"
   },
   {
-    "id": 165,
+    "id": 164,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10518,7 +10458,7 @@
     "hash": "c60050f2"
   },
   {
-    "id": 166,
+    "id": 165,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10578,7 +10518,7 @@
     "hash": "d7c8c64e"
   },
   {
-    "id": 167,
+    "id": 166,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10638,7 +10578,7 @@
     "hash": "1ed8400b"
   },
   {
-    "id": 168,
+    "id": 167,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10698,7 +10638,7 @@
     "hash": "03d73401"
   },
   {
-    "id": 169,
+    "id": 168,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10758,7 +10698,7 @@
     "hash": "b930c44d"
   },
   {
-    "id": 170,
+    "id": 169,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10818,7 +10758,7 @@
     "hash": "f7496765"
   },
   {
-    "id": 171,
+    "id": 170,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10878,7 +10818,7 @@
     "hash": "cac27c83"
   },
   {
-    "id": 172,
+    "id": 171,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -10944,7 +10884,7 @@
     "hash": "9c57dfd9"
   },
   {
-    "id": 173,
+    "id": 172,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11010,7 +10950,7 @@
     "hash": "7a271109"
   },
   {
-    "id": 174,
+    "id": 173,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11076,7 +11016,7 @@
     "hash": "bed24bc8"
   },
   {
-    "id": 175,
+    "id": 174,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11136,7 +11076,7 @@
     "hash": "ca24c0aa"
   },
   {
-    "id": 176,
+    "id": 175,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11202,7 +11142,7 @@
     "hash": "e084dd4a"
   },
   {
-    "id": 177,
+    "id": 176,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11262,7 +11202,7 @@
     "hash": "60e3bc26"
   },
   {
-    "id": 178,
+    "id": 177,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11328,7 +11268,7 @@
     "hash": "a96459b6"
   },
   {
-    "id": 179,
+    "id": 178,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11394,7 +11334,7 @@
     "hash": "73c35efd"
   },
   {
-    "id": 180,
+    "id": 179,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11466,7 +11406,7 @@
     "hash": "7f6bfce8"
   },
   {
-    "id": 181,
+    "id": 180,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11532,7 +11472,7 @@
     "hash": "14211afd"
   },
   {
-    "id": 182,
+    "id": 181,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11610,7 +11550,7 @@
     "hash": "d723e155"
   },
   {
-    "id": 183,
+    "id": 182,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11676,7 +11616,7 @@
     "hash": "ffb04133"
   },
   {
-    "id": 184,
+    "id": 183,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11742,7 +11682,7 @@
     "hash": "0aadaeda"
   },
   {
-    "id": 185,
+    "id": 184,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11814,7 +11754,7 @@
     "hash": "30dbf10f"
   },
   {
-    "id": 186,
+    "id": 185,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11880,7 +11820,7 @@
     "hash": "eb209ea0"
   },
   {
-    "id": 187,
+    "id": 186,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -11946,7 +11886,7 @@
     "hash": "b93cabe1"
   },
   {
-    "id": 188,
+    "id": 187,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12018,7 +11958,7 @@
     "hash": "b1b0c509"
   },
   {
-    "id": 189,
+    "id": 188,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12084,7 +12024,7 @@
     "hash": "cb311665"
   },
   {
-    "id": 190,
+    "id": 189,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12156,7 +12096,7 @@
     "hash": "43f6fe06"
   },
   {
-    "id": 191,
+    "id": 190,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12222,7 +12162,7 @@
     "hash": "812b6be3"
   },
   {
-    "id": 192,
+    "id": 191,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12288,7 +12228,7 @@
     "hash": "5d06343b"
   },
   {
-    "id": 193,
+    "id": 192,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12354,7 +12294,7 @@
     "hash": "b07924a4"
   },
   {
-    "id": 194,
+    "id": 193,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12414,7 +12354,7 @@
     "hash": "35fb5803"
   },
   {
-    "id": 195,
+    "id": 194,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12480,7 +12420,7 @@
     "hash": "001ceba3"
   },
   {
-    "id": 196,
+    "id": 195,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12552,7 +12492,7 @@
     "hash": "20e7988a"
   },
   {
-    "id": 197,
+    "id": 196,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12612,7 +12552,7 @@
     "hash": "166ee327"
   },
   {
-    "id": 198,
+    "id": 197,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12678,7 +12618,7 @@
     "hash": "567b90ea"
   },
   {
-    "id": 199,
+    "id": 198,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12744,7 +12684,7 @@
     "hash": "c90854f4"
   },
   {
-    "id": 200,
+    "id": 199,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12804,7 +12744,7 @@
     "hash": "ea2a712e"
   },
   {
-    "id": 201,
+    "id": 200,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12870,7 +12810,7 @@
     "hash": "467f7835"
   },
   {
-    "id": 202,
+    "id": 201,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -12942,7 +12882,7 @@
     "hash": "4afa3a40"
   },
   {
-    "id": 203,
+    "id": 202,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13008,7 +12948,7 @@
     "hash": "d14e0449"
   },
   {
-    "id": 204,
+    "id": 203,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13080,7 +13020,7 @@
     "hash": "b53ecbb6"
   },
   {
-    "id": 205,
+    "id": 204,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13152,7 +13092,7 @@
     "hash": "b18f1ecd"
   },
   {
-    "id": 206,
+    "id": 205,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13224,7 +13164,7 @@
     "hash": "a53435b3"
   },
   {
-    "id": 207,
+    "id": 206,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13296,7 +13236,7 @@
     "hash": "24064a8f"
   },
   {
-    "id": 208,
+    "id": 207,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13362,7 +13302,7 @@
     "hash": "1c1c07c0"
   },
   {
-    "id": 209,
+    "id": 208,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13428,7 +13368,7 @@
     "hash": "5bd4bacd"
   },
   {
-    "id": 210,
+    "id": 209,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13494,7 +13434,7 @@
     "hash": "68662a3d"
   },
   {
-    "id": 211,
+    "id": 210,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13560,7 +13500,7 @@
     "hash": "c4df1c92"
   },
   {
-    "id": 212,
+    "id": 211,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13626,7 +13566,7 @@
     "hash": "5b9f1737"
   },
   {
-    "id": 213,
+    "id": 212,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13692,7 +13632,7 @@
     "hash": "08762d94"
   },
   {
-    "id": 214,
+    "id": 213,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13758,7 +13698,7 @@
     "hash": "d8a6e52b"
   },
   {
-    "id": 215,
+    "id": 214,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13824,7 +13764,7 @@
     "hash": "48fcf0c5"
   },
   {
-    "id": 216,
+    "id": 215,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13890,7 +13830,7 @@
     "hash": "48db093f"
   },
   {
-    "id": 217,
+    "id": 216,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -13956,7 +13896,7 @@
     "hash": "0037fd74"
   },
   {
-    "id": 218,
+    "id": 217,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14034,7 +13974,7 @@
     "hash": "2c6d7804"
   },
   {
-    "id": 219,
+    "id": 218,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14100,7 +14040,7 @@
     "hash": "1a735a95"
   },
   {
-    "id": 220,
+    "id": 219,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14160,7 +14100,7 @@
     "hash": "326a97fb"
   },
   {
-    "id": 221,
+    "id": 220,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14232,7 +14172,7 @@
     "hash": "af256145"
   },
   {
-    "id": 222,
+    "id": 221,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14292,7 +14232,7 @@
     "hash": "a4e1c3bd"
   },
   {
-    "id": 223,
+    "id": 222,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14358,7 +14298,7 @@
     "hash": "e3067193"
   },
   {
-    "id": 224,
+    "id": 223,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14424,7 +14364,7 @@
     "hash": "a1d1bbfa"
   },
   {
-    "id": 225,
+    "id": 224,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14484,7 +14424,7 @@
     "hash": "c92c2646"
   },
   {
-    "id": 226,
+    "id": 225,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14550,7 +14490,7 @@
     "hash": "ef058910"
   },
   {
-    "id": 227,
+    "id": 226,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14610,7 +14550,7 @@
     "hash": "b5a00a48"
   },
   {
-    "id": 228,
+    "id": 227,
     "mateLength": 1,
     "initial": {
       "pieces": [
@@ -14676,7 +14616,7 @@
     "hash": "8584cb40"
   },
   {
-    "id": 229,
+    "id": 228,
     "mateLength": 1,
     "initial": {
       "pieces": [
