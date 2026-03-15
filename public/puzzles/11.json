@@ -1,1 +1,211 @@
-[]
+[
+  {
+    "id": 1,
+    "mateLength": 11,
+    "initial": {
+      "pieces": [
+        {
+          "x": 3,
+          "y": 1,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 1,
+          "y": 2,
+          "owner": "attacker",
+          "type": "L"
+        },
+        {
+          "x": 1,
+          "y": 3,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 1,
+          "y": 4,
+          "owner": "attacker",
+          "type": "P"
+        },
+        {
+          "x": 2,
+          "y": 4,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 3,
+          "y": 4,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 2,
+          "y": 5,
+          "owner": "attacker",
+          "type": "R"
+        },
+        {
+          "x": 3,
+          "y": 5,
+          "owner": "attacker",
+          "type": "G"
+        },
+        {
+          "x": 1,
+          "y": 6,
+          "owner": "defender",
+          "type": "K"
+        }
+      ],
+      "hands": {
+        "attacker": {
+          "R": 0,
+          "B": 0,
+          "G": 0,
+          "S": 0,
+          "N": 0,
+          "L": 0,
+          "P": 0
+        },
+        "defender": {
+          "R": 0,
+          "B": 2,
+          "G": 1,
+          "S": 4,
+          "N": 4,
+          "L": 3,
+          "P": 16
+        }
+      },
+      "sideToMove": "attacker"
+    },
+    "solution": [
+      {
+        "from": [
+          2,
+          5
+        ],
+        "to": [
+          1,
+          5
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          1,
+          6
+        ],
+        "to": [
+          1,
+          5
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          3,
+          5
+        ],
+        "to": [
+          2,
+          5
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          1,
+          5
+        ],
+        "to": [
+          1,
+          6
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          2,
+          5
+        ],
+        "to": [
+          2,
+          6
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          1,
+          6
+        ],
+        "to": [
+          1,
+          7
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          2,
+          6
+        ],
+        "to": [
+          2,
+          7
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          1,
+          7
+        ],
+        "to": [
+          1,
+          8
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          2,
+          7
+        ],
+        "to": [
+          2,
+          8
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          1,
+          8
+        ],
+        "to": [
+          1,
+          9
+        ],
+        "promote": false
+      },
+      {
+        "from": [
+          2,
+          8
+        ],
+        "to": [
+          2,
+          9
+        ],
+        "promote": false
+      }
+    ],
+    "quality": "validated",
+    "score": 25,
+    "hash": "f16ee5e7"
+  }
+]
