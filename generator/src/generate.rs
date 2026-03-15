@@ -1045,6 +1045,16 @@ fn attacker_composition_key(initial: &InitialData) -> String {
 type GeneratedPuzzleEntry = (InitialData, Vec<Move>, i32);
 type SaveCallback<'a> = dyn Fn(&[GeneratedPuzzleEntry], u32) + 'a;
 
+fn candidate_is_duplicate(
+    initial: &InitialData,
+    sig_set: &HashSet<String>,
+    struct_set: &HashSet<String>,
+) -> bool {
+    let sig = serde_json::to_string(initial).unwrap_or_default();
+    let ssig = structural_signature(initial);
+    sig_set.contains(&sig) || struct_set.contains(&ssig)
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seeds: &[InitialData], max: u32, existing: &[Puzzle], method: GenerateMethod, shorter_puzzles: &[Vec<Puzzle>], save_callback: Option<&SaveCallback<'_>>, extend_from: Option<u32>, run_extend: bool, extend_only: bool) -> Vec<Puzzle> {
     let mut sig_set: HashSet<String> = HashSet::new();
@@ -1171,11 +1181,16 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 let batch_start = batch * bw_batch_size;
                 let batch_end = (batch_start + bw_batch_size).min(backward_attempts);
                 let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+                let batch_sig_set = sig_set.clone();
+                let batch_struct_set = struct_set.clone();
 
                 let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
                     .filter_map(|&i| {
                         let rng_seed = seed.wrapping_add(i as u64).wrapping_mul(6364136223846793005);
                         let cand = backward::backward_candidate(rng_seed, mate_length)?;
+                        if candidate_is_duplicate(&cand, &batch_sig_set, &batch_struct_set) {
+                            return None;
+                        }
                         validate_and_prune(&cand, mate_length)
                     })
                     .collect();
@@ -1210,8 +1225,14 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             // 延長する段数を計算（例: 5手詰→9手詰 = 2段延長）
             let extend_steps = ((mate_length - source_mate) / 2) as usize;
             if extend_steps == 0 { continue; }
+            // 3段以上の多段延長は成功率が極端に低いためスキップ
+            if extend_steps > 2 { continue; }
 
-            let extend_attempts_per_puzzle = 200u32;
+            let extend_attempts_per_puzzle = match mate_length {
+                11.. => 1000u32,
+                9 => 500u32,
+                _ => 200u32,
+            };
             let total_extend = shorter_set.len() as u32 * extend_attempts_per_puzzle;
             eprintln!("  {}手詰: Starting extend phase from {}問 ({}手詰, {}段延長), {} attempts...",
                 mate_length, shorter_set.len(), source_mate, extend_steps, total_extend);
@@ -1230,6 +1251,8 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             let quick_reject_count = std::sync::atomic::AtomicU32::new(0);
             let validate_fail_count = std::sync::atomic::AtomicU32::new(0);
             let validate_ok_count = std::sync::atomic::AtomicU32::new(0);
+            let batch_sig_set = sig_set.clone();
+            let batch_struct_set = struct_set.clone();
 
             let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
                 .filter_map(|&i| {
@@ -1248,6 +1271,9 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                     let rejected = quick_reject(&current, mate_length);
                     if rejected {
                         quick_reject_count.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        return None;
+                    }
+                    if candidate_is_duplicate(&current, &batch_sig_set, &batch_struct_set) {
                         return None;
                     }
                     match validate_and_prune(&current, mate_length) {
@@ -1306,6 +1332,8 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
         let batch_start = batch * batch_size;
         let batch_end = (batch_start + batch_size).min(random_attempts);
         let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+        let batch_sig_set = sig_set.clone();
+        let batch_struct_set = struct_set.clone();
 
         // Generate and validate candidates in parallel
         let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
@@ -1314,6 +1342,9 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                 let params = candidate_params(mate_length);
                 let cand = random_candidate(&mut rng, &params);
                 let cand = cand?;
+                if candidate_is_duplicate(&cand, &batch_sig_set, &batch_struct_set) {
+                    return None;
+                }
                 validate_and_prune(&cand, mate_length)
             })
             .collect();
@@ -1345,6 +1376,8 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
             let batch_start = batch * mut_batch_size;
             let batch_end = (batch_start + mut_batch_size).min(mutate_attempts);
             let batch_range: Vec<u32> = (batch_start..batch_end).collect();
+            let batch_sig_set = sig_set.clone();
+            let batch_struct_set = struct_set.clone();
 
             let found: Vec<(InitialData, Vec<Move>, i32)> = batch_range.par_iter()
                 .filter_map(|&i| {
@@ -1356,11 +1389,17 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
                         // mirror
                         let mirrored = seed_initial.mirror();
                         if basic_validity(&mirrored) {
+                            if candidate_is_duplicate(&mirrored, &batch_sig_set, &batch_struct_set) {
+                                return None;
+                            }
                             return validate_and_prune(&mirrored, mate_length);
                         }
                         return None;
                     }
                     let cand = mutate_initial(&mut rng, seed_initial)?;
+                    if candidate_is_duplicate(&cand, &batch_sig_set, &batch_struct_set) {
+                        return None;
+                    }
                     validate_and_prune(&cand, mate_length)
                 })
                 .collect();

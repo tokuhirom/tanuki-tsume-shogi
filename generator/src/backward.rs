@@ -839,7 +839,7 @@ pub fn extend_candidate(rng_seed: u64, source: &InitialData) -> Option<InitialDa
     let mut rng = Rng::new(rng_seed);
     let mut best: Option<(u32, u32, u32, u32, InitialData)> = None;
 
-    for _ in 0..4 {
+    for _ in 0..12 {
         let mut current = source.to_state();
 
         // 攻め方の手番にする（初期局面は攻め方手番のはず）
