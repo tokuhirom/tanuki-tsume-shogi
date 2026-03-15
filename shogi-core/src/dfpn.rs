@@ -882,6 +882,9 @@ pub fn validate_tsume_dfpn(state: &mut State, mate_length: u32) -> Option<Vec<Mo
         return None;
     }
     state.king_pos(Owner::Defender)?;
+    if state_has_dead_end_pieces(state) {
+        return None;
+    }
 
     if is_in_check(state, Owner::Defender) {
         return None;
@@ -919,6 +922,9 @@ pub fn validate_tsume_dfpn_staged(state: &mut State, mate_length: u32) -> Option
         return None;
     }
     state.king_pos(Owner::Defender)?;
+    if state_has_dead_end_pieces(state) {
+        return None;
+    }
     if is_in_check(state, Owner::Defender) {
         return None;
     }

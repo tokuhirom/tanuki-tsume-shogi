@@ -79,6 +79,18 @@ impl PieceType {
 
 pub const HAND_TYPES: [PieceType; 7] = [PieceType::R, PieceType::B, PieceType::G, PieceType::S, PieceType::N, PieceType::L, PieceType::P];
 
+fn piece_is_dead_end(owner: Owner, piece_type: PieceType, y: i8) -> bool {
+    match piece_type {
+        PieceType::P | PieceType::L => {
+            (owner == Owner::Attacker && y == 1) || (owner == Owner::Defender && y == 9)
+        }
+        PieceType::N => {
+            (owner == Owner::Attacker && y <= 2) || (owner == Owner::Defender && y >= 8)
+        }
+        _ => false,
+    }
+}
+
 /// Zobrist ハッシュテーブル（局面のハッシュを差分更新するための乱数テーブル）
 struct ZobristTable {
     /// board[owner][piece_type][square]: 盤上の駒
@@ -1394,6 +1406,7 @@ pub fn validate_tsume_puzzle(state: &mut State, mate_length: u32) -> Option<Vec<
     if state.side_to_move != Owner::Attacker { return None; }
     // 守り方の玉は必須（攻め方の玉は無くても良い）
     state.king_pos(Owner::Defender)?;
+    if state_has_dead_end_pieces(state) { return None; }
 
     // 初期局面で既に王手がかかっていてはならない
     if is_in_check(state, Owner::Defender) { return None; }
@@ -1486,6 +1499,10 @@ pub struct InitialData {
 }
 
 impl InitialData {
+    pub fn has_dead_end_pieces(&self) -> bool {
+        self.pieces.iter().any(|p| piece_is_dead_end(p.owner, p.piece_type, p.y))
+    }
+
     pub fn to_state(&self) -> State {
         let mut state = State::new();
         for p in &self.pieces {
@@ -1593,6 +1610,19 @@ impl InitialData {
             side_to_move: self.side_to_move,
         }
     }
+}
+
+pub fn state_has_dead_end_pieces(state: &State) -> bool {
+    for y in 1..=9i8 {
+        for x in 1..=9i8 {
+            if let Some(piece) = state.get(Pos::new(x, y)) {
+                if piece_is_dead_end(piece.owner, piece.piece_type, y) {
+                    return true;
+                }
+            }
+        }
+    }
+    false
 }
 
 #[cfg(test)]
@@ -2055,6 +2085,21 @@ mod tests {
         let mut state = make_state((5, 9), (5, 1), &[]);
         assert!(validate_tsume_puzzle(&mut state, 2).is_none());
         assert!(validate_tsume_puzzle(&mut state, 0).is_none());
+    }
+
+    #[test]
+    fn test_validate_rejects_dead_end_pieces() {
+        let init = InitialData {
+            pieces: vec![
+                PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 1, y: 2, owner: Owner::Attacker, piece_type: PieceType::N },
+            ],
+            hands: empty_hands_data(),
+            side_to_move: Owner::Attacker,
+        };
+        assert!(init.has_dead_end_pieces());
+        let mut state = init.to_state();
+        assert!(validate_tsume_puzzle(&mut state, 1).is_none());
     }
 
     // --- InitialData 変換テスト ---

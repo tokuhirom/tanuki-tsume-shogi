@@ -310,6 +310,9 @@ pub fn validate_tsume_puzzle_js(state: &mut State, mate_length: u32) -> Option<V
         return None;
     }
     state.king_pos(Owner::Defender)?;
+    if state_has_dead_end_pieces(state) {
+        return None;
+    }
 
     let mut memo: FxHashMap<MemoKey, MateResult> = FxHashMap::default();
 
@@ -403,5 +406,22 @@ mod tests {
         assert!(def.drop.is_none(), "守り方は玉移動のはず（無駄合いスキップ）: {:?}", def);
 
         undo_move(&mut state, &m1, &undo);
+    }
+
+    #[test]
+    fn test_validate_tsume_puzzle_js_rejects_dead_end_pieces() {
+        let init = InitialData {
+            pieces: vec![
+                PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 1, y: 2, owner: Owner::Attacker, piece_type: PieceType::N },
+            ],
+            hands: HandsData {
+                attacker: HandCount::default(),
+                defender: HandCount::default(),
+            },
+            side_to_move: Owner::Attacker,
+        };
+        let mut state = init.to_state();
+        assert!(validate_tsume_puzzle_js(&mut state, 1).is_none());
     }
 }

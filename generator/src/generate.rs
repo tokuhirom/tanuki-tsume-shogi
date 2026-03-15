@@ -201,6 +201,7 @@ fn basic_validity(initial: &InitialData) -> bool {
     if dk.is_none() { return false; }
 
     if !piece_count_valid(initial) { return false; }
+    if initial.has_dead_end_pieces() { return false; }
 
     true
 }
@@ -311,6 +312,18 @@ fn add_hand_piece(hands: &mut HandsData, t: PieceType) {
     }
 }
 
+fn piece_can_be_placed(owner: Owner, piece_type: PieceType, y: i8) -> bool {
+    match piece_type {
+        PieceType::P | PieceType::L => {
+            !((owner == Owner::Attacker && y == 1) || (owner == Owner::Defender && y == 9))
+        }
+        PieceType::N => {
+            !((owner == Owner::Attacker && y <= 2) || (owner == Owner::Defender && y >= 8))
+        }
+        _ => true,
+    }
+}
+
 /// 守り方玉の周辺にランダムに駒を配置する共通処理
 #[allow(clippy::too_many_arguments)]
 fn place_pieces_near_king(
@@ -332,9 +345,9 @@ fn place_pieces_near_king(
             x = (dk.x + rng.ri(range.0, range.1)).clamp(1, 9);
             y = (dk.y + rng.ri(range.2, range.3)).clamp(1, 9);
             guard += 1;
-            if !used.contains(&(x, y)) || guard >= 40 { break; }
+            if (!used.contains(&(x, y)) && piece_can_be_placed(owner, t, y)) || guard >= 40 { break; }
         }
-        if used.contains(&(x, y)) { continue; }
+        if used.contains(&(x, y)) || !piece_can_be_placed(owner, t, y) { continue; }
         used.insert((x, y));
         pieces.push(PieceData { x, y, owner, piece_type: t });
     }
@@ -1451,6 +1464,28 @@ mod tests {
             PieceData { x: 3, y: 5, owner: Owner::Defender, piece_type: PieceType::S },
         ]);
         assert!(!basic_validity(&init));
+    }
+
+    #[test]
+    fn test_basic_validity_dead_end_pieces() {
+        let attacker_knight = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 1, y: 2, owner: Owner::Attacker, piece_type: PieceType::N },
+        ]);
+        assert!(!basic_validity(&attacker_knight));
+
+        let attacker_pawn = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 2, y: 1, owner: Owner::Attacker, piece_type: PieceType::P },
+        ]);
+        assert!(!basic_validity(&attacker_pawn));
+
+        let defender_knight = mk_initial(vec![
+            PieceData { x: 5, y: 9, owner: Owner::Attacker, piece_type: PieceType::K },
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 8, owner: Owner::Defender, piece_type: PieceType::N },
+        ]);
+        assert!(!basic_validity(&defender_knight));
     }
 
     // --- piece_count_valid テスト ---
