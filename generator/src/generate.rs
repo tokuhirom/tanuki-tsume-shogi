@@ -58,7 +58,7 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
         5 => 15,
         7 => 10,
         9 => 10,
-        _ => 10,       // 11手詰以上も分岐を厳しめに抑える
+        _ => 12,       // 11手詰以上は少し緩めて延長候補を通す
     };
     if checks > max_checks {
         return true;
@@ -82,7 +82,7 @@ fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
             5 => 6,
             7 => 5,
             9 => 4,
-            _ => 4,  // 11手詰以上も玉周りの疎な局面を早めに棄却
+            _ => 5,  // 11手詰以上は少し緩めて延長候補を通す
         };
         if empty_around >= max_empty {
             return true;
