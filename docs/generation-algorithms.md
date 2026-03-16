@@ -110,12 +110,23 @@
 ### 詰将棋生成
 
 - [逆算方式による詰将棋の問題生成プログラム - すぎゃーんメモ](https://memo.sugyan.com/entry/2017/11/19/220631)
+  - 3手詰までの逆算法の実装解説。詰み局面→1手戻し→3手詰への拡張手順
 - [詰将棋創作プログラミング 11 ランダムに自動創作 - 詰将棋メモ](http://toybox.tea-nifty.com/memo/2015/04/post-ae9c.html)
+  - ランダム法による自動創作の解説
 - [Pythonで一手詰め詰将棋自動生成プログラムを作る](https://note.com/kudoshusak/n/nd5507271e282)
+  - 1手詰の生成プログラムの実装例
 
 ### 詰将棋ソルバー / 探索アルゴリズム
 
 - [詰将棋アルゴリズムdf-pnのすべて - やねうら王 公式サイト](https://yaneuraou.yaneu.com/2024/05/08/all-about-df-pn/)
+  - df-pnの解説。KomoringHeightsが参考実装として推奨
 - [df-pnアルゴリズムを用いた詰将棋Solverによる最善解・余詰の導出 - すぎゃーんメモ](https://memo.sugyan.com/entry/2018/02/25/184347)
+  - df-pnの実装と詰将棋への応用
 - [df-pnアルゴリズムの詰将棋を解くプログラムへの応用 - 情報処理学会](https://www.ipsj.or.jp/award/H14/14-01.html)
+  - 学術論文。脊尾昌宏氏の原論文
 - [コンピュータ将棋の技術 第2回 詰将棋を解くための探索技術について - 人工知能学会誌](https://www.jstage.jst.go.jp/article/jjsai/26/4/26_392/_pdf)
+  - 詰将棋探索の学術的サーベイ
+- [A Survey of Tsume-Shogi Programs Using Variable-Depth Search - Springer](https://link.springer.com/chapter/10.1007/3-540-48957-6_20)
+  - 可変深さ探索の詰将棋プログラムのサーベイ
+- [The PN-search algorithm: Application to tsume-shogi - ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0004370201000844)
+  - PN探索の詰将棋への応用（原論文PDF）
