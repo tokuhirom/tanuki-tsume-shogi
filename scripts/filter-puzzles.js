@@ -40,7 +40,7 @@ function compositionKey(initial) {
   return `a:${atk} d:${def} h:${JSON.stringify(h)}`;
 }
 
-const MAX_PER_TAIL = 5;       // 同一詰み筋は最大5問
+const MAX_PER_TAIL = 1;       // 同一詰み筋は最大1問
 const MAX_PER_COMPOSITION = 5; // 同一駒構成は最大5問（generator側で3に制限済み、ここでは緩めに）
 const MATE_LENGTHS = [1, 3, 5, 7, 9, 11];
 
@@ -61,8 +61,8 @@ for (const ml of MATE_LENGTHS) {
     continue;
   }
 
-  // 7手詰以上で詰み筋フィルタを適用
-  const tailLen = ml >= 7 ? Math.min(ml, 7) : 0;
+  // 7手詰以上で詰み筋フィルタを適用（全手順で比較）
+  const tailLen = ml >= 7 ? ml : 0;
   const tailCount = new Map();
   const compCount = new Map();
   const filtered = [];
