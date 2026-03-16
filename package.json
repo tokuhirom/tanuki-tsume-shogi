@@ -6,7 +6,8 @@
   "scripts": {
     "build:wasm": "cd wasm && wasm-pack build --target web --out-dir ../src/wasm-pkg",
     "dev": "npm run build:wasm && vite",
-    "build": "npm run build:wasm && npm run validate && vite build",
+    "filter:puzzles": "node scripts/filter-puzzles.js",
+    "build": "npm run build:wasm && npm run validate && npm run filter:puzzles && vite build",
     "preview": "vite preview",
     "generate": "cargo run --release --manifest-path generator/Cargo.toml --",
     "validate": "cargo run --release --manifest-path generator/Cargo.toml -- validate",
