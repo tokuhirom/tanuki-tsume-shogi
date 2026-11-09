@@ -12706,156 +12706,6 @@
         {
           "x": 1,
           "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 1,
-          "y": 4,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 1,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 2,
-          "B": 1,
-          "G": 3,
-          "S": 3,
-          "N": 3,
-          "L": 4,
-          "P": 15
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          1,
-          4
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          3
-        ],
-        "to": [
-          1,
-          5
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          4
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          5
-        ],
-        "drop": "N",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 22,
-    "hash": "50c3a0e1"
-  },
-  {
-    "id": 92,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
           "owner": "defender",
           "type": "G"
         },
@@ -12990,157 +12840,7 @@
     "hash": "909e8753"
   },
   {
-    "id": 93,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "owner": "defender",
-          "type": "N"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 1,
-          "y": 4,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 6,
-          "owner": "attacker",
-          "type": "S"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 1,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 2,
-          "B": 1,
-          "G": 3,
-          "S": 3,
-          "N": 2,
-          "L": 4,
-          "P": 16
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          1,
-          4
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          3
-        ],
-        "to": [
-          1,
-          5
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          4
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          5
-        ],
-        "drop": "N",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 22,
-    "hash": "b1746b7e"
-  },
-  {
-    "id": 94,
+    "id": 92,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13272,7 +12972,7 @@
     "hash": "23c52377"
   },
   {
-    "id": 95,
+    "id": 93,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13422,7 +13122,7 @@
     "hash": "d0a3399b"
   },
   {
-    "id": 96,
+    "id": 94,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13560,7 +13260,7 @@
     "hash": "2957bea8"
   },
   {
-    "id": 97,
+    "id": 95,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13692,7 +13392,7 @@
     "hash": "9b5c0ca8"
   },
   {
-    "id": 98,
+    "id": 96,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13830,7 +13530,7 @@
     "hash": "35501baa"
   },
   {
-    "id": 99,
+    "id": 97,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -13962,7 +13662,7 @@
     "hash": "884ac3ab"
   },
   {
-    "id": 100,
+    "id": 98,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14100,7 +13800,7 @@
     "hash": "a7616e52"
   },
   {
-    "id": 101,
+    "id": 99,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14250,7 +13950,7 @@
     "hash": "a5f5a26f"
   },
   {
-    "id": 102,
+    "id": 100,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14388,7 +14088,7 @@
     "hash": "d3721cd1"
   },
   {
-    "id": 103,
+    "id": 101,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14520,7 +14220,7 @@
     "hash": "b499e7e9"
   },
   {
-    "id": 104,
+    "id": 102,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14658,7 +14358,7 @@
     "hash": "beb2b6ef"
   },
   {
-    "id": 105,
+    "id": 103,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14808,7 +14508,7 @@
     "hash": "99435b68"
   },
   {
-    "id": 106,
+    "id": 104,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -14940,7 +14640,7 @@
     "hash": "7b091632"
   },
   {
-    "id": 107,
+    "id": 105,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15090,7 +14790,7 @@
     "hash": "50099820"
   },
   {
-    "id": 108,
+    "id": 106,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15222,7 +14922,7 @@
     "hash": "c242e471"
   },
   {
-    "id": 109,
+    "id": 107,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15354,7 +15054,7 @@
     "hash": "d2c840f4"
   },
   {
-    "id": 110,
+    "id": 108,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15504,7 +15204,7 @@
     "hash": "c317b983"
   },
   {
-    "id": 111,
+    "id": 109,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15636,7 +15336,7 @@
     "hash": "bea86775"
   },
   {
-    "id": 112,
+    "id": 110,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15777,7 +15477,7 @@
     "hash": "086624c0"
   },
   {
-    "id": 113,
+    "id": 111,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -15915,7 +15615,7 @@
     "hash": "9b57cbc4"
   },
   {
-    "id": 114,
+    "id": 112,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16056,151 +15756,7 @@
     "hash": "48f2de6a"
   },
   {
-    "id": 115,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 7,
-          "y": 2,
-          "owner": "attacker",
-          "type": "B"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 4,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 1,
-          "y": 5,
-          "owner": "attacker",
-          "type": "N"
-        },
-        {
-          "x": 2,
-          "y": 6,
-          "owner": "attacker",
-          "type": "R"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 1,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 1,
-          "G": 4,
-          "S": 4,
-          "N": 3,
-          "L": 3,
-          "P": 16
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          2,
-          6
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          4
-        ],
-        "to": [
-          1,
-          5
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          1,
-          6
-        ],
-        "drop": "L",
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          5
-        ],
-        "to": [
-          1,
-          6
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          7,
-          2
-        ],
-        "to": [
-          2,
-          7
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          6
-        ],
-        "to": [
-          1,
-          5
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          7
-        ],
-        "to": [
-          2,
-          6
-        ],
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 33,
-    "hash": "91f39678"
-  },
-  {
-    "id": 116,
+    "id": 113,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16347,7 +15903,7 @@
     "hash": "a13fe2df"
   },
   {
-    "id": 117,
+    "id": 114,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16479,7 +16035,7 @@
     "hash": "794307a9"
   },
   {
-    "id": 118,
+    "id": 115,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16626,7 +16182,7 @@
     "hash": "224afbde"
   },
   {
-    "id": 119,
+    "id": 116,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16755,7 +16311,7 @@
     "hash": "523cf35c"
   },
   {
-    "id": 120,
+    "id": 117,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -16896,7 +16452,7 @@
     "hash": "7fc5eb81"
   },
   {
-    "id": 121,
+    "id": 118,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17034,7 +16590,7 @@
     "hash": "84ee8341"
   },
   {
-    "id": 122,
+    "id": 119,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17163,7 +16719,7 @@
     "hash": "a428a85a"
   },
   {
-    "id": 123,
+    "id": 120,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17298,7 +16854,7 @@
     "hash": "fdc998c8"
   },
   {
-    "id": 124,
+    "id": 121,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17427,157 +16983,7 @@
     "hash": "e7c37f9c"
   },
   {
-    "id": 125,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 2,
-          "owner": "attacker",
-          "type": "L"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 3,
-          "y": 3,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 4,
-          "y": 4,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 4,
-          "S": 3,
-          "N": 4,
-          "L": 3,
-          "P": 14
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          4,
-          4
-        ],
-        "to": [
-          2,
-          4
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          1,
-          2
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          3
-        ],
-        "drop": "S",
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          2
-        ],
-        "to": [
-          1,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          2
-        ],
-        "to": [
-          2,
-          1
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          2,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          3
-        ],
-        "to": [
-          2,
-          2
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 31,
-    "hash": "c55f3f36"
-  },
-  {
-    "id": 126,
+    "id": 122,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17706,7 +17112,7 @@
     "hash": "adcc639a"
   },
   {
-    "id": 127,
+    "id": 123,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17844,7 +17250,7 @@
     "hash": "998f2077"
   },
   {
-    "id": 128,
+    "id": 124,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -17979,7 +17385,7 @@
     "hash": "b2f30b2c"
   },
   {
-    "id": 129,
+    "id": 125,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18129,7 +17535,7 @@
     "hash": "cfcb9ce6"
   },
   {
-    "id": 130,
+    "id": 126,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18267,7 +17673,7 @@
     "hash": "1b649032"
   },
   {
-    "id": 131,
+    "id": 127,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18411,7 +17817,7 @@
     "hash": "4e27782f"
   },
   {
-    "id": 132,
+    "id": 128,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18540,7 +17946,7 @@
     "hash": "0b8cddf8"
   },
   {
-    "id": 133,
+    "id": 129,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18684,7 +18090,7 @@
     "hash": "31eb1f42"
   },
   {
-    "id": 134,
+    "id": 130,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18807,7 +18213,7 @@
     "hash": "44ff43ec"
   },
   {
-    "id": 135,
+    "id": 131,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -18951,7 +18357,7 @@
     "hash": "b5df13de"
   },
   {
-    "id": 136,
+    "id": 132,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19080,7 +18486,7 @@
     "hash": "ca7ee7fa"
   },
   {
-    "id": 137,
+    "id": 133,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19218,7 +18624,7 @@
     "hash": "ae0054d9"
   },
   {
-    "id": 138,
+    "id": 134,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19341,7 +18747,7 @@
     "hash": "e948b36c"
   },
   {
-    "id": 139,
+    "id": 135,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19488,7 +18894,7 @@
     "hash": "7bed1abf"
   },
   {
-    "id": 140,
+    "id": 136,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19638,7 +19044,7 @@
     "hash": "d92c2bf6"
   },
   {
-    "id": 141,
+    "id": 137,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19776,7 +19182,7 @@
     "hash": "7810477c"
   },
   {
-    "id": 142,
+    "id": 138,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -19899,7 +19305,7 @@
     "hash": "f396f915"
   },
   {
-    "id": 143,
+    "id": 139,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -20049,151 +19455,7 @@
     "hash": "e4e2a488"
   },
   {
-    "id": 144,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 3,
-          "y": 1,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "owner": "attacker",
-          "type": "S"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "attacker",
-          "type": "R"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 1,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 3,
-          "S": 2,
-          "N": 4,
-          "L": 4,
-          "P": 15
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          2,
-          4
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          3
-        ],
-        "to": [
-          1,
-          4
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          2
-        ],
-        "to": [
-          3,
-          4
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          4
-        ],
-        "to": [
-          1,
-          5
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          4
-        ],
-        "to": [
-          2,
-          4
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          5
-        ],
-        "to": [
-          1,
-          6
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          7
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 25,
-    "hash": "4b50052f"
-  },
-  {
-    "id": 145,
+    "id": 140,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -20331,7 +19593,7 @@
     "hash": "8ad952b8"
   },
   {
-    "id": 146,
+    "id": 141,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -20469,7 +19731,7 @@
     "hash": "54a7b660"
   },
   {
-    "id": 147,
+    "id": 142,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -20607,7 +19869,7 @@
     "hash": "df6e2577"
   },
   {
-    "id": 148,
+    "id": 143,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -20757,148 +20019,7 @@
     "hash": "0858e4e7"
   },
   {
-    "id": 149,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 2,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "defender",
-          "type": "S"
-        },
-        {
-          "x": 6,
-          "y": 2,
-          "owner": "attacker",
-          "type": "+R"
-        },
-        {
-          "x": 1,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 2,
-          "y": 3,
-          "owner": "defender",
-          "type": "S"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 0,
-          "B": 0,
-          "G": 0,
-          "S": 1,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 4,
-          "S": 1,
-          "N": 4,
-          "L": 4,
-          "P": 16
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "from": [
-          1,
-          2
-        ],
-        "to": [
-          1,
-          1
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          2,
-          1
-        ],
-        "to": [
-          3,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      },
-      {
-        "from": [
-          3,
-          1
-        ],
-        "to": [
-          4,
-          1
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          4,
-          2
-        ],
-        "drop": "S",
-        "promote": false
-      },
-      {
-        "from": [
-          4,
-          1
-        ],
-        "to": [
-          3,
-          2
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          2
-        ],
-        "to": [
-          3,
-          3
-        ],
-        "promote": true
-      }
-    ],
-    "quality": "validated",
-    "score": 28,
-    "hash": "2de72a6b"
-  },
-  {
-    "id": 150,
+    "id": 144,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21042,7 +20163,7 @@
     "hash": "bd65afad"
   },
   {
-    "id": 151,
+    "id": 145,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21171,7 +20292,7 @@
     "hash": "573fe463"
   },
   {
-    "id": 152,
+    "id": 146,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21300,7 +20421,7 @@
     "hash": "00ae07bc"
   },
   {
-    "id": 153,
+    "id": 147,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21453,7 +20574,7 @@
     "hash": "8c4be5f5"
   },
   {
-    "id": 154,
+    "id": 148,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21582,7 +20703,7 @@
     "hash": "834a071d"
   },
   {
-    "id": 155,
+    "id": 149,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21735,7 +20856,7 @@
     "hash": "0568eb77"
   },
   {
-    "id": 156,
+    "id": 150,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -21870,7 +20991,7 @@
     "hash": "7b4cbe18"
   },
   {
-    "id": 157,
+    "id": 151,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22011,7 +21132,7 @@
     "hash": "9e189596"
   },
   {
-    "id": 158,
+    "id": 152,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22149,7 +21270,7 @@
     "hash": "0d755219"
   },
   {
-    "id": 159,
+    "id": 153,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22278,7 +21399,7 @@
     "hash": "25413123"
   },
   {
-    "id": 160,
+    "id": 154,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22413,7 +21534,7 @@
     "hash": "857236e7"
   },
   {
-    "id": 161,
+    "id": 155,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22542,7 +21663,7 @@
     "hash": "7f6916a5"
   },
   {
-    "id": 162,
+    "id": 156,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22677,7 +21798,7 @@
     "hash": "c90d0e29"
   },
   {
-    "id": 163,
+    "id": 157,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22830,7 +21951,7 @@
     "hash": "90ac7af9"
   },
   {
-    "id": 164,
+    "id": 158,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -22965,7 +22086,7 @@
     "hash": "55807b9e"
   },
   {
-    "id": 165,
+    "id": 159,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23115,7 +22236,7 @@
     "hash": "6f6a4ebb"
   },
   {
-    "id": 166,
+    "id": 160,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23244,148 +22365,7 @@
     "hash": "e9f1e417"
   },
   {
-    "id": 167,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 4,
-          "y": 5,
-          "owner": "attacker",
-          "type": "N"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 1,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 2,
-          "S": 4,
-          "N": 3,
-          "L": 4,
-          "P": 16
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          2,
-          1
-        ],
-        "drop": "R",
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          1,
-          2
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          4
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          2
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          1
-        ],
-        "to": [
-          1,
-          1
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          3
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          3,
-          3
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 33,
-    "hash": "77f8ee5d"
-  },
-  {
-    "id": 168,
+    "id": 161,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23505,7 +22485,7 @@
     "hash": "a50a7796"
   },
   {
-    "id": 169,
+    "id": 162,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23658,7 +22638,7 @@
     "hash": "e9680e5f"
   },
   {
-    "id": 170,
+    "id": 163,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23787,7 +22767,7 @@
     "hash": "ea0d7742"
   },
   {
-    "id": 171,
+    "id": 164,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -23934,7 +22914,7 @@
     "hash": "5f3150ef"
   },
   {
-    "id": 172,
+    "id": 165,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24072,7 +23052,7 @@
     "hash": "fe712bc1"
   },
   {
-    "id": 173,
+    "id": 166,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24213,7 +23193,7 @@
     "hash": "bb98514a"
   },
   {
-    "id": 174,
+    "id": 167,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24363,7 +23343,7 @@
     "hash": "8913f931"
   },
   {
-    "id": 175,
+    "id": 168,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24498,7 +23478,7 @@
     "hash": "490f3cc3"
   },
   {
-    "id": 176,
+    "id": 169,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24636,7 +23616,7 @@
     "hash": "b24f475e"
   },
   {
-    "id": 177,
+    "id": 170,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24771,7 +23751,7 @@
     "hash": "8a6c9250"
   },
   {
-    "id": 178,
+    "id": 171,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -24900,7 +23880,7 @@
     "hash": "abacd289"
   },
   {
-    "id": 179,
+    "id": 172,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25047,7 +24027,7 @@
     "hash": "eb129040"
   },
   {
-    "id": 180,
+    "id": 173,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25179,7 +24159,7 @@
     "hash": "16f4d4a1"
   },
   {
-    "id": 181,
+    "id": 174,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25332,7 +24312,7 @@
     "hash": "d07269aa"
   },
   {
-    "id": 182,
+    "id": 175,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25467,7 +24447,7 @@
     "hash": "941ae08f"
   },
   {
-    "id": 183,
+    "id": 176,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25614,7 +24594,7 @@
     "hash": "3d704384"
   },
   {
-    "id": 184,
+    "id": 177,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25752,7 +24732,7 @@
     "hash": "1c61460a"
   },
   {
-    "id": 185,
+    "id": 178,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -25881,7 +24861,7 @@
     "hash": "0c5cc905"
   },
   {
-    "id": 186,
+    "id": 179,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26022,7 +25002,7 @@
     "hash": "c757dc6a"
   },
   {
-    "id": 187,
+    "id": 180,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26145,7 +25125,7 @@
     "hash": "1e824a9b"
   },
   {
-    "id": 188,
+    "id": 181,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26289,7 +25269,7 @@
     "hash": "2c148b88"
   },
   {
-    "id": 189,
+    "id": 182,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26418,7 +25398,7 @@
     "hash": "37c39950"
   },
   {
-    "id": 190,
+    "id": 183,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26553,7 +25533,7 @@
     "hash": "e5692e86"
   },
   {
-    "id": 191,
+    "id": 184,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26688,7 +25668,7 @@
     "hash": "96f37f9e"
   },
   {
-    "id": 192,
+    "id": 185,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26841,7 +25821,7 @@
     "hash": "1ee9ee4d"
   },
   {
-    "id": 193,
+    "id": 186,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -26970,7 +25950,7 @@
     "hash": "a5898beb"
   },
   {
-    "id": 194,
+    "id": 187,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27123,7 +26103,7 @@
     "hash": "34fa062e"
   },
   {
-    "id": 195,
+    "id": 188,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27255,7 +26235,7 @@
     "hash": "9300e005"
   },
   {
-    "id": 196,
+    "id": 189,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27384,7 +26364,7 @@
     "hash": "2d737e16"
   },
   {
-    "id": 197,
+    "id": 190,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27531,7 +26511,7 @@
     "hash": "86ce5e1d"
   },
   {
-    "id": 198,
+    "id": 191,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27660,7 +26640,7 @@
     "hash": "7491d058"
   },
   {
-    "id": 199,
+    "id": 192,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27807,7 +26787,7 @@
     "hash": "8550b020"
   },
   {
-    "id": 200,
+    "id": 193,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -27936,7 +26916,7 @@
     "hash": "849a7156"
   },
   {
-    "id": 201,
+    "id": 194,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28077,7 +27057,7 @@
     "hash": "374de61a"
   },
   {
-    "id": 202,
+    "id": 195,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28212,7 +27192,7 @@
     "hash": "21e6e42d"
   },
   {
-    "id": 203,
+    "id": 196,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28347,7 +27327,7 @@
     "hash": "6bc597a4"
   },
   {
-    "id": 204,
+    "id": 197,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28482,7 +27462,7 @@
     "hash": "2996ded9"
   },
   {
-    "id": 205,
+    "id": 198,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28617,7 +27597,7 @@
     "hash": "f95393ba"
   },
   {
-    "id": 206,
+    "id": 199,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28764,7 +27744,7 @@
     "hash": "fcbce0ae"
   },
   {
-    "id": 207,
+    "id": 200,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -28893,148 +27873,7 @@
     "hash": "2ee620e1"
   },
   {
-    "id": 208,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 1,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 2,
-          "S": 4,
-          "N": 3,
-          "L": 4,
-          "P": 15
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          2,
-          1
-        ],
-        "drop": "R",
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          1,
-          2
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          4
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          2
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          1
-        ],
-        "to": [
-          1,
-          1
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          3
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          4
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 31,
-    "hash": "eb70ba68"
-  },
-  {
-    "id": 209,
+    "id": 201,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29163,148 +28002,7 @@
     "hash": "155f8c98"
   },
   {
-    "id": 210,
-    "mateLength": 7,
-    "initial": {
-      "pieces": [
-        {
-          "x": 1,
-          "y": 1,
-          "owner": "defender",
-          "type": "K"
-        },
-        {
-          "x": 2,
-          "y": 2,
-          "owner": "attacker",
-          "type": "P"
-        },
-        {
-          "x": 3,
-          "y": 2,
-          "owner": "defender",
-          "type": "P"
-        },
-        {
-          "x": 1,
-          "y": 3,
-          "owner": "defender",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 4,
-          "owner": "attacker",
-          "type": "G"
-        },
-        {
-          "x": 2,
-          "y": 5,
-          "owner": "attacker",
-          "type": "P"
-        }
-      ],
-      "hands": {
-        "attacker": {
-          "R": 1,
-          "B": 0,
-          "G": 0,
-          "S": 0,
-          "N": 0,
-          "L": 0,
-          "P": 0
-        },
-        "defender": {
-          "R": 1,
-          "B": 2,
-          "G": 2,
-          "S": 4,
-          "N": 4,
-          "L": 4,
-          "P": 15
-        }
-      },
-      "sideToMove": "attacker"
-    },
-    "solution": [
-      {
-        "to": [
-          2,
-          1
-        ],
-        "drop": "R",
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          1
-        ],
-        "to": [
-          1,
-          2
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          4
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          1,
-          2
-        ],
-        "to": [
-          1,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "from": [
-          2,
-          1
-        ],
-        "to": [
-          1,
-          1
-        ],
-        "promote": true
-      },
-      {
-        "from": [
-          1,
-          3
-        ],
-        "to": [
-          2,
-          3
-        ],
-        "promote": false
-      },
-      {
-        "to": [
-          2,
-          4
-        ],
-        "drop": "G",
-        "promote": false
-      }
-    ],
-    "quality": "validated",
-    "score": 31,
-    "hash": "fea8ef69"
-  },
-  {
-    "id": 211,
+    "id": 202,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29445,7 +28143,7 @@
     "hash": "743a2196"
   },
   {
-    "id": 212,
+    "id": 203,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29574,7 +28272,7 @@
     "hash": "4405bfe3"
   },
   {
-    "id": 213,
+    "id": 204,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29715,7 +28413,7 @@
     "hash": "66b10a7d"
   },
   {
-    "id": 214,
+    "id": 205,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29844,7 +28542,7 @@
     "hash": "9b2cb323"
   },
   {
-    "id": 215,
+    "id": 206,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -29985,7 +28683,7 @@
     "hash": "ac586ffb"
   },
   {
-    "id": 216,
+    "id": 207,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -30111,7 +28809,7 @@
     "hash": "edc526be"
   },
   {
-    "id": 217,
+    "id": 208,
     "mateLength": 7,
     "initial": {
       "pieces": [
@@ -30246,7 +28944,7 @@
     "hash": "5bcc17ec"
   },
   {
-    "id": 218,
+    "id": 209,
     "mateLength": 7,
     "initial": {
       "pieces": [

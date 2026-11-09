@@ -57,7 +57,7 @@ fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<MemoKe
     }
 
     // 安定したソート（手の文字列表現）
-    winning.sort_by(|a, b| move_to_string(&a.0).cmp(&move_to_string(&b.0)));
+    winning.sort_by_key(|a| move_to_string(&a.0));
     let best = &winning[0];
     let unique = winning.len() == 1 && best.1.unique;
     let mut line = vec![best.0.clone()];

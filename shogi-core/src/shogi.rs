@@ -1378,7 +1378,7 @@ pub fn forced_mate_within(state: &mut State, plies: u32, memo: &mut FxHashMap<u6
         if winning.is_empty() {
             MateResult { mate: false, unique: false, line: vec![] }
         } else {
-            winning.sort_by(|a, b| a.0.to_string_key().cmp(&b.0.to_string_key()));
+            winning.sort_by_key(|a| a.0.to_string_key());
             let unique = winning.len() == 1 && winning[0].1.unique;
             let best = &winning[0];
             MateResult {
