@@ -205,8 +205,8 @@ fn generate_mated_position(rng: &mut Rng) -> Option<State> {
 
     // 行き場のない駒の配置チェック
     match check_type {
-        PieceType::P | PieceType::L => { if check_pos.y == 1 { return None; } }
-        PieceType::N => { if check_pos.y <= 2 { return None; } }
+        PieceType::P | PieceType::L if check_pos.y == 1 => return None,
+        PieceType::N if check_pos.y <= 2 => return None,
         _ => {}
     }
 
@@ -369,12 +369,8 @@ fn unwind_attacker_move(rng: &mut Rng, state: &State) -> Option<State> {
 
         // 行き場のない駒チェック
         match piece_type_at_from {
-            PieceType::P | PieceType::L => {
-                if from_pos.y == 1 { return None; }
-            }
-            PieceType::N => {
-                if from_pos.y <= 2 { return None; }
-            }
+            PieceType::P | PieceType::L if from_pos.y == 1 => return None,
+            PieceType::N if from_pos.y <= 2 => return None,
             _ => {}
         }
 
@@ -581,8 +577,8 @@ fn unwind_defender_interpose(rng: &mut Rng, state: &State, dk_pos: Pos) -> Optio
 
     // 行き場のない駒チェック
     match block_type {
-        PieceType::P | PieceType::L => { if block_pos.y >= 9 { return None; } }
-        PieceType::N => { if block_pos.y >= 8 { return None; } }
+        PieceType::P | PieceType::L if block_pos.y >= 9 => return None,
+        PieceType::N if block_pos.y >= 8 => return None,
         _ => {}
     }
 
