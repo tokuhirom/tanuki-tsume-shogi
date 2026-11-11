@@ -27,8 +27,7 @@ pub fn validate_tsume_for_verify(state: &mut State, mate_length: u32) -> Option<
 
 /// 安価な事前フィルタ: フルバリデーションの前に候補を早期棄却する
 fn quick_reject(initial: &InitialData, mate_length: u32) -> bool {
-    // 駒数上限チェック（角4枚など不正な局面を棄却）
-    if initial.has_excess_pieces() {
+    if !basic_validity(initial) {
         return true;
     }
 
@@ -184,6 +183,18 @@ fn piece_count_valid(initial: &InitialData) -> bool {
     counts.iter().all(|(&t, &c)| c <= max_piece_count(t))
 }
 
+pub fn has_nifu(initial: &InitialData) -> bool {
+    let mut pawns = [[false; 9]; 2];
+    for p in &initial.pieces {
+        if p.piece_type != PieceType::P || !(1..=9).contains(&p.x) { continue; }
+        let owner = if p.owner == Owner::Attacker { 0 } else { 1 };
+        let file = (p.x - 1) as usize;
+        if pawns[owner][file] { return true; }
+        pawns[owner][file] = true;
+    }
+    false
+}
+
 fn basic_validity(initial: &InitialData) -> bool {
     if initial.pieces.is_empty() { return false; }
     for p in &initial.pieces {
@@ -202,6 +213,7 @@ fn basic_validity(initial: &InitialData) -> bool {
 
     if !piece_count_valid(initial) { return false; }
     if initial.has_dead_end_pieces() { return false; }
+    if has_nifu(initial) { return false; }
 
     true
 }
@@ -1069,6 +1081,10 @@ pub fn generate_puzzles(seed: u64, mate_length: u32, attempts: u32, curated_seed
     let mut kept = 0u32;
     let mut dropped = 0u32;
     for p in existing {
+        if !basic_validity(&p.initial) {
+            dropped += 1;
+            continue;
+        }
         let mut state = p.initial.to_state();
         let valid = validate_tsume_for_verify(&mut state, mate_length);
         let has_leftover = match &valid {
@@ -1525,6 +1541,28 @@ mod tests {
             PieceData { x: 3, y: 8, owner: Owner::Defender, piece_type: PieceType::N },
         ]);
         assert!(!basic_validity(&defender_knight));
+    }
+
+    #[test]
+    fn test_basic_validity_nifu() {
+        for owner in [Owner::Attacker, Owner::Defender] {
+            let init = mk_initial(vec![
+                PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+                PieceData { x: 3, y: 3, owner, piece_type: PieceType::P },
+                PieceData { x: 3, y: 5, owner, piece_type: PieceType::P },
+            ]);
+            assert!(has_nifu(&init));
+            assert!(!basic_validity(&init));
+        }
+
+        let legal = mk_initial(vec![
+            PieceData { x: 5, y: 1, owner: Owner::Defender, piece_type: PieceType::K },
+            PieceData { x: 3, y: 3, owner: Owner::Attacker, piece_type: PieceType::P },
+            PieceData { x: 3, y: 5, owner: Owner::Defender, piece_type: PieceType::P },
+            PieceData { x: 3, y: 6, owner: Owner::Attacker, piece_type: PieceType::PP },
+        ]);
+        assert!(!has_nifu(&legal));
+        assert!(basic_validity(&legal));
     }
 
     // --- piece_count_valid テスト ---

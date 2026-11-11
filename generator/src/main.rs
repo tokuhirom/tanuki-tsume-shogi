@@ -245,6 +245,11 @@ fn validate_file(file: &str, mate_len: u32, failed: &mut u32, fix: bool) {
     let mut valid_puzzles: Vec<generate::Puzzle> = Vec::new();
 
     for p in &puzzles {
+        if generate::has_nifu(&p.initial) {
+            eprintln!("[NG] {}手詰 #{}: 二歩", mate_len, p.id);
+            *failed += 1;
+            continue;
+        }
         let sig = serde_json::to_string(&p.initial).unwrap();
         if checked.contains(&sig) {
             continue;

@@ -40,6 +40,17 @@ function compositionKey(initial) {
   return `a:${atk} d:${def} h:${JSON.stringify(h)}`;
 }
 
+function hasNifu(initial) {
+  const pawns = new Set();
+  for (const piece of initial.pieces) {
+    if (piece.type !== 'P') continue;
+    const key = `${piece.owner}:${piece.x}`;
+    if (pawns.has(key)) return true;
+    pawns.add(key);
+  }
+  return false;
+}
+
 const MAX_PER_TAIL = 1;       // 同一詰み筋は最大1問
 const MAX_PER_COMPOSITION = 5; // 同一駒構成は最大5問（generator側で3に制限済み、ここでは緩めに）
 const MATE_LENGTHS = [1, 3, 5, 7, 9, 11];
@@ -68,6 +79,7 @@ for (const ml of MATE_LENGTHS) {
   const filtered = [];
 
   for (const p of puzzles) {
+    if (hasNifu(p.initial)) continue;
     // 駒構成チェック
     const ckey = compositionKey(p.initial);
     const cc = compCount.get(ckey) || 0;
